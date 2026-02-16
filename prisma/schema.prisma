@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/**
+ * -------------------------------- ENUMS --------------------------------
+ */
+
+enum USER_ROLE {
+  admin
+  inventory_manager
+  user
+  auditor
+}
+
+enum INVITATION_STATUS {
+  pending
+  accepted
+}
+
+enum TRANSACTION_TYPE {
+  stock_in
+  dispensed
+  wastage
+  adjustment
+}
+
+enum ALERT_TYPE {
+  expiry_warning
+  expired
+  low_stock
+  out_of_stock
+}
+
+enum ALERT_STATUS {
+  pending
+  read
+  dismissed
+  resolved
+}
+
+enum REPORT_TYPE {
+  usage
+  wastage
+  stock_level
+  expiry
+}
+
+enum REPORT_PERIOD {
+  daily
+  weekly
+  monthly
+  custom
+}
+
+/**
+ * -------------------------------- MODELS --------------------------------
+ */
+
+model User {
+  id                String         @id
+  name              String
+  email             String
+  emailVerified     Boolean
+  image             String?
+  role              String         @default("user")
+  banned            Boolean        @default(false)
+  banReason         String?
+  banExpires        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  emailAlertEnabled Boolean?
+  sessions          Session[]
+  accounts          Account[]
+  invitations       Invitation[]
+  transactions      Transactions[]
+  reports           Reports[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime
+  updatedAt      DateTime
+  ipAddress      String?
+  impersonatedBy String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Invitation {
+  id    String    @id @default(cuid())
+  email String    @unique
+  role  USER_ROLE @default(user)
+  token String    @unique
+
+  invitedById String
+  invitedBy   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status    INVITATION_STATUS @default(pending)
+  createdAt DateTime          @default(now())
+  expiresAt DateTime
+  userId    String
+
+  @@index([token, status])
+  @@map("invitation")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  medicines Medicines[]
+
+  @@map("categories")
+}
+
+model Medicines {
+  id             String  @id @default(cuid())
+  name           String
+  scientificName String?
+  description    String?
+  unit           String
+  reorderlevel   Int
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  manufacturer String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  stockEntries StockEntries[]
+  alerts       Alerts[]
+
+  @@index([name, isActive, categoryId])
+  @@map("medicines")
+}
+
+model StockEntries {
+  id          String @id @default(cuid())
+  batchNumber String
+
+  medicineId String
+  medicine   Medicines @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+
+  quantity         Int
+  initialtQuantity Int
+  expiryDate       DateTime
+  purchaseDate     DateTime
+  purchasePrice    Int
+  supplier         String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  transactions Transactions[]
+  alerts       Alerts[]
+
+  @@index([batchNumber, medicineId, expiryDate])
+  @@map("stock_entries")
+}
+
+model Transactions {
+  id String @id @default(cuid())
+
+  stockEntriesId String
+  stockEntry     StockEntries @relation(fields: [stockEntriesId], references: [id], onDelete: Cascade)
+
+  type     TRANSACTION_TYPE @default(dispensed)
+  quantity Int
+  reason   String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  person    String
+  phone     String
+
+  @@index([stockEntriesId])
+  @@map("transactions")
+}
+
+model Alerts {
+  id   String     @id @default(cuid())
+  type ALERT_TYPE @default(low_stock)
+
+  stockEntriesId String
+  stockEntry     StockEntries @relation(fields: [stockEntriesId], references: [id], onDelete: Cascade)
+
+  medicinesId String
+  medicines   Medicines @relation(fields: [medicinesId], references: [id], onDelete: Cascade)
+
+  message String
+  status  ALERT_STATUS @default(pending)
+
+  createdAt DateTime @default(now())
+  readAt    DateTime @updatedAt
+
+  @@index([stockEntriesId, medicinesId])
+  @@map("alerts")
+}
+
+model Reports {
+  id        String        @id @default(cuid())
+  type      REPORT_TYPE   @default(usage)
+  period    REPORT_PERIOD @default(daily)
+  startDate DateTime
+  endDate   DateTime
+
+  generatedById String
+  generatedBy   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  filePath  String
+  name      String
+  createdAt DateTime
+  userId    String
+
+  @@map("reports")
+}
+
+model Settings {
+  id                     String   @id @default(cuid())
+  facilityName           String
+  facilityAddress        String
+  expiryWarnDays         Int
+  criticalExpiryWarnDays Int
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("settings")
+}
