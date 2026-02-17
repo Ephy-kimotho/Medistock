@@ -1,7 +1,7 @@
 function InventoryPage() {
   return (
     <div>
-      <p>This is the inventory page</p>
+      <p>This is the stock inventory page</p>
     </div>
   );
 }
