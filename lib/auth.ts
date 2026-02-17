@@ -1,6 +1,8 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from '@/lib/prisma'
+import { admin as adminPlugin } from "better-auth/plugins"
+import { ac, admin, auditor, inventoryManager, user } from "@/lib/permissions"
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -10,5 +12,16 @@ export const auth = betterAuth({
         enabled: true,
         disableSignUp: true
     },
-    trustedOrigins: ['http://localhost:3000']
+    trustedOrigins: ['http://localhost:3000'],
+    plugins: [
+        adminPlugin({
+            ac,
+            roles: {
+                admin,
+                auditor,
+                inventoryManager,
+                user
+            }
+        })
+    ]
 })
