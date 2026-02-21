@@ -11,7 +11,7 @@ export function usePermissions() {
     const isUser = userRole === "user"
     const isAdmin = userRole === "admin"
     const isAuditor = userRole === "auditor"
-    const isInventoryManager = userRole === "inventoryManager"
+    const isInventoryManager = userRole === "inventory_manager"
 
     return {
         isSessionPending: isPending,
