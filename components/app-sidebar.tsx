@@ -1,5 +1,8 @@
 "use client";
 
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { signOut } from "@/lib/auth-client";
 import {
   Sidebar,
   SidebarHeader,
@@ -36,8 +39,6 @@ import {
   SquarePen,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 // Navigation items configuration
 const mainNavItems = [
@@ -92,6 +93,16 @@ const footerNavItems = [
 
 function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   // Check if a path is active
   const isActive = (url: string) => pathname === url;
@@ -250,7 +261,8 @@ function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Sign out"
-              className="text-red-500 hover:bg-red-100 cursor-pointer hover:text-red-600"
+              className="text-red-500 hover:bg-red-200 cursor-pointer hover:text-red-600"
+              onClick={handleLogout}
             >
               <LogOut className="size-4" />
               <span>Sign out</span>
