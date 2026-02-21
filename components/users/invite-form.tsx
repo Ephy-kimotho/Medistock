@@ -179,7 +179,7 @@ function InvitationForm({ children }: { children: ReactNode }) {
                         "border-red-400 focus-visible:border-red-500 focus-visible:ring-red-400",
                     )}
                   >
-                    <SelectValue />
+                    <SelectValue placeholder="Choose user role" />
                   </SelectTrigger>
                   <SelectContent id="user-role">
                     <SelectGroup>
