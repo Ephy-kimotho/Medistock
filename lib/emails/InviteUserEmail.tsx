@@ -49,10 +49,7 @@ function InviteEmail({
       >
         <Body className="bg-gray-100 font-sans">
           <Container className="bg-white mx-auto my-10 py-10 px-8 max-w-3xl rounded-lg">
-            <Section className="text-center mb-6">
-              <div className="size-14 bg-brand rounded-lg flex items-center justify-center mb-4">
-                <Text className="text-white text-center text-2xl">M</Text>
-              </div>
+            <Section className="text-center w-full mb-4">
               <Heading
                 as="h1"
                 className="text-gray-900 font-bold text-2xl tracking-tight mb-4"
@@ -61,16 +58,17 @@ function InviteEmail({
               </Heading>
             </Section>
 
-            <Section className="mb-6">
+            <Section className="mb-4">
               <Heading
                 as="h3"
                 className="text-gray-800 font-medium text-lg mb-4"
               >
-                Hi {name ? name : "there"},
+                Hi {name ? name : "there"}, you have been invited to join
+                medistock by {invitor}.
               </Heading>
 
               <Text className="mb-4 text-gray-700 text-base">
-                {invitor} has invited you to join Medistock as{" "}
+                Your new role will be{" "}
                 <strong>
                   {role.startsWith("a")
                     ? `an ${role}`
@@ -94,7 +92,7 @@ function InviteEmail({
             </Section>
 
             {/* CTA buttons */}
-            <Section className="text-center py-2 mb-6">
+            <Section className="text-center py-2 mb-4">
               <Button
                 href={inviteURL}
                 className="bg-brand text-white py-4 px-8 rounded-lg inline-block text-xl font-bold"
@@ -104,7 +102,7 @@ function InviteEmail({
             </Section>
 
             {/* Fallback Link */}
-            <Section className="mb-6">
+            <Section className="mb-4">
               <Text className="text-gray-700 text-base leading-7 mb-2">
                 Or copy and paste this link into your browser:
               </Text>
@@ -113,7 +111,7 @@ function InviteEmail({
               </Text>
             </Section>
 
-            <Hr className="border-gray-200 my-6" />
+            <Hr className="border-gray-200 my-5" />
 
             <Section className="mb-6">
               <Text className="text-gray-800 text-sm leading-6 mb-2">
@@ -127,7 +125,7 @@ function InviteEmail({
               </Text>
             </Section>
 
-            <Hr className="border-gray-200 my-6" />
+            <Hr className="border-gray-200 my-5" />
 
             {/* Footer */}
             <Section>
