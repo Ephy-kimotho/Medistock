@@ -1,13 +1,14 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation";
 import { randomBytes } from "crypto";
-import { addMinutes } from "date-fns"
-import { isAfter } from "date-fns"
+import { addDays, isAfter } from "date-fns"
 import resend from "../email-client";
 import InviteEmail from "../emails/InviteUserEmail";
-import type { InviteUserInput } from "@/lib/types";
-
+import { acceptInvitationSchema } from "@/lib/schemas/users"
+import type { InviteUserInput, AcceptInvitationInput } from "@/lib/types";
 
 export async function createInvitation({ name, email, role, invitedById }: InviteUserInput) {
     try {
@@ -46,7 +47,7 @@ export async function createInvitation({ name, email, role, invitedById }: Invit
 
         // create a unique token
         const inviteToken = randomBytes(32).toString("hex")
-        const expiresAt = addMinutes(new Date(), 5)
+        const expiresAt = addDays(new Date(), 7)
 
         // Build the invite URL
         const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
@@ -93,10 +94,23 @@ export async function createInvitation({ name, email, role, invitedById }: Invit
     }
 }
 
+export async function acceptInvitation({ token, name, password }: AcceptInvitationInput) {
 
-export async function validateToken(token: string) {
+    // Validate input
+    const validation = acceptInvitationSchema.safeParse({
+        name,
+        password,
+        confirmPassword: password
+    })
 
-    // Get the invitation with this token
+    if (!validation.success) {
+        return {
+            success: false,
+            message: validation.error.message || "Invalid name or password."
+        }
+    }
+
+    // Check the token exists 
     const invitation = await prisma.invitation.findUnique({
         where: {
             token
@@ -106,30 +120,106 @@ export async function validateToken(token: string) {
     if (!invitation) {
         return {
             success: false,
-            message: "Invitation not found."
-        }
+            message: "Invalid invitation token.",
+        };
     }
 
-    // Check if the invitation has already been accepted
-    if (invitation && invitation.acceptedAt !== null) {
+    if (invitation.acceptedAt !== null) {
         return {
             success: false,
-            message: "This invitation has already been used."
-        }
+            message: "This invitation has already been accepted.",
+        };
     }
 
-    // Check if the token has expired
-    const hasExpired = isAfter(new Date(), invitation.expiresAt)
-
-    if (hasExpired) {
+    // Check the token has not expired
+    if (isAfter(new Date(), invitation.expiresAt)) {
         return {
             success: false,
-            message: "This invitation has already expired."
-        }
+            message: "This invitation has expired.",
+        };
     }
 
-    return {
-        success: true,
-        message: "Valid invitation"
+    // Check if user already exists 
+    const existingUser = await prisma.user.findUnique({
+        where: { email: invitation.email },
+    });
+
+    if (existingUser) {
+        return {
+            success: false,
+            message: "An account with this email already exists.",
+        };
+    }
+
+    // Create the user 
+    try {
+        console.log("Creating user......")
+
+        const { user } = await auth.api.createUser({
+            body: {
+                email: invitation.email,
+                role: invitation.role,
+                name,
+                password,
+                data: {
+                    emailVerified: true,
+                }
+
+            }
+        })
+
+        console.log("Created user result:", user)
+
+        if (!user) {
+            return {
+                success: false,
+                message: "Failed to create account. Please try again.",
+            };
+        }
+
+        await prisma.invitation.update({
+            where: { id: invitation.id },
+            data: { acceptedAt: new Date() },
+        });
+
+
+    } catch (error) {
+        console.error("Create user error:", error);
+
+        if (error instanceof Error && error.message.includes("already exists")) {
+            return {
+                success: false,
+                message: "An account with this email already exists.",
+            };
+        }
+
+        return {
+            success: false,
+            message: "Failed to create account. Please try again.",
+        };
+
+    }
+
+    let signInResult = null;
+
+    try {
+        console.log("Auto log-in attempt......")
+
+        signInResult = await auth.api.signInEmail({
+            body: {
+                email: invitation.email,
+                password: password,
+            }
+        })
+
+        console.log("Auto log-in result:", signInResult)
+    } catch (error) {
+        console.error("Auto sign-in error:", error);
+    }
+
+    if (signInResult !== null && signInResult.user) {
+        redirect("/dashboard");
+    } else {
+        redirect("/login");
     }
 }
