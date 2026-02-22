@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { LoginForm } from "./LoginForm";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Login() {
   // check if user count is greater than 0
   const userCount = await prisma.user.count();
