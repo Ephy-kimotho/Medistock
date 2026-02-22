@@ -25,7 +25,7 @@ export const user = ac.newRole({
     stockEntry: ["read"],
 })
 
-export const inventoryManager = ac.newRole({
+export const inventory_manager = ac.newRole({
     user: ["set-password", "get"],
     medicine: ["create", "read", "update", "soft-delete", "transact"],
     category: ["create", "read", "update"],
