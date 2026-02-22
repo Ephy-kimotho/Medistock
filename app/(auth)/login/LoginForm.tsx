@@ -22,6 +22,7 @@ function LoginForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<Login>({
     mode: "all",
@@ -35,7 +36,7 @@ function LoginForm() {
       if (error) {
         throw new Error(error.message || "Invalid email or password");
       }
-
+      reset();
       toast.success("Login successful");
 
       router.prefetch("/dashboard");

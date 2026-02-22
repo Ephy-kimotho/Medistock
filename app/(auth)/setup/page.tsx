@@ -8,7 +8,7 @@ import { User, Mail, LockKeyhole, Eye, EyeOff, Loader } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { setupSchema, type SetupSchema } from "@/lib/schemas/setup";
-import { useForm, SubmitHandler, } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { createAdminUser } from "@/lib/actions/setup";
@@ -20,6 +20,7 @@ export default function SetupPage() {
 
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SetupSchema>({
@@ -34,7 +35,7 @@ export default function SetupPage() {
       toast.error(response.message);
       return;
     }
-
+    reset();
     toast.success(response.message);
     router.push("/login");
   };

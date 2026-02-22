@@ -53,8 +53,26 @@ export const loginSchema = z.object({
 
 })
 
+export const forgotPasswordSchema = z.object({
+    email: z.email()
+})
+
+export const resetPasswordSchema = z.object({
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters long')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/\d/, 'Password must contain at least one number')
+        .regex(/[\W_]/, 'Password must contain at least one special character'),
+    confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+})
 
 export type Login = z.infer<typeof loginSchema>
+export type ResetPassword = z.infer<typeof resetPasswordSchema>
+export type ForgotPassword = z.infer<typeof forgotPasswordSchema>
 export type AcceptInvitation = z.infer<typeof acceptInvitationSchema>
 export type InvitationType = z.infer<typeof invitationSchema>
 export type UserInvitationType = z.infer<typeof userInvitationSchema>
