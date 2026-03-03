@@ -38,6 +38,7 @@ import {
   Trash2,
   SquarePen,
 } from "lucide-react";
+import { usePermissions } from "@/hooks/usePermissions";
 import Link from "next/link";
 
 // Navigation items configuration
@@ -94,6 +95,8 @@ const footerNavItems = [
 function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+
+  const { isAdmin, isInventoryManager, isUser } = usePermissions();
 
   const handleLogout = async () => {
     try {
@@ -209,8 +212,16 @@ function AppSidebar() {
                     </SidebarMenuItem>
                   </Collapsible>
                 ) : (
-                  // Regular menu item
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem
+                    key={item.title}
+                    className={cn(
+                      item.title === "Users" && !isAdmin && "hidden",
+                      item.title === "Alerts" &&
+                        !(isAdmin || isInventoryManager) &&
+                        "hidden",
+                      item.title === "Reports" && isUser && "hidden",
+                    )}
+                  >
                     <SidebarMenuButton
                       asChild
                       tooltip={item.title}
@@ -240,7 +251,7 @@ function AppSidebar() {
 
       {/* Footer Navigation */}
       <SidebarFooter className="border-t border-sidebar-border py-4">
-        <SidebarMenu className="gap-2">
+        <SidebarMenu className={cn("gap-2", !isAdmin && "hidden")}>
           {footerNavItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton

@@ -5,10 +5,38 @@ import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation";
 import { randomBytes } from "crypto";
 import { addDays, isAfter } from "date-fns"
-import resend from "../email-client";
-import InviteEmail from "../emails/InviteUserEmail";
 import { acceptInvitationSchema } from "@/lib/schemas/users"
+import resend from "../email-client";
+import ReminderInviteEmail from "../emails/ReminderInviteEmail"
+import InviteEmail from "../emails/InviteUserEmail";
 import type { InviteUserInput, AcceptInvitationInput } from "@/lib/types";
+
+
+export async function getInvitations() {
+    try {
+        const invitations = await prisma.invitation.findMany({
+            where: {
+                acceptedAt: null
+            }
+        })
+
+        const updatedInvitations = invitations.map((invitation) => {
+
+            const isExpired = isAfter(new Date(), invitation.expiresAt)
+
+            return {
+                ...invitation,
+                isExpired
+            }
+
+        })
+
+        return updatedInvitations
+    } catch (error) {
+        throw error
+    }
+
+}
 
 export async function createInvitation({ name, email, role, invitedById }: InviteUserInput) {
     try {
@@ -223,3 +251,84 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
         redirect("/login");
     }
 }
+
+export async function resendInvite(token: string) {
+    try {
+        // Get the invite from the database
+        const invitation = await prisma.invitation.findUnique({
+            where: {
+                token
+            }
+        })
+
+        if (!invitation) {
+            throw new Error("Invitation not found!")
+        }
+
+        if (invitation.acceptedAt !== null) {
+            throw new Error("This invitation has already been accepted!")
+        }
+
+        // Get the user who has invited the new user
+        const invitor = await prisma.user.findUnique({
+            where: {
+                id: invitation.invitedById
+            }
+        })
+
+        if (!invitor) {
+            throw new Error("Invitor not found!")
+        }
+
+        // Add expiration time
+        const inviteToken = invitation.token;
+        const expiresAt = addDays(new Date(), 7)
+
+        // Update the invite expiration
+        const updatedInvitation = await prisma.invitation.update({
+            where: {
+                id: invitation.id,
+                token: invitation.token
+            },
+            data: {
+                expiresAt
+            }
+
+        })
+
+        // Build the invite URL
+        const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
+
+        // Send the email
+        console.log("Trying to resend invite")
+        const { error: emailError } = await resend.emails.send({
+            from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
+            to: invitation.email,
+            subject: "Reminder - You've been invited to join MediStock",
+            react: ReminderInviteEmail({
+                name: invitation.name,
+                expiryDate: expiresAt,
+                role: invitation.role,
+                inviteURL,
+                invitor: invitor.name
+            })
+        })
+
+        if (emailError) {
+            console.error("Error sending email:", emailError)
+            throw new Error(`Failed to send invitation email: ${emailError.message}`)
+        }
+
+        console.log("Resend invite successfull.")
+        return {
+            success: true,
+            message: "Invitation resent successfully",
+            invitation: updatedInvitation
+        }
+
+    } catch (error) {
+        throw error
+    }
+
+}
+
