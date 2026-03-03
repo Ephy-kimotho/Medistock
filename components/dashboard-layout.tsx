@@ -129,7 +129,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 min-h-screen overflow-auto p-4">
+          <main className="flex-1 min-h-screen overflow-auto py-4 px-4 md:px-6">
             {children}
           </main>
         </SidebarInset>
