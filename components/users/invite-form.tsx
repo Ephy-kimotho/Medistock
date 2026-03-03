@@ -203,7 +203,7 @@ function InvitationForm({ children }: { children: ReactNode }) {
           </div>
 
           {/* Action buttons */}
-          <DialogFooter>
+          <DialogFooter className="flex">
             <DialogClose asChild>
               <Button
                 variant="outline"
