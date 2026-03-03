@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import type { Role } from "@/lib/types"
 
 export async function getServerSession() {
     const session = await auth.api.getSession({
@@ -12,36 +13,45 @@ export async function getServerSession() {
 
 export async function checkServerPermission(resource: string, action: string) {
     const session = await getServerSession()
-    const userId = session?.user?.id
 
-    if (!userId) {
+    if (!session?.user?.id) {
         return false
     }
 
     try {
         const { success } = await auth.api.userHasPermission({
+            headers: await headers(),
             body: {
                 permissions: {
-                    [resource]: [action],
-                },
+                    [resource]: [action]
+                }
             }
         })
 
-        return success ?? false
+
+        return success || false
+
     } catch {
+
         return false
+    }
+}
+
+export async function requirePermission(resource: string, action: string) {
+    const hasPermission = await checkServerPermission(resource, action)
+
+    if (!hasPermission) {
+        throw new Error("Unauthorized: Insufficent permissions.")
     }
 
 }
 
+export async function requireRole(allowedRoles: Role[]) {
+    const session = await getServerSession();
+    const userRole = (session?.user?.role as Role) || "user"
 
-
-export async function requirePermission(resource: string, action: string) {
-    
-    const hasPermission = await checkServerPermission(resource, action)
-
-    if (!hasPermission) {
-        throw new Error("Unauthorized: insufficient permissions!")
+    if (!allowedRoles.includes(userRole)) {
+        throw new Error("Unauthorized: Insufficent role.")
     }
 
 }
