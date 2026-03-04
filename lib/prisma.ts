@@ -4,18 +4,21 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const globalForPrisma = global as unknown as {
     prisma: PrismaClient;
 };
+
 const adapter = new PrismaPg({
     connectionString: process.env.DATABASE_URL,
-    connectionTimeoutMillis: 5000,
-    idleTimeoutMillis: 300
+    connectionTimeoutMillis: 60000,  // 60s to handle cold starts
+    idleTimeoutMillis: 60000,        // keep idle connections alive for 60s
+    max: 10,                         // max connections in the pool
 });
 
 const prisma =
     globalForPrisma.prisma ||
     new PrismaClient({
         adapter,
+        log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
     });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-export { prisma }; 
+export { prisma };
