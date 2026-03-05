@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"
 import { getApplicationUsers } from "@/lib/actions/users"
-import { updateUserRole } from "@/lib/actions/users"
+import { updateUserRole, allowEmailNotifications } from "@/lib/actions/users"
 import { toast } from "sonner"
 import { banUser, unbanUser } from "@/lib/auth-client"
 import type { GetUsersProps, Role, BanUserInfo } from "@/lib/types"
@@ -106,4 +106,24 @@ export const useUnBanUser = () => {
             console.error("Error banning user:", error);
         },
     })
+}
+
+// Email notifications hook
+export const useConfigureEmailsAlerts = () => {
+    return useMutation({
+        mutationFn: async ({ allow, userId }: { allow: boolean, userId: string }) => {
+            return await allowEmailNotifications(allow, userId)
+        },
+        onSuccess(data) {
+            toast.success(data.message)
+        },
+        onError(error) {
+            let message = "Failed to update email alerts configuration."
+            if (error instanceof Error) {
+                message = error.message
+            }
+            toast.error(message)
+        },
+    })
+
 }

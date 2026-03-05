@@ -8,11 +8,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Layout>
-      <Providers>
+    <Providers>
+      <Layout>
         {children}
         <ReactQueryDevtools initialIsOpen={false} />
-      </Providers>
-    </Layout>
+      </Layout>
+    </Providers>
   );
 }

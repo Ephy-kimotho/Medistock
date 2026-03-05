@@ -99,80 +99,82 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
   }
 
   return (
-    <section>
-      {/* Search and filters */}
-      <article className="flex flex-col gap-2 md:gap-4 my-4">
-        <div className="flex items-center gap-2">
-          <Input
-            type="text"
-            placeholder="Search by name or email..."
-            className="w-full md:max-w-xl"
-            disabled={isPending}
-            value={userFilters.search || ""}
-            onChange={(e) =>
-              setUserFilters((prev) => ({ ...prev, search: e.target.value }))
-            }
-          />
+    <>
+      <div className="flex-1">
+        {/* Search and filters */}
+        <article className="flex flex-col gap-5 md:gap-4 my-4">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <Input
+              type="text"
+              placeholder="Search by name or email..."
+              className="w-full md:max-w-xl"
+              disabled={isPending}
+              value={userFilters.search || ""}
+              onChange={(e) =>
+                setUserFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
+            />
 
-          <Select
-            value={userFilters.searchRole || "all"}
-            disabled={isPending}
-            onValueChange={(value) => {
-              setUserFilters((prev) => ({ ...prev, searchRole: value }));
-            }}
-          >
-            <SelectTrigger className="w-full md:w-52">
-              <SelectValue placeholder="Filter by role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="admin">Admins</SelectItem>
-              <SelectItem value="auditor">Auditors</SelectItem>
-              <SelectItem value="inventory_manager">
-                Inventory Managers
-              </SelectItem>
-              <SelectItem value="user">Regular Staff</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            <Select
+              value={userFilters.searchRole || "all"}
+              disabled={isPending}
+              onValueChange={(value) => {
+                setUserFilters((prev) => ({ ...prev, searchRole: value }));
+              }}
+            >
+              <SelectTrigger className="w-full md:w-52">
+                <SelectValue placeholder="Filter by role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="admin">Admins</SelectItem>
+                <SelectItem value="auditor">Auditors</SelectItem>
+                <SelectItem value="inventory_manager">
+                  Inventory Managers
+                </SelectItem>
+                <SelectItem value="user">Regular Staff</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          <Button
-            size="lg"
-            className="cursor-pointer px-12"
-            disabled={isPending}
-            onClick={applyFilters}
-          >
-            {isApplyTransitionPending ? (
-              <span className="inline-flex items-center gap-2">
-                <Loader className="size-4 animate-spin" />
-                Applying...
-              </span>
-            ) : (
-              "Apply filters"
-            )}
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="px-10 text-white hover:text-white bg-crimson-red hover:bg-lipstick-red"
-            disabled={isPending}
-            onClick={clearFilters}
-          >
-            {isClearTransitionPending ? (
-              <span className="inline-flex items-center gap-2">
-                <Loader className="size-4 animate-spin" />
-                Clearing...
-              </span>
-            ) : (
-              "Clear filters"
-            )}
-          </Button>
-        </div>
-      </article>
+          {/* Action buttons */}
+          <div className="flex items-center gap-2">
+            <Button
+              size="lg"
+              className="cursor-pointer px-12"
+              disabled={isPending}
+              onClick={applyFilters}
+            >
+              {isApplyTransitionPending ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader className="size-4 animate-spin" />
+                  Applying...
+                </span>
+              ) : (
+                "Apply filters"
+              )}
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-10 text-white hover:text-white bg-crimson-red hover:bg-lipstick-red"
+              disabled={isPending}
+              onClick={clearFilters}
+            >
+              {isClearTransitionPending ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader className="size-4 animate-spin" />
+                  Clearing...
+                </span>
+              ) : (
+                "Clear filters"
+              )}
+            </Button>
+          </div>
+        </article>
 
-      <UserTable users={data.users} />
+        <UserTable users={data.users} />
+      </div>
 
       <Footer
         currentPage={data.currentPage}
@@ -181,7 +183,7 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
         totalPages={data.totalPages}
         preserveParams={["tab", "search", "role"]}
       />
-    </section>
+    </>
   );
 }
 

@@ -6,8 +6,8 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { requireRole, getServerSession } from "@/lib/check-permissions";
 import { Prisma } from "@/generated/prisma/client";
-import type { GetUsersProps, Role } from "@/lib/types";
 import { LIMIT } from "@/lib/utils";
+import type { GetUsersProps, Role, } from "@/lib/types";
 
 export async function getUsersStats() {
 
@@ -129,6 +129,57 @@ export async function updateUserRole({ userId, role }: { userId: string, role: R
 
     } catch (error) {
         console.error("Error updating user role:", error)
+        throw error
+    }
+
+}
+
+export async function getUserProfile(userId: string) {
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    })
+
+    return user
+}
+
+export async function changeUserPassword(password: string, userId: string) {
+    const data = await auth.api.setUserPassword({
+        headers: await headers(),
+        body: {
+            newPassword: password,
+            userId: userId,
+        }
+    });
+
+    return { status: data.status }
+}
+
+export async function allowEmailNotifications(allow: boolean, userId: string) {
+    try {
+
+        await requireRole(["admin", "inventory_manager"])
+
+        const result = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                emailAlertEnabled: allow
+            }
+        })
+
+        const message = result.emailAlertEnabled ? "Email alerts enabled successfully." : "Email alerts disbaled successfully."
+
+        return {
+            success: true,
+            message
+        }
+
+    } catch (error) {
+        console.error("Error configuring alerts: ", error);
         throw error
     }
 

@@ -9,15 +9,51 @@ import { acceptInvitationSchema } from "@/lib/schemas/users"
 import resend from "../email-client";
 import ReminderInviteEmail from "../emails/ReminderInviteEmail"
 import InviteEmail from "../emails/InviteUserEmail";
-import type { InviteUserInput, AcceptInvitationInput } from "@/lib/types";
+import { Prisma } from "@/generated/prisma/client"
+import { LIMIT } from "@/lib/utils"
+import type { InviteUserInput, AcceptInvitationInput, GetInvitationProps, Role } from "@/lib/types";
 
 
-export async function getInvitations() {
+export async function getInvitations({ page = 1, role, search }: GetInvitationProps) {
     try {
+
+        // Build the where clause
+        const where: Prisma.InvitationWhereInput = {
+            acceptedAt: null,
+
+            // search filter
+            ...(search !== "" && {
+                OR: [
+                    {
+                        name: {
+                            contains: search,
+                            mode: "insensitive"
+                        }
+                    },
+                    {
+                        email: {
+                            contains: search,
+                            mode: "insensitive"
+                        }
+                    }
+                ]
+            }),
+
+
+            // role filter
+            ...(role !== "all" && {
+                role: role as Role
+            })
+        }
+
+
         const invitations = await prisma.invitation.findMany({
-            where: {
-                acceptedAt: null
-            }
+            where,
+            orderBy: {
+                createdAt: "desc"
+            },
+            take: LIMIT,
+            skip: (page - 1) * LIMIT
         })
 
         const updatedInvitations = invitations.map((invitation) => {
@@ -31,7 +67,17 @@ export async function getInvitations() {
 
         })
 
-        return updatedInvitations
+        // count invitations
+        const totalInvitations = await prisma.invitation.count({
+            where
+        })
+
+        // calculate total pages
+        const totalPages = Math.ceil(totalInvitations / LIMIT);
+        const hasNext = page < totalPages
+        const hasPrev = page > 1 && page <= totalPages
+
+        return { invitations: updatedInvitations, totalPages, currentPage: page, hasNext, hasPrev }
     } catch (error) {
         throw error
     }
@@ -181,7 +227,7 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
 
     // Create the user 
     try {
-        console.log("Creating user......")
+
 
         const { user } = await auth.api.createUser({
             body: {
@@ -196,7 +242,7 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
             }
         })
 
-        console.log("Created user result:", user)
+
 
         if (!user) {
             return {
@@ -231,7 +277,6 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
     let signInResult = null;
 
     try {
-        console.log("Auto log-in attempt......")
 
         signInResult = await auth.api.signInEmail({
             body: {
@@ -240,7 +285,7 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
             }
         })
 
-        console.log("Auto log-in result:", signInResult)
+
     } catch (error) {
         console.error("Auto sign-in error:", error);
     }
@@ -300,7 +345,6 @@ export async function resendInvite(token: string) {
         const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
 
         // Send the email
-        console.log("Trying to resend invite")
         const { error: emailError } = await resend.emails.send({
             from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
             to: invitation.email,
@@ -318,8 +362,6 @@ export async function resendInvite(token: string) {
             console.error("Error sending email:", emailError)
             throw new Error(`Failed to send invitation email: ${emailError.message}`)
         }
-
-        console.log("Resend invite successfull.")
         return {
             success: true,
             message: "Invitation resent successfully",

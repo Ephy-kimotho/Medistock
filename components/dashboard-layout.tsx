@@ -24,11 +24,14 @@ import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { cn, formatRole } from "@/lib/utils";
 import { AppSkeleton } from "./app-skeleton";
+import { useQueryClient } from "@tanstack/react-query";
+import { prefetchSettings } from "@/hooks/useSettings";
 import Link from "next/link";
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { currentUser, isSessionPending } = usePermissions();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {
@@ -90,7 +93,12 @@ function Layout({ children }: { children: React.ReactNode }) {
                     <ChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-60">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-60"
+                  onMouseEnter={() => prefetchSettings(queryClient)}
+                  onFocus={() => prefetchSettings(queryClient)}
+                >
                   <DropdownMenuLabel className="pl-4">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium">
@@ -130,7 +138,9 @@ function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto py-4 px-4 md:px-6 relative">
-            {children}
+            <section className="flex flex-col min-h-[calc(100vh-10rem)]">
+              {children}
+            </section>
           </main>
         </SidebarInset>
       </SidebarProvider>

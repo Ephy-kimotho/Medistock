@@ -39,6 +39,8 @@ import {
   SquarePen,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useQueryClient } from "@tanstack/react-query";
+import { prefetchSettings } from "@/hooks/useSettings";
 import Link from "next/link";
 
 // Navigation items configuration
@@ -95,6 +97,7 @@ const footerNavItems = [
 function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { isAdmin, isInventoryManager, isUser } = usePermissions();
 
@@ -251,7 +254,11 @@ function AppSidebar() {
 
       {/* Footer Navigation */}
       <SidebarFooter className="border-t border-sidebar-border py-4">
-        <SidebarMenu className={cn("gap-2", !isAdmin && "hidden")}>
+        <SidebarMenu
+          className={cn("gap-2", !isAdmin && "hidden")}
+          onMouseEnter={() => prefetchSettings(queryClient)}
+          onFocus={() => prefetchSettings(queryClient)}
+        >
           {footerNavItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton

@@ -3,17 +3,27 @@
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { getInvitations, resendInvite } from "@/lib/actions/invitations"
 import { toast } from "sonner"
+import type { GetInvitationProps } from "@/lib/types"
 
 const InvitationKeys = {
-    all: ["invitations", "all"] as const
+    all: ["invitations"] as const,
+    lists: () => [...InvitationKeys.all, "list"] as const,
+    list: (page: number, role: string, search: string) =>
+        [...InvitationKeys.lists(), page, role, search] as const,
 }
 
-export const useInvitations = () => {
+export const useInvitations = ({ page, role, search }: GetInvitationProps) => {
     return useQuery({
-        queryKey: InvitationKeys.all,
+        queryKey: InvitationKeys.list(page, role, search),
         queryFn: async () => {
-            return await getInvitations()
-        }
+            return await getInvitations({
+                page,
+                role,
+                search: search.trim()
+            })
+        },
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000
     })
 
 }
