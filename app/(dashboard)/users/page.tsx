@@ -9,9 +9,19 @@ import { redirect } from "next/navigation";
 import { Statcards } from "@/components/stat-cards";
 import { getUsersStats } from "@/lib/actions/users";
 import { Users as UsersIcon, ShieldUser, Shield } from "lucide-react";
+import Link from "next/link";
 import type { Role, StatCardProps } from "@/lib/types";
 
-async function Users() {
+interface UsersPageProps {
+  searchParams: Promise<{
+    page?: string;
+    search?: string;
+    role?: string;
+    tab?: string;
+  }>;
+}
+
+async function Users({ searchParams }: UsersPageProps) {
   const session = await getServerSession();
 
   if (!session) {
@@ -23,6 +33,13 @@ async function Users() {
   if (role !== "admin") {
     redirect("/dashboard");
   }
+
+  const params = await searchParams;
+
+  const page = Number(params.page) || 1;
+  const search = params.search || "";
+  const searchRole = params.role || "all";
+  const tab = params.tab || "users";
 
   const userStats = await getUsersStats();
 
@@ -58,7 +75,7 @@ async function Users() {
   ];
 
   return (
-    <section className="space-y-4 min-h-screen">
+    <section className="space-y-4">
       <header className="flex flex-col md:flex-row  md:items-center gap-4 md:gap-0 md:justify-between">
         <div>
           <h2 className="text-2xl text-slate-900 font-bold">User Management</h2>
@@ -79,17 +96,27 @@ async function Users() {
       <Statcards stats={statsInfo} />
 
       {/* Tabs content */}
-      <Tabs defaultValue="users">
-        <TabsList className="w-7/12">
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="Invitations">Invitations</TabsTrigger>
+      <Tabs value={tab}>
+        <TabsList className="w-10/12 md:w-7/12">
+          <TabsTrigger value="users" className="cursor-pointer" asChild>
+            <Link href="/users?tab=users&page=1">Users</Link>
+          </TabsTrigger>
+          <TabsTrigger value="invitations" className="cursor-pointer" asChild>
+            <Link href="/users?tab=invitations&page=1">Invitations</Link>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
-          <UsersTab />
+          <UsersTab
+            initialFilters={{ search, searchRole }}
+            currentPage={page}
+          />
         </TabsContent>
-        <TabsContent value="Invitations">
-          <InvitationsTab />
+        <TabsContent value="invitations">
+          <InvitationsTab
+            initialFilters={{ search, searchRole }}
+            currentPage={page}
+          />
         </TabsContent>
       </Tabs>
     </section>

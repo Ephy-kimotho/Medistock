@@ -22,13 +22,16 @@ import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, formatRole } from "@/lib/utils";
 import { AppSkeleton } from "./app-skeleton";
+import { useQueryClient } from "@tanstack/react-query";
+import { prefetchSettings } from "@/hooks/useSettings";
 import Link from "next/link";
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { currentUser, isSessionPending } = usePermissions();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {
@@ -47,9 +50,9 @@ function Layout({ children }: { children: React.ReactNode }) {
     <TooltipProvider>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="flex flex-col h-screen overflow-hidden">
           {/* Header */}
-          <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-6">
+          <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-6">
             {/* Left side - Hamburger menu icon */}
             <div className="flex items-center gap-2">
               <SidebarTrigger className="cursor-pointer" />
@@ -90,7 +93,12 @@ function Layout({ children }: { children: React.ReactNode }) {
                     <ChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-60">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-60"
+                  onMouseEnter={() => prefetchSettings(queryClient)}
+                  onFocus={() => prefetchSettings(queryClient)}
+                >
                   <DropdownMenuLabel className="pl-4">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium">
@@ -98,7 +106,7 @@ function Layout({ children }: { children: React.ReactNode }) {
                         {currentUser?.name || "John Doe"}
                       </p>
                       <p className={cn("text-xs text-muted-foreground")}>
-                        {currentUser?.role || "user"}
+                        {formatRole(currentUser?.role || "user")}
                       </p>
                     </div>
                   </DropdownMenuLabel>
@@ -129,8 +137,10 @@ function Layout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 min-h-screen overflow-auto py-4 px-4 md:px-6">
-            {children}
+          <main className="flex-1 overflow-auto py-4 px-4 md:px-6 relative">
+            <section className="flex flex-col min-h-[calc(100vh-10rem)]">
+              {children}
+            </section>
           </main>
         </SidebarInset>
       </SidebarProvider>

@@ -4,10 +4,34 @@ import { getInvitations } from "@/lib/actions/invitations"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager"
-export type Invitations = NonNullable<Awaited<ReturnType<typeof getInvitations>>>
-export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>[number]
+export type Invitations = NonNullable<Awaited<ReturnType<typeof getInvitations>>>["invitations"]
+export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
+export type Settings = {
+    facilityName: string;
+    facilityAddress: string;
+    expiryWarnDays: number;
+    criticalExpiryWarnDays: number;
+}
 
 // ==================== INTERFACES ====================
+export interface GetUsersProps {
+    page: number,
+    search: string,
+    role: string
+}
+
+export interface GetInvitationProps {
+    page: number,
+    search: string,
+    role: string
+}
+
+export interface BanUserInfo {
+    userId: string,
+    banReason?: string,
+    banExpiresIn?: number
+}
+
 export interface InviteUserInput {
     name: string;
     role: Role;

@@ -5,6 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const LIMIT = 9;
+
 export function formatRole(role: string): string {
   const roleMap: Record<string, string> = {
     admin: "Admin",
