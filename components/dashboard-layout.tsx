@@ -50,7 +50,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     <TooltipProvider>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset className="flex flex-col h-screen overflow-hidden">
+        <SidebarInset className="flex flex-col min-h-screen overflow-hidden">
           {/* Header */}
           <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-6">
             {/* Left side - Hamburger menu icon */}
@@ -137,8 +137,8 @@ function Layout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto py-4 px-4 md:px-6 relative">
-            <section className="flex flex-col min-h-[calc(100vh-10rem)]">
+          <main className="flex-1 overflow-auto py-4 px-4 md:px-6">
+            <section className="flex-1 flex flex-col min-h-[calc(100vh-10rem)]">
               {children}
             </section>
           </main>

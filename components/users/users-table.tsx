@@ -306,7 +306,7 @@ export function UserTable({ users }: UserTableProps) {
           }
         }}
         title={alertContent.title}
-        descritption={alertContent.description}
+        description={alertContent.description}
         actionType="info"
         action="Confirm"
         actionFn={handleConfirmRoleChange}
