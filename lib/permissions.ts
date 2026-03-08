@@ -7,7 +7,7 @@ import { defaultStatements, adminAc } from "better-auth/plugins/admin/access";
 const statement = {
     ...defaultStatements,
     medicine: ["create", "read", "update", "soft-delete", "hard-delete", "transact"],
-    category: ["create", "read", "update", "delete"],
+    category: ["create", "read", "update", "delete", "restore"],
     stockEntry: ["create", "read", "update", "delete"],
     report: ["create", "read", "delete"]
 } as const;
@@ -28,8 +28,8 @@ export const user = ac.newRole({
 export const inventory_manager = ac.newRole({
     user: ["set-password", "get"],
     medicine: ["create", "read", "update", "soft-delete", "transact"],
-    category: ["create", "read", "update"],
-    stockEntry: ["create", "read", "update",],
+    category: ["create", "read", "update", "delete", "restore"],
+    stockEntry: ["create", "read", "update"],
     report: ["create", "read"]
 })
 
@@ -45,7 +45,7 @@ export const auditor = ac.newRole({
 export const admin = ac.newRole({
     ...adminAc.statements,
     medicine: ["create", "read", "update", "soft-delete", "hard-delete", "transact"],
-    category: ["create", "read", "update", "delete"],
+    category: ["create", "read", "update", "delete", "restore"],
     stockEntry: ["create", "read", "update", "delete"],
     report: ["create", "read", "delete"]
 })
