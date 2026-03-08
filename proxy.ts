@@ -1,50 +1,54 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getSessionCookie } from "better-auth/cookies"
+import { getSessionCookie } from "better-auth/cookies";
+import { auth } from "@/lib/auth";
 
 export async function proxy(request: NextRequest) {
+    const pathName = request.nextUrl.pathname;
+    const sessionCookie = getSessionCookie(request);
 
-    const pathName = request.nextUrl.pathname
-    const sessionCookie = getSessionCookie(request)
-
-    // define public routes
     const publicRoutes = [
         "/login",
         "/accept",
         "/setup",
         "/forgot-password",
         "/reset-password",
-        "/api/auth",
-        "/api/better-auth",
-    ]
+    ];
 
-    // check if the pathName is a public route
-    const isPublicRoute = publicRoutes.some((route) => pathName.startsWith(route))
+    const isPublicRoute = publicRoutes.some((route) =>
+        pathName.startsWith(route)
+    );
 
-    // If user is not authenticated and trying to access a protected route
-    if (!sessionCookie && !isPublicRoute) {
-        return NextResponse.redirect(new URL("/login", request.url))
+    // Public routes - allow through
+    if (isPublicRoute) {
+        // But redirect to dashboard if logged in and on login/setup
+        if (sessionCookie && (pathName === "/login" || pathName === "/setup")) {
+            return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+
+        return NextResponse.next();
     }
 
-
-    // If user is authenticated and trying to access login or setup page
-    // Only redirect if they're exactly on these pages, not sub-routes
-    if (sessionCookie && (pathName === "/login" || pathName === "/setup")) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Protected route - no cookie
+    if (!sessionCookie) {
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Allow all other requests to proceed
+    // Protected route - verify session
+    const session = await auth.api.getSession({
+        headers: request.headers,
+    });
+
+    if (!session) {
+        const response = NextResponse.redirect(new URL("/login", request.url));
+        response.cookies.delete("better-auth.session_token");
+        return response;
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - api routes (handled by better-auth)
-         */
         "/((?!_next/static|_next/image|favicon.ico|api).*)",
     ],
 };

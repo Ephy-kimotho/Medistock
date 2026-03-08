@@ -12,7 +12,7 @@ export const auth = betterAuth({
         provider: 'postgresql',
     }),
     session: {
-        expiresIn: 60 * 60 * 24
+        expiresIn: 24 * 60 * 60    
     },
     emailAndPassword: {
         enabled: true,

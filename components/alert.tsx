@@ -12,7 +12,7 @@ import { Loader } from "lucide-react";
 
 interface AlertProps {
   title: string;
-  descritption: string;
+  description: string;
   actionType: "info" | "warn" | "critical";
   action: string;
   actionFn: () => void;
@@ -26,7 +26,7 @@ export function Alert({
   actionFn,
   actionType,
   title,
-  descritption,
+  description,
   open,
   onOpenChange,
   isLoading = false,
@@ -35,7 +35,7 @@ export function Alert({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="capitalize">{title}</AlertDialogTitle>
+          <AlertDialogTitle className="capitalize font-bold">{title}</AlertDialogTitle>
           <AlertDialogDescription
             className={cn(
               "p-4 rounded-md mt-2",
@@ -47,7 +47,7 @@ export function Alert({
                 "bg-crimson-red/10 text-crimson-red border border-crimson-red",
             )}
           >
-            {descritption}
+            {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -67,10 +67,10 @@ export function Alert({
             disabled={isLoading}
             className={cn(
               "px-10 capitalize",
-              actionType === "info" && "bg-azure hover:bg-blue-600",
+              actionType === "info" && "hover:bg-blue-600 bg-azure",
               actionType === "warn" &&
-                "bg-princeton-orange hover:bg-orange-600",
-              actionType === "critical" && "bg-crimson-red hover:bg-red-600",
+                "hover:bg-orange-600 bg-princeton-orange",
+              actionType === "critical" && "hover:bg-red-600 bg-crimson-red",
             )}
           >
             {isLoading ? (
