@@ -10,6 +10,7 @@
 */
 
 export const USER_ROLE = {
+  hr: 'hr',
   admin: 'admin',
   inventory_manager: 'inventory_manager',
   user: 'user',
@@ -17,6 +18,14 @@ export const USER_ROLE = {
 } as const
 
 export type USER_ROLE = (typeof USER_ROLE)[keyof typeof USER_ROLE]
+
+
+export const REQUEST_STATUS = {
+  pending: 'pending',
+  sent: 'sent'
+} as const
+
+export type REQUEST_STATUS = (typeof REQUEST_STATUS)[keyof typeof REQUEST_STATUS]
 
 
 export const TRANSACTION_TYPE = {

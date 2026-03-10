@@ -55,6 +55,7 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
+  InvitationRequest: 'InvitationRequest',
   Invitation: 'Invitation',
   Category: 'Category',
   Medicines: 'Medicines',
@@ -88,12 +89,13 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   role: 'role',
+  employeeId: 'employeeId',
   banned: 'banned',
   banReason: 'banReason',
   banExpires: 'banExpires',
+  emailAlertEnabled: 'emailAlertEnabled',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  emailAlertEnabled: 'emailAlertEnabled'
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -145,11 +147,24 @@ export const VerificationScalarFieldEnum = {
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
-export const InvitationScalarFieldEnum = {
+export const InvitationRequestScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   role: 'role',
+  employeeId: 'employeeId',
+  requestedById: 'requestedById',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvitationRequestScalarFieldEnum = (typeof InvitationRequestScalarFieldEnum)[keyof typeof InvitationRequestScalarFieldEnum]
+
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
   token: 'token',
   invitedById: 'invitedById',
   createdAt: 'createdAt',
