@@ -40,7 +40,6 @@ export const useSetUserRole = () => {
             userId: string;
             role: Role;
         }) => {
-            console.log(userId, role)
             const result = await updateUserRole({ userId, role });
             return result;
         },

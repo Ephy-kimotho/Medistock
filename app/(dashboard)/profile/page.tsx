@@ -58,8 +58,9 @@ async function ProfilePage() {
                 variant="secondary"
                 className={cn(
                   "py-1.5 px-3",
-                  user.role === "admin" &&
-                    "bg-crimson-red/10 text-crimson-red border-crimson-red",
+                  user.role === "admin" ||
+                    (user.role === "hr" &&
+                      "bg-crimson-red/10 text-crimson-red border-crimson-red"),
                   user.role === "auditor" &&
                     "bg-purple-500/10 text-purple-500 border-purple-500",
                   user.role === "inventory_manager" &&

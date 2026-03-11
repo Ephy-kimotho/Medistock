@@ -29,6 +29,7 @@ interface AcceptInviteFormProps {
   email: string;
   name: string;
   role: string;
+  employeeId: string;
 }
 
 export function AcceptInviteForm({
@@ -36,6 +37,7 @@ export function AcceptInviteForm({
   email,
   name,
   role,
+  employeeId,
 }: AcceptInviteFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -68,11 +70,12 @@ export function AcceptInviteForm({
 
   const onSubmit = (values: AcceptInvitation) => {
     startTransition(async () => {
-      const result = await acceptInvitation({
+      const fields = {
         token,
         name: values.name,
         password: values.password,
-      });
+      };
+      const result = await acceptInvitation({ fields, employeeId });
 
       reset();
 
@@ -99,14 +102,14 @@ export function AcceptInviteForm({
       <CardContent>
         {/* Invitation Info */}
         <div className="mb-4 p-4 flex item-center justify-between bg-slate-50 rounded-lg">
-          <div className="flex items-center gap-5 text-sm">
+          <div className="flex items-center gap-3 text-sm">
             <span className="text-slate-500 flex items-center gap-2">
               <Mail className="size-4" />
             </span>
             <span className="font-medium text-slate-900">{email}</span>
           </div>
-          <div className="flex items-center gap-5 text-sm">
-            <span className="text-slate-500 flex items-center gap-2">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-slate-500 flex items-center">
               <Shield className="size-4" />
               Role
             </span>

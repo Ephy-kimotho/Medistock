@@ -42,9 +42,8 @@ export async function getUsersStats() {
 
 export async function getApplicationUsers({ page = 1, role, search }: GetUsersProps) {
     try {
-
         // Ensure only admins can get users.
-        await requireRole(["admin"])
+        await requireRole(["admin", "hr"])
 
         // Get the current user
         const session = await getServerSession()
@@ -59,6 +58,10 @@ export async function getApplicationUsers({ page = 1, role, search }: GetUsersPr
         const where: Prisma.UserWhereInput = {
             id: {
                 not: user.id
+            },
+
+            role: {
+                not: "hr"
             },
 
             ...(search && {

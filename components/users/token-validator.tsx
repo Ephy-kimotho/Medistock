@@ -15,11 +15,16 @@ export async function TokenValidator({ token }: TokenValidatorProps) {
     },
     select: {
       id: true,
-      name: true,
-      email: true,
-      role: true,
       acceptedAt: true,
       expiresAt: true,
+      request: {
+        select: {
+          name: true,
+          email: true,
+          role: true,
+          employeeId:true
+        },
+      },
     },
   });
 
@@ -46,9 +51,10 @@ export async function TokenValidator({ token }: TokenValidatorProps) {
   return (
     <AcceptInviteForm
       token={token}
-      email={invitation.email}
-      name={invitation.name}
-      role={invitation.role}
+      email={invitation.request.email}
+      name={invitation.request.name}
+      role={invitation.request.role}
+      employeeId={invitation.request.employeeId}
     />
   );
 }

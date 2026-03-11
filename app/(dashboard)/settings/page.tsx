@@ -1,6 +1,23 @@
 import { SettingsForm } from "@/components/settings/settings-form";
+import { getServerSession } from "@/lib/check-permissions";
+import { UnauthorizedUI } from "@/components/settings/unauthorized-ui";
+import { redirect } from "next/navigation";
+import type { Role } from "@/lib/types.ts";
 
-function SettingsPage() {
+async function SettingsPage() {
+  const session = await getServerSession();
+  const user = session?.user;
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const userRole = user.role as Role;
+
+  if (!["admin", "inventory_manager"].includes(userRole)) {
+    return <UnauthorizedUI />;
+  }
+
   return (
     <section className="space-y-4">
       <header>

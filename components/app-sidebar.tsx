@@ -37,6 +37,8 @@ import {
   Layers,
   Trash2,
   SquarePen,
+  Mail,
+  UserPlus,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -84,6 +86,16 @@ const mainNavItems = [
     url: "/users",
     icon: Users,
   },
+  {
+    title: "Invitations",
+    url: "/invitations",
+    icon: Mail,
+  },
+  {
+    title: "Onboarding",
+    url: "/onboarding",
+    icon: UserPlus,
+  },
 ];
 
 const footerNavItems = [
@@ -99,7 +111,13 @@ function AppSidebar() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { isAdmin, isInventoryManager, isUser } = usePermissions();
+  const {
+    canViewUsers,
+    canViewAlerts,
+    canViewReports,
+    canManageInvitations,
+    canManageSettings,
+  } = usePermissions();
 
   const handleLogout = async () => {
     try {
@@ -120,6 +138,24 @@ function AppSidebar() {
   }) => {
     if (item.url && pathname === item.url) return true;
     return item.subItems?.some((sub) => pathname === sub.url) ?? false;
+  };
+
+  // Check visibility for each nav item
+  const isNavItemVisible = (title: string) => {
+    switch (title) {
+      case "Users":
+        return canViewUsers;
+      case "Alerts":
+        return canViewAlerts;
+      case "Reports":
+        return canViewReports;
+      case "Invitations":
+        return canManageInvitations;
+      case "Onboarding":
+        return canManageInvitations;
+      default:
+        return true;
+    }
   };
 
   return (
@@ -217,13 +253,7 @@ function AppSidebar() {
                 ) : (
                   <SidebarMenuItem
                     key={item.title}
-                    className={cn(
-                      item.title === "Users" && !isAdmin && "hidden",
-                      item.title === "Alerts" &&
-                        !(isAdmin || isInventoryManager) &&
-                        "hidden",
-                      item.title === "Reports" && isUser && "hidden",
-                    )}
+                    className={cn(!isNavItemVisible(item.title) && "hidden")}
                   >
                     <SidebarMenuButton
                       asChild
@@ -254,28 +284,30 @@ function AppSidebar() {
 
       {/* Footer Navigation */}
       <SidebarFooter className="border-t border-sidebar-border py-4">
-        <SidebarMenu
-          className={cn("gap-2", !isAdmin && "hidden")}
-          onMouseEnter={() => prefetchSettings(queryClient)}
-          onFocus={() => prefetchSettings(queryClient)}
-        >
-          {footerNavItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                tooltip={item.title}
-                isActive={isActive(item.url)}
-                className="text-sidebar-primary-foreground hover:bg-sidebar-accent"
+        <SidebarMenu className="gap-2">
+          {/* Settings - Admin only */}
+          {canManageSettings &&
+            footerNavItems.map((item) => (
+              <SidebarMenuItem
+                key={item.title}
+                onMouseEnter={() => prefetchSettings(queryClient)}
+                onFocus={() => prefetchSettings(queryClient)}
               >
-                <Link href={item.url}>
-                  <item.icon className="size-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  isActive={isActive(item.url)}
+                  className="text-sidebar-primary-foreground hover:bg-sidebar-accent"
+                >
+                  <Link href={item.url}>
+                    <item.icon className="size-4" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
 
-          {/* Sign Out Button */}
+          {/* Sign Out Button - Always visible */}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Sign out"

@@ -1,3 +1,5 @@
+"use server"
+
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import type { Role } from "@/lib/types"
@@ -9,7 +11,6 @@ export async function getServerSession() {
 
     return session
 }
-
 
 export async function checkServerPermission(resource: string, action: string) {
     const session = await getServerSession()
@@ -41,9 +42,8 @@ export async function requirePermission(resource: string, action: string) {
     const hasPermission = await checkServerPermission(resource, action)
 
     if (!hasPermission) {
-        throw new Error("Unauthorized: Insufficent permissions.")
+        throw new Error("Unauthorized Insufficent permissions!")
     }
-
 }
 
 export async function requireRole(allowedRoles: Role[]) {
@@ -51,7 +51,7 @@ export async function requireRole(allowedRoles: Role[]) {
     const userRole = (session?.user?.role as Role) || "user"
 
     if (!allowedRoles.includes(userRole)) {
-        throw new Error("Unauthorized: Insufficent role.")
+        throw new Error("Unauthorized Insufficent role!")
     }
 
 }

@@ -35,43 +35,44 @@ import {
 import { cn, formatRole } from "@/lib/utils";
 import { Alert } from "@/components/alert";
 import { useSetUserRole, useUnBanUser } from "@/hooks/useUsers";
-import type { User, Role } from "@/lib/types";
+import type { User, RoleWithoutHR } from "@/lib/types";
 
 interface UserTableProps {
   users: User[];
+  isReadOnly?: boolean;
 }
 
 interface RoleChangeConfig {
   userId: string;
   userName: string;
-  newRole: Role;
+  newRole: RoleWithoutHR;
 }
 
-// Generate title and description based on new role
-function getAlertContent(userName: string, newRole: Role) {
-  const content: Record<Role, { title: string; description: string }> = {
-    admin: {
-      title: "Change Role to Administrator",
-      description: `You are about to make ${userName} an Administrator. They will have full access to manage users, view all reports, and configure system settings.`,
-    },
-    inventory_manager: {
-      title: "Change Role to Inventory Manager",
-      description: `You are about to make ${userName} an Inventory Manager. They will be able to manage stock, record transactions, and handle medicine inventory.`,
-    },
-    auditor: {
-      title: "Change Role to Auditor",
-      description: `You are about to make ${userName} an Auditor. They will have read-only access to reports and transaction history.`,
-    },
-    user: {
-      title: "Change Role to Regular Staff",
-      description: `You are about to make ${userName} a Regular Staff member. They will be able to dispense medicines and view basic inventory information.`,
-    },
-  };
+function getAlertContent(userName: string, newRole: RoleWithoutHR) {
+  const content: Record<RoleWithoutHR, { title: string; description: string }> =
+    {
+      admin: {
+        title: "Change Role to Administrator",
+        description: `You are about to make ${userName} an Administrator. They will have full access to manage users, view all reports, and configure system settings.`,
+      },
+      inventory_manager: {
+        title: "Change Role to Inventory Manager",
+        description: `You are about to make ${userName} an Inventory Manager. They will be able to manage stock, record transactions, and handle medicine inventory.`,
+      },
+      auditor: {
+        title: "Change Role to Auditor",
+        description: `You are about to make ${userName} an Auditor. They will have read-only access to reports and transaction history.`,
+      },
+      user: {
+        title: "Change Role to Regular Staff",
+        description: `You are about to make ${userName} a Regular Staff member. They will be able to dispense medicines and view basic inventory information.`,
+      },
+    };
 
   return content[newRole];
 }
 
-export function UserTable({ users }: UserTableProps) {
+export function UserTable({ users, isReadOnly = false }: UserTableProps) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [banOpen, setBanOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -86,7 +87,7 @@ export function UserTable({ users }: UserTableProps) {
   const handleRoleChangeClick = (
     userId: string,
     userName: string,
-    newRole: Role,
+    newRole: RoleWithoutHR,
   ) => {
     setRoleChangeConfig({ userId, userName, newRole });
     setAlertOpen(true);
@@ -121,7 +122,7 @@ export function UserTable({ users }: UserTableProps) {
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date Joined</TableHead>
-              <TableHead>Actions</TableHead>
+              {!isReadOnly && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -170,156 +171,171 @@ export function UserTable({ users }: UserTableProps) {
                 <TableCell className="text-muted-foreground">
                   {format(new Date(user.createdAt), "dd/MM/yyyy")}
                 </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="size-8 p-0 hover:bg-muted"
-                        disabled={isPending}
-                      >
-                        <MoreVertical className="size-4 text-muted-foreground" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-60">
-                      <DropdownMenuGroup>
-                        <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">
-                          Change User Role
-                        </DropdownMenuLabel>
 
-                        {user.role !== "admin" && (
-                          <DropdownMenuItem
-                            className="hover:bg-azure/20  gap-2 cursor-pointer"
-                            onClick={() =>
-                              handleRoleChangeClick(user.id, user.name, "admin")
-                            }
-                          >
-                            <ShieldUser className="size-4 text-crimson-red" />
-                            <span>Administrator</span>
-                          </DropdownMenuItem>
-                        )}
+                {/* Actions - only shown for non-read-only mode */}
+                {!isReadOnly && (
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="size-8 p-0 hover:bg-muted"
+                          disabled={isPending}
+                        >
+                          <MoreVertical className="size-4 text-muted-foreground" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-60">
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">
+                            Change User Role
+                          </DropdownMenuLabel>
 
-                        {user.role !== "inventory_manager" && (
-                          <DropdownMenuItem
-                            className="hover:bg-azure/20  gap-2 cursor-pointer"
-                            onClick={() =>
-                              handleRoleChangeClick(
-                                user.id,
-                                user.name,
-                                "inventory_manager",
-                              )
-                            }
-                          >
-                            <Shield className="size-4 text-princeton-orange" />
-                            <span>Inventory Manager</span>
-                          </DropdownMenuItem>
-                        )}
+                          {user.role !== "admin" && (
+                            <DropdownMenuItem
+                              className="hover:bg-azure/20 gap-2 cursor-pointer"
+                              onClick={() =>
+                                handleRoleChangeClick(
+                                  user.id,
+                                  user.name,
+                                  "admin",
+                                )
+                              }
+                            >
+                              <ShieldUser className="size-4 text-crimson-red" />
+                              <span>Administrator</span>
+                            </DropdownMenuItem>
+                          )}
 
-                        {user.role !== "auditor" && (
-                          <DropdownMenuItem
-                            className="hover:bg-azure/20  gap-2 cursor-pointer"
-                            onClick={() =>
-                              handleRoleChangeClick(
-                                user.id,
-                                user.name,
-                                "auditor",
-                              )
-                            }
-                          >
-                            <Shield className="size-4 text-purple-500" />
-                            <span>Auditor</span>
-                          </DropdownMenuItem>
-                        )}
+                          {user.role !== "inventory_manager" && (
+                            <DropdownMenuItem
+                              className="hover:bg-azure/20 gap-2 cursor-pointer"
+                              onClick={() =>
+                                handleRoleChangeClick(
+                                  user.id,
+                                  user.name,
+                                  "inventory_manager",
+                                )
+                              }
+                            >
+                              <Shield className="size-4 text-princeton-orange" />
+                              <span>Inventory Manager</span>
+                            </DropdownMenuItem>
+                          )}
 
-                        {user.role !== "user" && (
-                          <DropdownMenuItem
-                            className="hover:bg-azure/20  gap-2 cursor-pointer"
-                            onClick={() =>
-                              handleRoleChangeClick(user.id, user.name, "user")
-                            }
-                          >
-                            <UserIcon className="size-4 text-azure" />
-                            <span>Regular Staff</span>
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuGroup>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuGroup>
-                        <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">
-                          User ban status
-                        </DropdownMenuLabel>
+                          {user.role !== "auditor" && (
+                            <DropdownMenuItem
+                              className="hover:bg-azure/20 gap-2 cursor-pointer"
+                              onClick={() =>
+                                handleRoleChangeClick(
+                                  user.id,
+                                  user.name,
+                                  "auditor",
+                                )
+                              }
+                            >
+                              <Shield className="size-4 text-purple-500" />
+                              <span>Auditor</span>
+                            </DropdownMenuItem>
+                          )}
 
-                        {user.banned ? (
-                          <DropdownMenuItem
-                            className="gap-2 cursor-pointer"
-                            onClick={() => {
-                              unBanMutation.mutate(user.id);
-                            }}
-                            disabled={unBanMutation.isPending}
-                          >
-                            {unBanMutation.isPending ? (
-                              <span className="inline-flex items-center gap-2">
-                                <Loader className="size-4 animate-spin text-medium-jungle" />
-                                <span className="text-sm text-medium-jungle">
-                                  Unbanning...
+                          {user.role !== "user" && (
+                            <DropdownMenuItem
+                              className="hover:bg-azure/20 gap-2 cursor-pointer"
+                              onClick={() =>
+                                handleRoleChangeClick(
+                                  user.id,
+                                  user.name,
+                                  "user",
+                                )
+                              }
+                            >
+                              <UserIcon className="size-4 text-azure" />
+                              <span>Pharmacist</span>
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">
+                            User ban status
+                          </DropdownMenuLabel>
+
+                          {user.banned ? (
+                            <DropdownMenuItem
+                              className="gap-2 cursor-pointer"
+                              onClick={() => {
+                                unBanMutation.mutate(user.id);
+                              }}
+                              disabled={unBanMutation.isPending}
+                            >
+                              {unBanMutation.isPending ? (
+                                <span className="inline-flex items-center gap-2">
+                                  <Loader className="size-4 animate-spin text-medium-jungle" />
+                                  <span className="text-sm text-medium-jungle">
+                                    Unbanning...
+                                  </span>
                                 </span>
-                              </span>
-                            ) : (
-                              <>
-                                <Unban className="size-4 text-medium-jungle" />
-                                <span className="text-medium-jungle">
-                                  Unban user
-                                </span>
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            className="gap-2 cursor-pointer"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setBanOpen(true);
-                            }}
-                          >
-                            <Ban className="size-4 text-crimson-red" />
-                            <span className="text-crimson-red">Ban user</span>
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+                              ) : (
+                                <>
+                                  <Unban className="size-4 text-medium-jungle" />
+                                  <span className="text-medium-jungle">
+                                    Unban user
+                                  </span>
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              className="gap-2 cursor-pointer"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setBanOpen(true);
+                              }}
+                            >
+                              <Ban className="size-4 text-crimson-red" />
+                              <span className="text-crimson-red">Ban user</span>
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
 
-      {/* Confirmation Alert */}
-      <Alert
-        open={alertOpen}
-        onOpenChange={(open) => {
-          if (!isPending) {
-            setAlertOpen(open);
-          }
-        }}
-        title={alertContent.title}
-        description={alertContent.description}
-        actionType="info"
-        action="Confirm"
-        actionFn={handleConfirmRoleChange}
-        isLoading={isPending}
-      />
+      {/* Only render dialogs if not read-only */}
+      {!isReadOnly && (
+        <>
+          <Alert
+            open={alertOpen}
+            onOpenChange={(open) => {
+              if (!isPending) {
+                setAlertOpen(open);
+              }
+            }}
+            title={alertContent.title}
+            description={alertContent.description}
+            actionType="info"
+            action="Confirm"
+            actionFn={handleConfirmRoleChange}
+            isLoading={isPending}
+          />
 
-      {/* Ban Dialog */}
-      <BanDialog
-        banDialogOpen={banOpen}
-        selectedUser={selectedUser}
-        setBanOpen={setBanOpen}
-        setSelectedUser={setSelectedUser}
-      />
+          <BanDialog
+            banDialogOpen={banOpen}
+            selectedUser={selectedUser}
+            setBanOpen={setBanOpen}
+            setSelectedUser={setSelectedUser}
+          />
+        </>
+      )}
     </>
   );
 }

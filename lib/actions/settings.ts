@@ -7,7 +7,8 @@ import type { Settings } from "@/lib/types"
 
 export async function getApplicationSettings() {
     try {
-        await requireRole(["admin"])
+        await requireRole(["admin", "inventory_manager"])
+        
         const settings = await prisma.settings.findFirst()
 
         return settings
@@ -19,6 +20,7 @@ export async function getApplicationSettings() {
 
 export async function setApplicationSettings({ values }: { values: Settings }) {
     try {
+        await requireRole(["admin", "inventory_manager"])
 
         const settings = await prisma.settings.findFirst()
 
