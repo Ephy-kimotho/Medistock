@@ -275,6 +275,9 @@ export async function acceptInvitation({ fields: { token, name, password }, empl
         };
     }
 
+    // if user is admin or inventory manager enable email alerts
+    const allowEmailNotifications = invitation.request.role === "admin" || invitation.request.role === "inventory_manager"
+
     // Create the user 
     try {
         const { user } = await auth.api.createUser({
@@ -285,6 +288,7 @@ export async function acceptInvitation({ fields: { token, name, password }, empl
                 password,
                 data: {
                     emailVerified: true,
+                    emailAlertEnabled: allowEmailNotifications,
                     employeeId
                 }
 
