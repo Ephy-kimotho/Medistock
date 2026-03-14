@@ -193,8 +193,6 @@ model Category {
 model Medicines {
   id             String  @id @default(cuid())
   name           String
-  scientificName String?
-  description    String?
   unit           String
   reorderlevel   Int
 
@@ -203,6 +201,7 @@ model Medicines {
 
   manufacturer String?
   isActive     Boolean   @default(true)
+  
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?

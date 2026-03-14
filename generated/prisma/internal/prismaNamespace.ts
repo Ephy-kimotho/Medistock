@@ -1525,8 +1525,6 @@ export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typ
 export const MedicinesScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  scientificName: 'scientificName',
-  description: 'description',
   unit: 'unit',
   reorderlevel: 'reorderlevel',
   categoryId: 'categoryId',
