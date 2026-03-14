@@ -37,8 +37,6 @@ export type MedicinesSumAggregateOutputType = {
 export type MedicinesMinAggregateOutputType = {
   id: string | null
   name: string | null
-  scientificName: string | null
-  description: string | null
   unit: string | null
   reorderlevel: number | null
   categoryId: string | null
@@ -52,8 +50,6 @@ export type MedicinesMinAggregateOutputType = {
 export type MedicinesMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  scientificName: string | null
-  description: string | null
   unit: string | null
   reorderlevel: number | null
   categoryId: string | null
@@ -67,8 +63,6 @@ export type MedicinesMaxAggregateOutputType = {
 export type MedicinesCountAggregateOutputType = {
   id: number
   name: number
-  scientificName: number
-  description: number
   unit: number
   reorderlevel: number
   categoryId: number
@@ -92,8 +86,6 @@ export type MedicinesSumAggregateInputType = {
 export type MedicinesMinAggregateInputType = {
   id?: true
   name?: true
-  scientificName?: true
-  description?: true
   unit?: true
   reorderlevel?: true
   categoryId?: true
@@ -107,8 +99,6 @@ export type MedicinesMinAggregateInputType = {
 export type MedicinesMaxAggregateInputType = {
   id?: true
   name?: true
-  scientificName?: true
-  description?: true
   unit?: true
   reorderlevel?: true
   categoryId?: true
@@ -122,8 +112,6 @@ export type MedicinesMaxAggregateInputType = {
 export type MedicinesCountAggregateInputType = {
   id?: true
   name?: true
-  scientificName?: true
-  description?: true
   unit?: true
   reorderlevel?: true
   categoryId?: true
@@ -224,8 +212,6 @@ export type MedicinesGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 export type MedicinesGroupByOutputType = {
   id: string
   name: string
-  scientificName: string | null
-  description: string | null
   unit: string
   reorderlevel: number
   categoryId: string
@@ -262,8 +248,6 @@ export type MedicinesWhereInput = {
   NOT?: Prisma.MedicinesWhereInput | Prisma.MedicinesWhereInput[]
   id?: Prisma.StringFilter<"Medicines"> | string
   name?: Prisma.StringFilter<"Medicines"> | string
-  scientificName?: Prisma.StringNullableFilter<"Medicines"> | string | null
-  description?: Prisma.StringNullableFilter<"Medicines"> | string | null
   unit?: Prisma.StringFilter<"Medicines"> | string
   reorderlevel?: Prisma.IntFilter<"Medicines"> | number
   categoryId?: Prisma.StringFilter<"Medicines"> | string
@@ -280,8 +264,6 @@ export type MedicinesWhereInput = {
 export type MedicinesOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  scientificName?: Prisma.SortOrderInput | Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   unit?: Prisma.SortOrder
   reorderlevel?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -301,8 +283,6 @@ export type MedicinesWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MedicinesWhereInput[]
   NOT?: Prisma.MedicinesWhereInput | Prisma.MedicinesWhereInput[]
   name?: Prisma.StringFilter<"Medicines"> | string
-  scientificName?: Prisma.StringNullableFilter<"Medicines"> | string | null
-  description?: Prisma.StringNullableFilter<"Medicines"> | string | null
   unit?: Prisma.StringFilter<"Medicines"> | string
   reorderlevel?: Prisma.IntFilter<"Medicines"> | number
   categoryId?: Prisma.StringFilter<"Medicines"> | string
@@ -319,8 +299,6 @@ export type MedicinesWhereUniqueInput = Prisma.AtLeast<{
 export type MedicinesOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  scientificName?: Prisma.SortOrderInput | Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   unit?: Prisma.SortOrder
   reorderlevel?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -342,8 +320,6 @@ export type MedicinesScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MedicinesScalarWhereWithAggregatesInput | Prisma.MedicinesScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Medicines"> | string
   name?: Prisma.StringWithAggregatesFilter<"Medicines"> | string
-  scientificName?: Prisma.StringNullableWithAggregatesFilter<"Medicines"> | string | null
-  description?: Prisma.StringNullableWithAggregatesFilter<"Medicines"> | string | null
   unit?: Prisma.StringWithAggregatesFilter<"Medicines"> | string
   reorderlevel?: Prisma.IntWithAggregatesFilter<"Medicines"> | number
   categoryId?: Prisma.StringWithAggregatesFilter<"Medicines"> | string
@@ -357,8 +333,6 @@ export type MedicinesScalarWhereWithAggregatesInput = {
 export type MedicinesCreateInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   manufacturer?: string | null
@@ -374,8 +348,6 @@ export type MedicinesCreateInput = {
 export type MedicinesUncheckedCreateInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   categoryId: string
@@ -391,8 +363,6 @@ export type MedicinesUncheckedCreateInput = {
 export type MedicinesUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -408,8 +378,6 @@ export type MedicinesUpdateInput = {
 export type MedicinesUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -425,8 +393,6 @@ export type MedicinesUncheckedUpdateInput = {
 export type MedicinesCreateManyInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   categoryId: string
@@ -440,8 +406,6 @@ export type MedicinesCreateManyInput = {
 export type MedicinesUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -454,8 +418,6 @@ export type MedicinesUpdateManyMutationInput = {
 export type MedicinesUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -479,8 +441,6 @@ export type MedicinesOrderByRelationAggregateInput = {
 export type MedicinesCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  scientificName?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   unit?: Prisma.SortOrder
   reorderlevel?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -498,8 +458,6 @@ export type MedicinesAvgOrderByAggregateInput = {
 export type MedicinesMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  scientificName?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   unit?: Prisma.SortOrder
   reorderlevel?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -513,8 +471,6 @@ export type MedicinesMaxOrderByAggregateInput = {
 export type MedicinesMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  scientificName?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   unit?: Prisma.SortOrder
   reorderlevel?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
@@ -615,8 +571,6 @@ export type MedicinesUpdateOneRequiredWithoutAlertsNestedInput = {
 export type MedicinesCreateWithoutCategoryInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   manufacturer?: string | null
@@ -631,8 +585,6 @@ export type MedicinesCreateWithoutCategoryInput = {
 export type MedicinesUncheckedCreateWithoutCategoryInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   manufacturer?: string | null
@@ -676,8 +628,6 @@ export type MedicinesScalarWhereInput = {
   NOT?: Prisma.MedicinesScalarWhereInput | Prisma.MedicinesScalarWhereInput[]
   id?: Prisma.StringFilter<"Medicines"> | string
   name?: Prisma.StringFilter<"Medicines"> | string
-  scientificName?: Prisma.StringNullableFilter<"Medicines"> | string | null
-  description?: Prisma.StringNullableFilter<"Medicines"> | string | null
   unit?: Prisma.StringFilter<"Medicines"> | string
   reorderlevel?: Prisma.IntFilter<"Medicines"> | number
   categoryId?: Prisma.StringFilter<"Medicines"> | string
@@ -691,8 +641,6 @@ export type MedicinesScalarWhereInput = {
 export type MedicinesCreateWithoutStockEntriesInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   manufacturer?: string | null
@@ -707,8 +655,6 @@ export type MedicinesCreateWithoutStockEntriesInput = {
 export type MedicinesUncheckedCreateWithoutStockEntriesInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   categoryId: string
@@ -739,8 +685,6 @@ export type MedicinesUpdateToOneWithWhereWithoutStockEntriesInput = {
 export type MedicinesUpdateWithoutStockEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -755,8 +699,6 @@ export type MedicinesUpdateWithoutStockEntriesInput = {
 export type MedicinesUncheckedUpdateWithoutStockEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -771,8 +713,6 @@ export type MedicinesUncheckedUpdateWithoutStockEntriesInput = {
 export type MedicinesCreateWithoutAlertsInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   manufacturer?: string | null
@@ -787,8 +727,6 @@ export type MedicinesCreateWithoutAlertsInput = {
 export type MedicinesUncheckedCreateWithoutAlertsInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   categoryId: string
@@ -819,8 +757,6 @@ export type MedicinesUpdateToOneWithWhereWithoutAlertsInput = {
 export type MedicinesUpdateWithoutAlertsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -835,8 +771,6 @@ export type MedicinesUpdateWithoutAlertsInput = {
 export type MedicinesUncheckedUpdateWithoutAlertsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -851,8 +785,6 @@ export type MedicinesUncheckedUpdateWithoutAlertsInput = {
 export type MedicinesCreateManyCategoryInput = {
   id?: string
   name: string
-  scientificName?: string | null
-  description?: string | null
   unit: string
   reorderlevel: number
   manufacturer?: string | null
@@ -865,8 +797,6 @@ export type MedicinesCreateManyCategoryInput = {
 export type MedicinesUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -881,8 +811,6 @@ export type MedicinesUpdateWithoutCategoryInput = {
 export type MedicinesUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -897,8 +825,6 @@ export type MedicinesUncheckedUpdateWithoutCategoryInput = {
 export type MedicinesUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  scientificName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -951,8 +877,6 @@ export type MedicinesCountOutputTypeCountAlertsArgs<ExtArgs extends runtime.Type
 export type MedicinesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  scientificName?: boolean
-  description?: boolean
   unit?: boolean
   reorderlevel?: boolean
   categoryId?: boolean
@@ -970,8 +894,6 @@ export type MedicinesSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type MedicinesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  scientificName?: boolean
-  description?: boolean
   unit?: boolean
   reorderlevel?: boolean
   categoryId?: boolean
@@ -986,8 +908,6 @@ export type MedicinesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type MedicinesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  scientificName?: boolean
-  description?: boolean
   unit?: boolean
   reorderlevel?: boolean
   categoryId?: boolean
@@ -1002,8 +922,6 @@ export type MedicinesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type MedicinesSelectScalar = {
   id?: boolean
   name?: boolean
-  scientificName?: boolean
-  description?: boolean
   unit?: boolean
   reorderlevel?: boolean
   categoryId?: boolean
@@ -1014,7 +932,7 @@ export type MedicinesSelectScalar = {
   deletedAt?: boolean
 }
 
-export type MedicinesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "scientificName" | "description" | "unit" | "reorderlevel" | "categoryId" | "manufacturer" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medicines"]>
+export type MedicinesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unit" | "reorderlevel" | "categoryId" | "manufacturer" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medicines"]>
 export type MedicinesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   stockEntries?: boolean | Prisma.Medicines$stockEntriesArgs<ExtArgs>
@@ -1038,8 +956,6 @@ export type $MedicinesPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    scientificName: string | null
-    description: string | null
     unit: string
     reorderlevel: number
     categoryId: string
@@ -1476,8 +1392,6 @@ export interface Prisma__MedicinesClient<T, Null = never, ExtArgs extends runtim
 export interface MedicinesFieldRefs {
   readonly id: Prisma.FieldRef<"Medicines", 'String'>
   readonly name: Prisma.FieldRef<"Medicines", 'String'>
-  readonly scientificName: Prisma.FieldRef<"Medicines", 'String'>
-  readonly description: Prisma.FieldRef<"Medicines", 'String'>
   readonly unit: Prisma.FieldRef<"Medicines", 'String'>
   readonly reorderlevel: Prisma.FieldRef<"Medicines", 'Int'>
   readonly categoryId: Prisma.FieldRef<"Medicines", 'String'>

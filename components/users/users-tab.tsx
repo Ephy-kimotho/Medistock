@@ -24,19 +24,22 @@ interface InitialFilters {
 interface UserTabProps {
   initialFilters: InitialFilters;
   currentPage: number;
+  isReadOnly?: boolean;
 }
 
-function UsersTab({ initialFilters, currentPage }: UserTabProps) {
+function UsersTab({
+  initialFilters,
+  currentPage,
+  isReadOnly = false,
+}: UserTabProps) {
   const [isApplyTransitionPending, startApplyTransition] = useTransition();
   const [isClearTransitionPending, startClearTransition] = useTransition();
 
-  // Local state for form inputs (before applying)
   const [userFilters, setUserFilters] =
     useState<InitialFilters>(initialFilters);
 
   const router = useRouter();
 
-  // Fetch data using URL params (initialFilters), not local state
   const { data, isLoading } = useUsers({
     page: currentPage,
     search: initialFilters.search || "",
@@ -47,7 +50,6 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
 
   const applyFilters = () => {
     const params = new URLSearchParams();
-    params.set("tab", "users");
     params.set("page", "1");
 
     if (userFilters.search) {
@@ -70,11 +72,10 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
     });
 
     startClearTransition(() => {
-      router.push("/users?tab=users&page=1");
+      router.push("/users?page=1");
     });
   };
 
-  // Loading state
   if (!data || isLoading) {
     return (
       <section className="grid place-items-center py-10">
@@ -86,13 +87,17 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
     );
   }
 
-  // Empty state
   if (data.users.length === 0) {
     return (
       <section className="grid place-items-center py-10">
-        <div className="grid place-items-center text-muted-foreground">
-          <UserRoundX className="size-10 mb-2" />
-          <p className="text-sm">No users found.</p>
+        <div className="flex flex-col items-center">
+          <div className="size-16 bg-crimson-red/10 rounded-full flex items-center justify-center mb-4">
+            <UserRoundX className="size-6 text-crimson-red" />
+          </div>
+          <p className="text-sm text-muted-foreground">No users found!</p>
+          <p className="text-sm text-muted-foreground">
+            HR and the current user are excluded.
+          </p>
         </div>
       </section>
     );
@@ -127,6 +132,7 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="hr">HR</SelectItem>
                 <SelectItem value="admin">Admins</SelectItem>
                 <SelectItem value="auditor">Auditors</SelectItem>
                 <SelectItem value="inventory_manager">
@@ -173,7 +179,7 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
           </div>
         </article>
 
-        <UserTable users={data.users} />
+        <UserTable users={data.users} isReadOnly={isReadOnly} />
       </div>
 
       <Footer
@@ -181,7 +187,7 @@ function UsersTab({ initialFilters, currentPage }: UserTabProps) {
         hasNext={data.hasNext}
         hasPrev={data.hasPrev}
         totalPages={data.totalPages}
-        preserveParams={["tab", "search", "role"]}
+        preserveParams={["search", "role"]}
       />
     </>
   );

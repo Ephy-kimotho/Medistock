@@ -1,7 +1,7 @@
 "use client"
 
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { getInvitations, resendInvite } from "@/lib/actions/invitations"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { getInvitations, resendInvite, createInvitation } from "@/lib/actions/invitations"
 import { toast } from "sonner"
 import type { GetInvitationProps } from "@/lib/types"
 
@@ -28,6 +28,25 @@ export const useInvitations = ({ page, role, search }: GetInvitationProps) => {
 
 }
 
+export const useSendInvitation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ requestId, invitorId }: { requestId: string, invitorId: string }) => {
+            const result = await createInvitation(requestId, invitorId)
+            return result
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["invitation-requests", "list"] });
+            toast.success(data.message);
+        },
+        onError: (error) => {
+            const message =
+                error instanceof Error ? error.message : "Failed to send invitation";
+            toast.error(message);
+        },
+    });
+};
 
 export const useResendInvite = () => {
     return useMutation({
@@ -35,8 +54,7 @@ export const useResendInvite = () => {
             return resendInvite(token)
         },
         onSuccess(data) {
-            const message = `Invite resent to ${data.invitation.email}`
-            toast.success(message)
+            toast.success(data.message)
         },
         onError(error) {
             let message = "Failed to resend invite user"
@@ -48,6 +66,4 @@ export const useResendInvite = () => {
             toast.error(message)
         },
     })
-
-
 }

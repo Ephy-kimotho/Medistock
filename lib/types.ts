@@ -1,11 +1,14 @@
 import { ComponentType } from "react"
 import { getApplicationUsers } from "@/lib/actions/users"
 import { getInvitations } from "@/lib/actions/invitations"
+import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories } from "@/lib/actions/categories"
 
 // ==================== TYPE DEFINITIONS ====================
-export type Role = "user" | "admin" | "auditor" | "inventory_manager"
+export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
+export type RoleWithoutHR = "user" | "admin" | "auditor" | "inventory_manager";
 export type Invitations = NonNullable<Awaited<ReturnType<typeof getInvitations>>>["invitations"]
+export type InvitationRequest = NonNullable<Awaited<ReturnType<typeof getInvitationRequests>>>["requests"][number]
 export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
 
@@ -34,6 +37,14 @@ export interface GetInvitationProps {
     page: number,
     search: string,
     role: string
+}
+
+export interface NotifyAdminsParams {
+    employeeName: string;
+    employeeEmail: string;
+    employeeRole: string;
+    employeeId: string;
+    requestedByName: string;
 }
 
 export interface BanUserInfo {

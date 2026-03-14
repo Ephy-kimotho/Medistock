@@ -388,6 +388,7 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
+  InvitationRequest: 'InvitationRequest',
   Invitation: 'Invitation',
   Category: 'Category',
   Medicines: 'Medicines',
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "invitation" | "category" | "medicines" | "stockEntries" | "transactions" | "alerts" | "reports" | "settings"
+    modelProps: "user" | "session" | "account" | "verification" | "invitationRequest" | "invitation" | "category" | "medicines" | "stockEntries" | "transactions" | "alerts" | "reports" | "settings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -708,6 +709,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.VerificationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.VerificationCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvitationRequest: {
+      payload: Prisma.$InvitationRequestPayload<ExtArgs>
+      fields: Prisma.InvitationRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvitationRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvitationRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.InvitationRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvitationRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>
+        }
+        findMany: {
+          args: Prisma.InvitationRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>[]
+        }
+        create: {
+          args: Prisma.InvitationRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>
+        }
+        createMany: {
+          args: Prisma.InvitationRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvitationRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.InvitationRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>
+        }
+        update: {
+          args: Prisma.InvitationRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvitationRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvitationRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvitationRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvitationRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.InvitationRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvitationRequest>
+        }
+        groupBy: {
+          args: Prisma.InvitationRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvitationRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvitationRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvitationRequestCountAggregateOutputType> | number
         }
       }
     }
@@ -1349,12 +1424,13 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   role: 'role',
+  employeeId: 'employeeId',
   banned: 'banned',
   banReason: 'banReason',
   banExpires: 'banExpires',
+  emailAlertEnabled: 'emailAlertEnabled',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  emailAlertEnabled: 'emailAlertEnabled'
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -1406,11 +1482,24 @@ export const VerificationScalarFieldEnum = {
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
-export const InvitationScalarFieldEnum = {
+export const InvitationRequestScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   role: 'role',
+  employeeId: 'employeeId',
+  requestedById: 'requestedById',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvitationRequestScalarFieldEnum = (typeof InvitationRequestScalarFieldEnum)[keyof typeof InvitationRequestScalarFieldEnum]
+
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
   token: 'token',
   invitedById: 'invitedById',
   createdAt: 'createdAt',
@@ -1436,8 +1525,6 @@ export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typ
 export const MedicinesScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  scientificName: 'scientificName',
-  description: 'description',
   unit: 'unit',
   reorderlevel: 'reorderlevel',
   categoryId: 'categoryId',
@@ -1602,6 +1689,20 @@ export type EnumUSER_ROLEFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'USER_ROLE[]'
  */
 export type ListEnumUSER_ROLEFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'USER_ROLE[]'>
+    
+
+
+/**
+ * Reference to a field of type 'REQUEST_STATUS'
+ */
+export type EnumREQUEST_STATUSFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REQUEST_STATUS'>
+    
+
+
+/**
+ * Reference to a field of type 'REQUEST_STATUS[]'
+ */
+export type ListEnumREQUEST_STATUSFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REQUEST_STATUS[]'>
     
 
 
@@ -1801,6 +1902,7 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
+  invitationRequest?: Prisma.InvitationRequestOmit
   invitation?: Prisma.InvitationOmit
   category?: Prisma.CategoryOmit
   medicines?: Prisma.MedicinesOmit

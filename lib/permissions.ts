@@ -9,6 +9,7 @@ const statement = {
     medicine: ["create", "read", "update", "soft-delete", "hard-delete", "transact"],
     category: ["create", "read", "update", "delete", "restore"],
     stockEntry: ["create", "read", "update", "delete"],
+    invitation: ["request", "send"],
     report: ["create", "read", "delete"]
 } as const;
 
@@ -41,13 +42,19 @@ export const auditor = ac.newRole({
     report: ["create", "read"]
 })
 
-
 export const admin = ac.newRole({
     ...adminAc.statements,
     medicine: ["create", "read", "update", "soft-delete", "hard-delete", "transact"],
     category: ["create", "read", "update", "delete", "restore"],
     stockEntry: ["create", "read", "update", "delete"],
-    report: ["create", "read", "delete"]
+    report: ["create", "read", "delete"],
+    invitation: ["send"],
 })
 
-
+export const hr = ac.newRole({
+    user: ["set-password", "get"],
+    medicine: ["read"],
+    category: ["read"],
+    stockEntry: ["read"],
+    invitation: ["request", "send"],
+})

@@ -12,10 +12,16 @@ datasource db {
  */
 
 enum USER_ROLE {
+  hr
   admin
   inventory_manager
   user
   auditor
+}
+
+enum REQUEST_STATUS {
+  pending
+  sent
 }
 
 enum TRANSACTION_TYPE {
@@ -53,28 +59,37 @@ enum REPORT_PERIOD {
   custom
 }
 
+enum CATEGORY_AGE_GROUP {
+  adult
+  pediatric
+  all_ages
+}
+
 /**
  * -------------------------------- MODELS --------------------------------
  */
 
 model User {
-  id                String         @id
+  id                String    @id
   name              String
   email             String
   emailVerified     Boolean
   image             String?
-  role              String         @default("user")
-  banned            Boolean        @default(false)
+  role              String    @default("user")
+  employeeId        String?
+  banned            Boolean   @default(false)
   banReason         String?
   banExpires        DateTime?
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
   emailAlertEnabled Boolean?
-  sessions          Session[]
-  accounts          Account[]
-  invitations       Invitation[]
-  transactions      Transactions[]
-  reports           Reports[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  sessions             Session[]
+  accounts             Account[]
+  transactions         Transactions[]
+  reports              Reports[]
+  sentInvitations      Invitation[]        @relation("SentInvitations")
+  requestedInvitations InvitationRequest[] @relation("RequestedInvitations")
 
   @@unique([email])
   @@map("user")
@@ -126,15 +141,39 @@ model Verification {
   @@map("verification")
 }
 
+model InvitationRequest {
+  id String @id @default(cuid())
+
+  name       String
+  email      String    @unique
+  role       USER_ROLE @default(user)
+  employeeId String
+
+  requestedById String
+  requestedBy   User   @relation("RequestedInvitations", fields: [requestedById], references: [id], onDelete: Cascade)
+
+  status REQUEST_STATUS @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invitation Invitation?
+
+  @@index([status])
+  @@index([requestedById])
+  @@map("invitation_request")
+}
+
 model Invitation {
-  id    String    @id @default(cuid())
-  name  String
-  email String    @unique
-  role  USER_ROLE @default(user)
-  token String    @unique
+  id String @id @default(cuid())
+
+  requestId String            @unique
+  request   InvitationRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  token String @unique
 
   invitedById String
-  invitedBy   User   @relation(fields: [invitedById], references: [id], onDelete: Cascade)
+  invitedBy   User   @relation("SentInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
 
   createdAt  DateTime  @default(now())
   expiresAt  DateTime
@@ -158,21 +197,20 @@ model Category {
 }
 
 model Medicines {
-  id             String  @id @default(cuid())
-  name           String
-  scientificName String?
-  description    String?
-  unit           String
-  reorderlevel   Int
+  id           String @id @default(cuid())
+  name         String
+  unit         String
+  reorderlevel Int
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   manufacturer String?
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  isActive     Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   stockEntries StockEntries[]
   alerts       Alerts[]

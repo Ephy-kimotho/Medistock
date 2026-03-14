@@ -1,23 +1,17 @@
 import { getServerSession } from "@/lib/check-permissions";
-import { InvitationForm } from "@/components/users/invite-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { InvitationsTab } from "@/components/users/invitations-tab";
 import { UsersTab } from "@/components/users/users-tab";
-import { UserPlus } from "lucide-react";
+import { UnauthorizedUI } from "@/components/users/unauthorized-ui";
 import { redirect } from "next/navigation";
 import { Statcards } from "@/components/stat-cards";
 import { getUsersStats } from "@/lib/actions/users";
 import { Users as UsersIcon, ShieldUser, Shield } from "lucide-react";
-import Link from "next/link";
-import type { Role, StatCardProps } from "@/lib/types";
+import type { StatCardProps, Role } from "@/lib/types";
 
 interface UsersPageProps {
   searchParams: Promise<{
     page?: string;
     search?: string;
     role?: string;
-    tab?: string;
   }>;
 }
 
@@ -28,18 +22,20 @@ async function Users({ searchParams }: UsersPageProps) {
     redirect("/login");
   }
 
-  const role = (session?.user.role as Role) || "user";
+  const userRole = session.user.role as Role;
 
-  if (role !== "admin") {
-    redirect("/dashboard");
+  if (!["hr", "admin"].includes(userRole)) {
+    return <UnauthorizedUI />;
   }
+
+  // HR has read-only access
+  const isReadOnly = userRole === "hr";
 
   const params = await searchParams;
 
   const page = Number(params.page) || 1;
   const search = params.search || "";
   const searchRole = params.role || "all";
-  const tab = params.tab || "users";
 
   const userStats = await getUsersStats();
 
@@ -47,7 +43,7 @@ async function Users({ searchParams }: UsersPageProps) {
     {
       title: "Total users",
       metric: userStats.totalUsers || 0,
-      details: "All User's count",
+      details: "Total User's count",
       Icon: UsersIcon,
       theme: "green",
     },
@@ -76,49 +72,26 @@ async function Users({ searchParams }: UsersPageProps) {
 
   return (
     <section className="space-y-4">
-      <header className="flex flex-col md:flex-row  md:items-center gap-4 md:gap-0 md:justify-between">
+      <header className="flex flex-col md:flex-row md:items-center gap-4 md:gap-0 md:justify-between">
         <div>
           <h2 className="text-2xl text-slate-900 font-bold">User Management</h2>
           <p className="text-muted-foreground text-pretty">
-            Manage user accounts, roles, and permissions.
+            {isReadOnly
+              ? "View user accounts and roles."
+              : "Manage user accounts, roles, and permissions."}
           </p>
         </div>
-
-        <InvitationForm>
-          <Button className="h-0 py-5 px-8 bg-azure self-start hover:bg-primary inline-flex items-center gap-2">
-            <UserPlus className="size-4" />
-            Invite user
-          </Button>
-        </InvitationForm>
       </header>
 
       {/* Users Statistics Cards */}
       <Statcards stats={statsInfo} />
 
-      {/* Tabs content */}
-      <Tabs value={tab}>
-        <TabsList className="w-10/12 md:w-7/12">
-          <TabsTrigger value="users" className="cursor-pointer" asChild>
-            <Link href="/users?tab=users&page=1">Users</Link>
-          </TabsTrigger>
-          <TabsTrigger value="invitations" className="cursor-pointer" asChild>
-            <Link href="/users?tab=invitations&page=1">Invitations</Link>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="users">
-          <UsersTab
-            initialFilters={{ search, searchRole }}
-            currentPage={page}
-          />
-        </TabsContent>
-        <TabsContent value="invitations">
-          <InvitationsTab
-            initialFilters={{ search, searchRole }}
-            currentPage={page}
-          />
-        </TabsContent>
-      </Tabs>
+      {/* Users List */}
+      <UsersTab
+        initialFilters={{ search, searchRole }}
+        currentPage={page}
+        isReadOnly={isReadOnly}
+      />
     </section>
   );
 }

@@ -60,6 +60,11 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
+ * Model InvitationRequest
+ * 
+ */
+export type InvitationRequest = Prisma.InvitationRequestModel
+/**
  * Model Invitation
  * 
  */

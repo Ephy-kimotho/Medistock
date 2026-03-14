@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User as UserIcon, Mail, Shield, Calendar } from "lucide-react";
+import { User as UserIcon, Mail, Shield, Calendar, IdCard } from "lucide-react";
 import { format } from "date-fns";
 import { getUserProfile } from "@/lib/actions/users";
 import { getServerSession } from "@/lib/check-permissions";
@@ -58,8 +58,9 @@ async function ProfilePage() {
                 variant="secondary"
                 className={cn(
                   "py-1.5 px-3",
-                  user.role === "admin" &&
-                    "bg-crimson-red/10 text-crimson-red border-crimson-red",
+                  user.role === "admin" ||
+                    (user.role === "hr" &&
+                      "bg-crimson-red/10 text-crimson-red border-crimson-red"),
                   user.role === "auditor" &&
                     "bg-purple-500/10 text-purple-500 border-purple-500",
                   user.role === "inventory_manager" &&
@@ -81,9 +82,9 @@ async function ProfilePage() {
             User Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Row 1: Name and Email */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <CardContent className="space-y-8">
+          {/* Row 1: Name, Email and Employee ID */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {/* Full Name */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
@@ -113,10 +114,27 @@ async function ProfilePage() {
                 </p>
               </div>
             </div>
+
+            {/*Employee ID*/}
+            {user.employeeId && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                  <IdCard className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Employee ID
+                  </p>
+                  <p className="text-base font-semibold text-foreground">
+                    {user.employeeId}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Row 2: Role and Member Since */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {/* Role */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">

@@ -13,7 +13,7 @@ import {
   Hr,
 } from "@react-email/components";
 
-type Role = "user" | "admin" | "auditor" | "inventory_manager";
+type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr";
 
 interface InviteEmailProps {
   name?: string;
@@ -80,7 +80,7 @@ function InviteEmail({
                   {role.startsWith("a")
                     ? `an ${role}`
                     : role === "user"
-                      ? `a ${role}`
+                      ? `a pharmacist`
                       : "an Inventory Manager"}
                   .
                 </strong>

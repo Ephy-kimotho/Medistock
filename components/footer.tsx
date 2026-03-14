@@ -39,7 +39,7 @@ export function Footer({
   };
 
   return (
-    <footer className="w-full py-4  flex items-center justify-between">
+    <footer className="w-full flex items-center justify-between">
       <p className="text-sm text-muted-foreground font-medium">
         Showing page {currentPage} of {totalPages}{" "}
         {totalPages === 1 ? "page" : "pages"}

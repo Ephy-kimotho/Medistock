@@ -3,7 +3,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
 import { prisma } from '@/lib/prisma'
 import { admin as adminPlugin } from "better-auth/plugins"
-import { ac, admin, auditor, inventory_manager, user } from "@/lib/permissions"
+import { ac, admin, auditor, inventory_manager, user, hr } from "@/lib/permissions"
 import { sendPasswordResetLinkEmail } from "@/lib/actions/emails"
 
 
@@ -12,7 +12,7 @@ export const auth = betterAuth({
         provider: 'postgresql',
     }),
     session: {
-        expiresIn: 24 * 60 * 60    
+        expiresIn: 24 * 60 * 60
     },
     emailAndPassword: {
         enabled: true,
@@ -42,7 +42,8 @@ export const auth = betterAuth({
                 admin,
                 auditor,
                 inventory_manager,
-                user
+                user,
+                hr
             }
         }),
         nextCookies()

@@ -10,9 +10,10 @@ export const LIMIT = 9;
 export function formatRole(role: string): string {
   const roleMap: Record<string, string> = {
     admin: "Admin",
-    user: "User",
-    inventory_manager: "Inventory Manager",
+    user: "Pharmacist",
+    inventory_manager: "Manager",
     auditor: "Auditor",
+    hr: "Human Resource"
   };
   return roleMap[role.toLowerCase()] || role;
 }

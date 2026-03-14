@@ -58,7 +58,7 @@ export function CategoriesListing({
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-[74vh] justify-between">
+    <div className="flex flex-col flex-1 min-h-[75vh] justify-between">
       <div className="space-y-4 flex-1">
         <CategorySearch
           value={searchValue}

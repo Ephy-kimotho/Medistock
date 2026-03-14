@@ -3,20 +3,25 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache"
 import { randomBytes } from "crypto";
 import { addDays, isAfter } from "date-fns"
 import { acceptInvitationSchema } from "@/lib/schemas/users"
+import { Prisma } from "@/generated/prisma/client"
+import { LIMIT } from "@/lib/utils"
+import { requireRole } from "@/lib/check-permissions";
 import resend from "../email-client";
 import ReminderInviteEmail from "../emails/ReminderInviteEmail"
 import InviteEmail from "../emails/InviteUserEmail";
-import { Prisma } from "@/generated/prisma/client"
-import { LIMIT } from "@/lib/utils"
-import type { InviteUserInput, AcceptInvitationInput, GetInvitationProps, Role } from "@/lib/types";
+import type { AcceptInvitationInput, GetInvitationProps, Role } from "@/lib/types";
 
+interface AcceptInvitationProps {
+    fields: AcceptInvitationInput,
+    employeeId: string
+}
 
 export async function getInvitations({ page = 1, role, search }: GetInvitationProps) {
     try {
-
         // Build the where clause
         const where: Prisma.InvitationWhereInput = {
             acceptedAt: null,
@@ -25,15 +30,15 @@ export async function getInvitations({ page = 1, role, search }: GetInvitationPr
             ...(search !== "" && {
                 OR: [
                     {
-                        name: {
-                            contains: search,
-                            mode: "insensitive"
-                        }
-                    },
-                    {
-                        email: {
-                            contains: search,
-                            mode: "insensitive"
+                        request: {
+                            name: {
+                                contains: search,
+                                mode: "insensitive"
+                            },
+                            email: {
+                                contains: search,
+                                mode: "insensitive"
+                            }
                         }
                     }
                 ]
@@ -42,13 +47,23 @@ export async function getInvitations({ page = 1, role, search }: GetInvitationPr
 
             // role filter
             ...(role !== "all" && {
-                role: role as Role
+                request: {
+                    role: role as Role
+                }
             })
         }
 
-
         const invitations = await prisma.invitation.findMany({
             where,
+            include: {
+                request: {
+                    select: {
+                        name: true,
+                        email: true,
+                        role: true
+                    }
+                }
+            },
             orderBy: {
                 createdAt: "desc"
             },
@@ -84,39 +99,55 @@ export async function getInvitations({ page = 1, role, search }: GetInvitationPr
 
 }
 
-export async function createInvitation({ name, email, role, invitedById }: InviteUserInput) {
+export async function createInvitation(requestId: string, invitorId: string) {
     try {
-        // Check if a user with email already exists 
+        // Ensure only an admin or HR can send an invitation
+        await requireRole(["hr", "admin"]);
+
+        // Get the invitation request
+        const invitationRequest = await prisma.invitationRequest.findUnique({
+            where: { id: requestId },
+            include: {
+                requestedBy: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+
+        });
+
+        if (!invitationRequest) {
+            throw new Error("Invitation request not found!");
+        }
+
+        if (invitationRequest.status === "sent") {
+            throw new Error("Invitation has already been sent for this request!");
+        }
+
+        // Check if user already exists
         const existingUser = await prisma.user.findUnique({
-            where: { email }
-        })
+            where: { email: invitationRequest.email },
+        });
 
         if (existingUser) {
-            throw new Error("A user with this email already exists.")
+            throw new Error("A user with this email already exists!");
         }
 
-        // Check if an invitation has already been sent
-        const existingInvitation = await prisma.invitation.findUnique({
-            where: { email }
-        })
-
-        if (existingInvitation) {
-            if (existingInvitation.acceptedAt === null) {
-                throw new Error("An invitation has already been sent.")
-            } else {
-                throw new Error("This invitation has already been accepted.")
-            }
-        }
-
-        // Get the user who has invited the new user
+        // Get the invitor 
         const invitor = await prisma.user.findUnique({
             where: {
-                id: invitedById
+                id: invitorId
+            },
+            select: {
+                id: true,
+                name: true
             }
         })
 
         if (!invitor) {
-            throw new Error("Invitor not found.")
+            throw new Error("Invitor not found!");
         }
 
         // create a unique token
@@ -129,38 +160,49 @@ export async function createInvitation({ name, email, role, invitedById }: Invit
         // send email before creating invitation
         const { error: emailError } = await resend.emails.send({
             from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
-            to: email,
+            to: invitationRequest.email,
             subject: "You've been invited to join MediStock",
             react: InviteEmail({
-                name,
+                name: invitationRequest.name,
                 expiryDate: expiresAt,
-                role,
+                role: invitationRequest.role,
                 inviteURL,
                 invitor: invitor.name
             })
         })
-
 
         if (emailError) {
             console.error("Error sending email:", emailError)
             throw new Error(`Failed to send invitation email: ${emailError.message}`)
         }
 
-        // create the invitation after email has been sent successfully
-        await prisma.invitation.create({
-            data: {
-                name,
-                email,
-                role,
-                token: inviteToken,
-                expiresAt,
-                invitedById
-            }
+        // Create invitation and update request status in a transaction after sending email
+        await prisma.$transaction(async (tx) => {
+            const invitation = await tx.invitation.create({
+                data: {
+                    requestId: invitationRequest.id,
+                    token: inviteToken,
+                    invitedById: invitorId,
+                    expiresAt,
+                },
+            })
+
+            await tx.invitationRequest.update({
+                where: {
+                    id: requestId
+                },
+                data: { status: "sent" },
+            })
+
+            return invitation
         })
+
+        revalidatePath("/onboarding");
+        revalidatePath("/invitations");
 
         return {
             success: true,
-            message: `Invitation sent to ${email}.`
+            message: `Invitation sent to ${invitationRequest.email}.`
         }
 
     } catch (error) {
@@ -168,7 +210,7 @@ export async function createInvitation({ name, email, role, invitedById }: Invit
     }
 }
 
-export async function acceptInvitation({ token, name, password }: AcceptInvitationInput) {
+export async function acceptInvitation({ fields: { token, name, password }, employeeId }: AcceptInvitationProps) {
 
     // Validate input
     const validation = acceptInvitationSchema.safeParse({
@@ -188,6 +230,14 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
     const invitation = await prisma.invitation.findUnique({
         where: {
             token
+        },
+        include: {
+            request: {
+                select: {
+                    email: true,
+                    role: true
+                }
+            }
         }
     })
 
@@ -215,7 +265,7 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
 
     // Check if user already exists 
     const existingUser = await prisma.user.findUnique({
-        where: { email: invitation.email },
+        where: { email: invitation.request.email },
     });
 
     if (existingUser) {
@@ -225,23 +275,25 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
         };
     }
 
+    // if user is admin or inventory manager enable email alerts
+    const allowEmailNotifications = invitation.request.role === "admin" || invitation.request.role === "inventory_manager"
+
     // Create the user 
     try {
-
-
         const { user } = await auth.api.createUser({
             body: {
-                email: invitation.email,
-                role: invitation.role,
+                email: invitation.request.email,
+                role: invitation.request.role,
                 name,
                 password,
                 data: {
                     emailVerified: true,
+                    emailAlertEnabled: allowEmailNotifications,
+                    employeeId
                 }
 
             }
         })
-
 
 
         if (!user) {
@@ -280,7 +332,7 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
 
         signInResult = await auth.api.signInEmail({
             body: {
-                email: invitation.email,
+                email: invitation.request.email,
                 password: password,
             }
         })
@@ -299,10 +351,28 @@ export async function acceptInvitation({ token, name, password }: AcceptInvitati
 
 export async function resendInvite(token: string) {
     try {
+        // Ensure only an admin or HR can send an invitation
+        await requireRole(["hr", "admin"]);
+
         // Get the invite from the database
         const invitation = await prisma.invitation.findUnique({
             where: {
                 token
+            },
+            include: {
+                invitedBy: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                request: {
+                    select: {
+                        name: true,
+                        email: true,
+                        role: true
+                    }
+                }
             }
         })
 
@@ -329,8 +399,30 @@ export async function resendInvite(token: string) {
         const inviteToken = invitation.token;
         const expiresAt = addDays(new Date(), 7)
 
+        // Build the invite URL
+        const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
+
+        // Resend the email
+        const { error: emailError } = await resend.emails.send({
+            from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
+            to: invitation.request.email,
+            subject: "Reminder - You've been invited to join MediStock",
+            react: ReminderInviteEmail({
+                name: invitation.request.name,
+                expiryDate: expiresAt,
+                role: invitation.request.role,
+                inviteURL,
+                invitor: invitor.name
+            })
+        })
+
+        if (emailError) {
+            console.error("Error sending email:", emailError)
+            throw new Error(`Failed to send invitation email: ${emailError.message}`)
+        }
+
         // Update the invite expiration
-        const updatedInvitation = await prisma.invitation.update({
+        await prisma.invitation.update({
             where: {
                 id: invitation.id,
                 token: invitation.token
@@ -341,31 +433,12 @@ export async function resendInvite(token: string) {
 
         })
 
-        // Build the invite URL
-        const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
+        revalidatePath("/onboarding");
+        revalidatePath("/invitations");
 
-        // Send the email
-        const { error: emailError } = await resend.emails.send({
-            from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
-            to: invitation.email,
-            subject: "Reminder - You've been invited to join MediStock",
-            react: ReminderInviteEmail({
-                name: invitation.name,
-                expiryDate: expiresAt,
-                role: invitation.role,
-                inviteURL,
-                invitor: invitor.name
-            })
-        })
-
-        if (emailError) {
-            console.error("Error sending email:", emailError)
-            throw new Error(`Failed to send invitation email: ${emailError.message}`)
-        }
         return {
             success: true,
-            message: "Invitation resent successfully",
-            invitation: updatedInvitation
+            message: `Invitation resent to ${invitation.request.email}.`,
         }
 
     } catch (error) {

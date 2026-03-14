@@ -8,12 +8,22 @@ import { LIMIT } from "@/lib/utils"
 import { redirect } from "next/navigation"
 
 type CreateCategoryData = Prisma.CategoryCreateInput
-type UpdateCategoryData = Prisma.CategoryUpdateInput
+type UpdateCategoryData = CreateCategoryData
 
 export async function createCategory(data: CreateCategoryData) {
     try {
 
+        // Check for the necessary permissions
         await requireRole(["admin", "inventory_manager"])
+
+        // Check if category already exists
+        const existing = await prisma.category.findUnique({
+            where: { name: data.name, deletedAt: null },
+        });
+
+        if (existing) {
+            throw new Error("A category with this name already exists");
+        }
 
         const category = await prisma.category.create({
             data
@@ -27,8 +37,11 @@ export async function createCategory(data: CreateCategoryData) {
             category
         }
     } catch (error) {
-        console.error("Error creating category: ", error);
-        throw error
+        console.error("Error creating category:", error);
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error("Failed to create category");
     }
 
 }
@@ -93,7 +106,6 @@ export async function getCategories({
             const medicineCount = category.medicines.length;
 
             const totalStock = category.medicines.reduce((sum, medicine) => {
-
                 const medicineStock = medicine.stockEntries.reduce(
                     (entrySum, entry) => entrySum + entry.quantity,
                     0
@@ -128,8 +140,23 @@ export async function getCategories({
     }
 }
 
-export async function updateCategory(values: UpdateCategoryData, categoryId: string) {
+export async function updateCategory(categoryId: string, values: UpdateCategoryData) {
     try {
+
+        await requireRole(["admin", "inventory_manager"]);
+
+        const existing = await prisma.category.findFirst({
+            where: {
+                name: values.name,
+                deletedAt: null,
+                NOT: { id: categoryId },
+            },
+        });
+
+        if (existing) {
+            throw new Error("A category with this name already exists");
+        }
+
         const updatedCategory = await prisma.category.update({
             where: {
                 id: categoryId
@@ -153,23 +180,63 @@ export async function updateCategory(values: UpdateCategoryData, categoryId: str
 
 export async function archiveCategory(categoryId: string) {
     try {
+        
+        await requireRole(["admin", "inventory_manager"]);
 
-        const session = await getServerSession();
+        // Check if there are any medicines with stock in this category
+        const category = await prisma.category.findUnique({
+            where: { id: categoryId },
+            include: {
+                medicines: {
+                    where: { isActive: true },
+                    select: {
+                        id: true,
+                        name: true,
+                        stockEntries: {
+                            select: {
+                                quantity: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-        if (!session) {
-            throw new Error("Unauthorized");
+        if (!category) {
+            throw new Error("Category not found");
         }
 
-        await requireRole(["admin", "inventory_manager"])
+        // Calculate total stock across all medicines in this category
+        const totalStock = category.medicines.reduce((sum, medicine) => {
+            const medicineStock = medicine.stockEntries.reduce(
+                (entrySum, entry) => entrySum + entry.quantity,
+                0
+            );
+            return sum + medicineStock;
+        }, 0);
+
+        if (totalStock > 0) {
+            throw new Error(
+                `Cannot archive "${category.name}". There are still ${totalStock} units in stock across ${category.medicines.length} medicine(s). Please clear or transfer the stock first.`
+            );
+        }
 
         const archivedCategory = await prisma.category.update({
             where: { id: categoryId },
             data: { deletedAt: new Date() },
         });
 
-        return { success: true, message: `${archivedCategory.name} category archived successfully` };
+        revalidatePath("/inventory/categories");
+
+        return {
+            success: true,
+            message: `${archivedCategory.name} category archived successfully`,
+        };
     } catch (error) {
         console.error("Error archiving category:", error);
+        if (error instanceof Error) {
+            throw error;
+        }
         throw new Error("Failed to archive category");
     }
 }

@@ -29,7 +29,8 @@ import { prefetchSettings } from "@/hooks/useSettings";
 import Link from "next/link";
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const { currentUser, isSessionPending } = usePermissions();
+  const { currentUser, isSessionPending, isAdmin, isInventoryManager } =
+    usePermissions();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -93,12 +94,7 @@ function Layout({ children }: { children: React.ReactNode }) {
                     <ChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-60"
-                  onMouseEnter={() => prefetchSettings(queryClient)}
-                  onFocus={() => prefetchSettings(queryClient)}
-                >
+                <DropdownMenuContent align="end" className="w-60">
                   <DropdownMenuLabel className="pl-4">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium">
@@ -117,12 +113,22 @@ function Layout({ children }: { children: React.ReactNode }) {
                       <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="pl-4 cursor-pointer" asChild>
-                    <Link href="/settings" className="flex items-center gap-2">
-                      <Settings className="size-4 text-muted-foreground" />
-                      <span>Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  {(isAdmin || isInventoryManager) && (
+                    <DropdownMenuItem
+                      className="pl-4 cursor-pointer"
+                      asChild
+                      onMouseEnter={() => prefetchSettings(queryClient)}
+                      onFocus={() => prefetchSettings(queryClient)}
+                    >
+                      <Link
+                        href="/settings"
+                        className="flex items-center gap-2"
+                      >
+                        <Settings className="size-4 text-muted-foreground" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="hover:bg-blue-500 flex items-center gap-2 cursor-pointer text-red-600 pl-4"

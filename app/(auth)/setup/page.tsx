@@ -11,7 +11,7 @@ import { setupSchema, type SetupSchema } from "@/lib/schemas/setup";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
-import { createAdminUser } from "@/lib/actions/setup";
+import { createHRUser } from "@/lib/actions/setup";
 import { toast } from "sonner";
 
 export default function SetupPage() {
@@ -26,10 +26,15 @@ export default function SetupPage() {
   } = useForm<SetupSchema>({
     mode: "all",
     resolver: zodResolver(setupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit: SubmitHandler<SetupSchema> = async (values) => {
-    const response = await createAdminUser(values);
+    const response = await createHRUser(values);
 
     if (response.success === false) {
       toast.error(response.message);
@@ -48,8 +53,7 @@ export default function SetupPage() {
         </CardTitle>
 
         <p className="text-night text-sm">
-          This is the first time setup, create your admin account to get
-          started.
+          This is the first time setup, create your HR account to get started.
         </p>
       </CardHeader>
 
@@ -159,7 +163,7 @@ export default function SetupPage() {
                   Creating account...
                 </span>
               ) : (
-                "Create Admin Account"
+                "Create HR Account"
               )}
             </Button>
           </div>
