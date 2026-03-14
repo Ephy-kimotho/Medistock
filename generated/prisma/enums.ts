@@ -76,3 +76,12 @@ export const REPORT_PERIOD = {
 } as const
 
 export type REPORT_PERIOD = (typeof REPORT_PERIOD)[keyof typeof REPORT_PERIOD]
+
+
+export const CATEGORY_AGE_GROUP = {
+  adult: 'adult',
+  pediatric: 'pediatric',
+  all_ages: 'all_ages'
+} as const
+
+export type CATEGORY_AGE_GROUP = (typeof CATEGORY_AGE_GROUP)[keyof typeof CATEGORY_AGE_GROUP]

@@ -59,6 +59,12 @@ enum REPORT_PERIOD {
   custom
 }
 
+enum CATEGORY_AGE_GROUP {
+  adult
+  pediatric
+  all_ages
+}
+
 /**
  * -------------------------------- MODELS --------------------------------
  */
@@ -178,11 +184,12 @@ model Invitation {
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String             @id @default(cuid())
+  name        String             @unique
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  ageGroup    CATEGORY_AGE_GROUP @default(all_ages)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
   deletedAt   DateTime?
 
   medicines Medicines[]
@@ -191,20 +198,20 @@ model Category {
 }
 
 model Medicines {
-  id             String  @id @default(cuid())
-  name           String
-  unit           String
-  reorderlevel   Int
+  id           String @id @default(cuid())
+  name         String
+  unit         String
+  reorderlevel Int
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   manufacturer String?
-  isActive     Boolean   @default(true)
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  isActive     Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   stockEntries StockEntries[]
   alerts       Alerts[]

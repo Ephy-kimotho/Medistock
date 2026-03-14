@@ -1514,6 +1514,7 @@ export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
+  ageGroup: 'ageGroup',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -1703,6 +1704,20 @@ export type EnumREQUEST_STATUSFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'REQUEST_STATUS[]'
  */
 export type ListEnumREQUEST_STATUSFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REQUEST_STATUS[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CATEGORY_AGE_GROUP'
+ */
+export type EnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CATEGORY_AGE_GROUP'>
+    
+
+
+/**
+ * Reference to a field of type 'CATEGORY_AGE_GROUP[]'
+ */
+export type ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CATEGORY_AGE_GROUP[]'>
     
 
 

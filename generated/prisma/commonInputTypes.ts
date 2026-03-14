@@ -195,6 +195,23 @@ export type EnumREQUEST_STATUSWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumREQUEST_STATUSFilter<$PrismaModel>
 }
 
+export type EnumCATEGORY_AGE_GROUPFilter<$PrismaModel = never> = {
+  equals?: $Enums.CATEGORY_AGE_GROUP | Prisma.EnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel> | $Enums.CATEGORY_AGE_GROUP
+}
+
+export type EnumCATEGORY_AGE_GROUPWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CATEGORY_AGE_GROUP | Prisma.EnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCATEGORY_AGE_GROUPWithAggregatesFilter<$PrismaModel> | $Enums.CATEGORY_AGE_GROUP
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel>
+}
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -499,6 +516,23 @@ export type NestedEnumREQUEST_STATUSWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumREQUEST_STATUSFilter<$PrismaModel>
   _max?: Prisma.NestedEnumREQUEST_STATUSFilter<$PrismaModel>
+}
+
+export type NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel = never> = {
+  equals?: $Enums.CATEGORY_AGE_GROUP | Prisma.EnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel> | $Enums.CATEGORY_AGE_GROUP
+}
+
+export type NestedEnumCATEGORY_AGE_GROUPWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CATEGORY_AGE_GROUP | Prisma.EnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CATEGORY_AGE_GROUP[] | Prisma.ListEnumCATEGORY_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCATEGORY_AGE_GROUPWithAggregatesFilter<$PrismaModel> | $Enums.CATEGORY_AGE_GROUP
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCATEGORY_AGE_GROUPFilter<$PrismaModel>
 }
 
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {

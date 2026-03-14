@@ -28,6 +28,7 @@ export type CategoryMinAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
+  ageGroup: $Enums.CATEGORY_AGE_GROUP | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -37,6 +38,7 @@ export type CategoryMaxAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
+  ageGroup: $Enums.CATEGORY_AGE_GROUP | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -46,6 +48,7 @@ export type CategoryCountAggregateOutputType = {
   id: number
   name: number
   description: number
+  ageGroup: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -57,6 +60,7 @@ export type CategoryMinAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  ageGroup?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -66,6 +70,7 @@ export type CategoryMaxAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  ageGroup?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -75,6 +80,7 @@ export type CategoryCountAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  ageGroup?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -157,6 +163,7 @@ export type CategoryGroupByOutputType = {
   id: string
   name: string
   description: string | null
+  ageGroup: $Enums.CATEGORY_AGE_GROUP
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -187,6 +194,7 @@ export type CategoryWhereInput = {
   id?: Prisma.StringFilter<"Category"> | string
   name?: Prisma.StringFilter<"Category"> | string
   description?: Prisma.StringNullableFilter<"Category"> | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFilter<"Category"> | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFilter<"Category"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Category"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Category"> | Date | string | null
@@ -197,6 +205,7 @@ export type CategoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  ageGroup?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -210,6 +219,7 @@ export type CategoryWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CategoryWhereInput[]
   NOT?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[]
   description?: Prisma.StringNullableFilter<"Category"> | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFilter<"Category"> | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFilter<"Category"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Category"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Category"> | Date | string | null
@@ -220,6 +230,7 @@ export type CategoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  ageGroup?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -235,6 +246,7 @@ export type CategoryScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Category"> | string
   name?: Prisma.StringWithAggregatesFilter<"Category"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Category"> | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPWithAggregatesFilter<"Category"> | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Category"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Category"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Category"> | Date | string | null
@@ -244,6 +256,7 @@ export type CategoryCreateInput = {
   id?: string
   name: string
   description?: string | null
+  ageGroup?: $Enums.CATEGORY_AGE_GROUP
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -254,6 +267,7 @@ export type CategoryUncheckedCreateInput = {
   id?: string
   name: string
   description?: string | null
+  ageGroup?: $Enums.CATEGORY_AGE_GROUP
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -264,6 +278,7 @@ export type CategoryUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -274,6 +289,7 @@ export type CategoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -284,6 +300,7 @@ export type CategoryCreateManyInput = {
   id?: string
   name: string
   description?: string | null
+  ageGroup?: $Enums.CATEGORY_AGE_GROUP
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -293,6 +310,7 @@ export type CategoryUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -302,6 +320,7 @@ export type CategoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -311,6 +330,7 @@ export type CategoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  ageGroup?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -320,6 +340,7 @@ export type CategoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  ageGroup?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -329,6 +350,7 @@ export type CategoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  ageGroup?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -337,6 +359,10 @@ export type CategoryMinOrderByAggregateInput = {
 export type CategoryScalarRelationFilter = {
   is?: Prisma.CategoryWhereInput
   isNot?: Prisma.CategoryWhereInput
+}
+
+export type EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput = {
+  set?: $Enums.CATEGORY_AGE_GROUP
 }
 
 export type CategoryCreateNestedOneWithoutMedicinesInput = {
@@ -357,6 +383,7 @@ export type CategoryCreateWithoutMedicinesInput = {
   id?: string
   name: string
   description?: string | null
+  ageGroup?: $Enums.CATEGORY_AGE_GROUP
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -366,6 +393,7 @@ export type CategoryUncheckedCreateWithoutMedicinesInput = {
   id?: string
   name: string
   description?: string | null
+  ageGroup?: $Enums.CATEGORY_AGE_GROUP
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -391,6 +419,7 @@ export type CategoryUpdateWithoutMedicinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -400,6 +429,7 @@ export type CategoryUncheckedUpdateWithoutMedicinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ageGroup?: Prisma.EnumCATEGORY_AGE_GROUPFieldUpdateOperationsInput | $Enums.CATEGORY_AGE_GROUP
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -440,6 +470,7 @@ export type CategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   name?: boolean
   description?: boolean
+  ageGroup?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -451,6 +482,7 @@ export type CategorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   name?: boolean
   description?: boolean
+  ageGroup?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -460,6 +492,7 @@ export type CategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   name?: boolean
   description?: boolean
+  ageGroup?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -469,12 +502,13 @@ export type CategorySelectScalar = {
   id?: boolean
   name?: boolean
   description?: boolean
+  ageGroup?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["category"]>
+export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "ageGroup" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["category"]>
 export type CategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   medicines?: boolean | Prisma.Category$medicinesArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>
@@ -491,6 +525,7 @@ export type $CategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     name: string
     description: string | null
+    ageGroup: $Enums.CATEGORY_AGE_GROUP
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -921,6 +956,7 @@ export interface CategoryFieldRefs {
   readonly id: Prisma.FieldRef<"Category", 'String'>
   readonly name: Prisma.FieldRef<"Category", 'String'>
   readonly description: Prisma.FieldRef<"Category", 'String'>
+  readonly ageGroup: Prisma.FieldRef<"Category", 'CATEGORY_AGE_GROUP'>
   readonly createdAt: Prisma.FieldRef<"Category", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Category", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Category", 'DateTime'>
