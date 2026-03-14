@@ -4,12 +4,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
     createCategory,
     getCategories,
-    updateCategory,
     archiveCategory,
     restoreCategory
 } from "@/lib/actions/categories"
 import { toast } from "sonner"
-import type { CreateCategory, UpdateCategory } from "@/lib/types"
+import type { CreateCategory } from "@/lib/types"
 
 export const CategoryKeys = {
     all: ["categories"] as const,
@@ -28,9 +27,11 @@ export const useCreateCategory = () => {
             const message = data.message || "Category created successfully."
             toast.success(message)
         },
-        onError() {
-            toast.error("Failed to create category!")
-        }
+        onError: (error) => {
+            const message =
+                error instanceof Error && error.message.includes("already exists") ? error.message : "Failed to create category";
+            toast.error(message);
+        },
     })
 }
 
@@ -45,13 +46,13 @@ export const useCategories = ({ page = 1, search = "" }: { page: number, search:
 }
 
 // UPDATE a category
-export const useUpdateCategory = () => {
+/* export const useUpdateCategory = () => {
 
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ values, categoryId }: { values: UpdateCategory, categoryId: string }) => {
-            return await updateCategory(values, categoryId)
+        mutationFn: async ({ id, data }: { id: string; data: CreateCategory }) => {
+            return await updateCategory(id, data)
 
         },
         onSuccess: async (data) => {
@@ -62,12 +63,18 @@ export const useUpdateCategory = () => {
             const message = data.message || "Category updated successfully."
             toast.success(message)
         },
-        onError: () => {
-            toast.error("Failed to update category")
+        onError: (error) => {
+            let message = "Failed to update category";
+
+            if (error instanceof Error && error.message.includes("already exists")) {
+                message = error.message
+            }
+
+            toast.error(message)
         }
 
     })
-}
+} */
 
 //  Archive a category
 export const useArchiveCategory = () => {

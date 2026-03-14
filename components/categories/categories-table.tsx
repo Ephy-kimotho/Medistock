@@ -17,8 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Pencil, Archive, ArchiveRestore } from "lucide-react";
-import { EditCategoryForm } from "@/components/categories/category-edit-dialog";
+import { MoreVertical, Archive, ArchiveRestore } from "lucide-react";
 import { Alert } from "@/components/alert";
 import { useArchiveCategory, useRestoreCategory } from "@/hooks/useCategories";
 import { cn } from "@/lib/utils";
@@ -33,13 +32,6 @@ export function CategoriesTable({
   categories,
   canViewArchived,
 }: CategoriesTableProps) {
-  // Edit category dialog state
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null,
-  );
-
-  // Archive/Restore dialog state
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [categoryToArchive, setCategoryToArchive] = useState<Category | null>(
     null,
@@ -83,6 +75,7 @@ export function CategoriesTable({
             <TableRow className="bg-muted">
               <TableHead className="font-semibold">Name</TableHead>
               <TableHead className="font-semibold">Description</TableHead>
+
               <TableHead className="font-semibold text-center">
                 Medicine count
               </TableHead>
@@ -108,16 +101,16 @@ export function CategoriesTable({
                 <TableCell className="font-medium capitalize">
                   {category.name}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground max-w-xs truncate">
                   {category.description || "—"}
                 </TableCell>
+
                 <TableCell className="text-center font-bold">
                   {category.medicineCount ?? 0}
                 </TableCell>
                 <TableCell className="text-center font-bold">
                   {category.totalStock ?? 0}
                 </TableCell>
-                {/* Status badge - only for admin/inventory_manager */}
                 {canViewArchived && (
                   <TableCell className="text-center">
                     <Badge
@@ -148,20 +141,6 @@ export function CategoriesTable({
                     <DropdownMenuContent align="end" className="w-40">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-                      {/* Edit - Action */}
-                      <DropdownMenuItem
-                        className="flex items-center gap-2 cursor-pointer"
-                        disabled={category.isArchived}
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          setEditDialogOpen(true);
-                        }}
-                      >
-                        <Pencil className="size-4 text-muted-foreground" />
-                        <span>Edit</span>
-                      </DropdownMenuItem>
-
-                      {/* Archive/Restore - only for admin and inventory managers */}
                       {canViewArchived && (
                         <>
                           <DropdownMenuSeparator />
@@ -197,17 +176,6 @@ export function CategoriesTable({
         </Table>
       </div>
 
-      {/* Edit Dialog */}
-      {selectedCategory && (
-        <EditCategoryForm
-          open={editDialogOpen}
-          category={selectedCategory}
-          setOpen={setEditDialogOpen}
-          setSelectedCategory={setSelectedCategory}
-        />
-      )}
-
-      {/* Archive/Restore Confirmation Dialog */}
       {categoryToArchive && (
         <Alert
           open={archiveDialogOpen}
