@@ -179,7 +179,6 @@ export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  ageGroup: 'ageGroup',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
