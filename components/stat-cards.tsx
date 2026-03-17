@@ -4,12 +4,9 @@ import type { StatCardProps } from "@/lib/types";
 
 function Statcards({ stats }: { stats: StatCardProps[] }) {
   return (
-    <div className="my-3 md:my-5 grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="my-3 grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map(({ title, metric, details, theme, Icon }, idx) => (
-        <Card
-          key={idx}
-          className="border border-mist/60 shadow-sm rounded-lg"
-        >
+        <Card key={idx} className="border border-mist/60 shadow-sm rounded-lg">
           <CardHeader>
             <CardTitle className="text-base font-semibold text-accent-foreground/80 capitalize">
               {title}
@@ -55,9 +52,7 @@ function Statcards({ stats }: { stats: StatCardProps[] }) {
             </div>
 
             {details && (
-              <p className="text-xs text-muted-foreground">
-                {details}
-              </p>
+              <p className="text-xs text-muted-foreground">{details}</p>
             )}
           </CardContent>
         </Card>

@@ -180,7 +180,7 @@ export async function updateCategory(categoryId: string, values: UpdateCategoryD
 
 export async function archiveCategory(categoryId: string) {
     try {
-        
+
         await requireRole(["admin", "inventory_manager"]);
 
         // Check if there are any medicines with stock in this category
@@ -243,11 +243,6 @@ export async function archiveCategory(categoryId: string) {
 
 export async function restoreCategory(categoryId: string) {
     try {
-        const session = await getServerSession();
-
-        if (!session) {
-            throw new Error("Unauthorized");
-        }
 
         await requireRole(["admin", "inventory_manager"])
 
@@ -259,6 +254,10 @@ export async function restoreCategory(categoryId: string) {
         return { success: true, message: `${restoredCategory.name} category restored successfully` };
     } catch (error) {
         console.error("Error restoring category:", error);
-        throw new Error("Failed to restore category");
+        if (error instanceof Error) {
+            throw error
+        } else {
+            throw new Error("Failed to restore category");
+        }
     }
 }

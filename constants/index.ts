@@ -1,4 +1,4 @@
-
+/* ------------------------- MEDICINE CATEGORIES ------------------------- */
 export const MEDICINE_CATEGORIES = [
     { name: "Analgesics", description: "Pain relief and management medications" },
     { name: "Antibiotics", description: "Medications to treat bacterial infections" },
@@ -22,15 +22,79 @@ export const MEDICINE_CATEGORIES = [
     { name: "Emergency & Critical Care", description: "Epinephrine, resuscitation, and emergency medications" },
 ] as const;
 
-export const AGE_GROUPS = [
-    { value: "all_ages", label: "All Ages" },
-    { value: "adult", label: "Adult" },
-    { value: "pediatric", label: "Pediatric" },
-] as const;
-
-export type AgeGroup = typeof AGE_GROUPS[number]["value"];
-
 export function getDescriptionByCategory(categoryName: string) {
     const category = MEDICINE_CATEGORIES.find((c) => c.name === categoryName);
     return category?.description ?? null;
 }
+
+/* ------------------------- MEDICINE UNIT TYPES ------------------------- */
+export const MEDICINE_UNIT_GROUPS = [
+    {
+        label: "Solid Forms",
+        units: [
+            { value: "tablets", label: "Tablets" },
+            { value: "capsules", label: "Capsules" },
+            { value: "sachets", label: "Sachets" },
+            { value: "lozenges", label: "Lozenges" },
+            { value: "suppositories", label: "Suppositories" },
+        ],
+    },
+    {
+        label: "Liquid Forms",
+        units: [
+            { value: "bottles", label: "Bottles (Syrup/Suspension)" },
+            { value: "drops", label: "Drops" },
+            { value: "ampoules", label: "Ampoules" },
+            { value: "vials", label: "Vials" },
+        ],
+    },
+    {
+        label: "Semi-Solid Forms",
+        units: [
+            { value: "creams", label: "Creams" },
+            { value: "ointments", label: "Ointments" },
+            { value: "gels", label: "Gels" },
+            { value: "tubes", label: "Tubes" },
+        ],
+    },
+    {
+        label: "Respiratory",
+        units: [
+            { value: "inhalers", label: "Inhalers" },
+            { value: "nebules", label: "Nebules" },
+        ],
+    },
+    {
+        label: "Other Forms",
+        units: [
+            { value: "patches", label: "Patches" },
+            { value: "sprays", label: "Sprays" },
+            { value: "injections", label: "Injections (Pre-filled)" },
+        ],
+    },
+] as const;
+
+
+export const MEDICINE_UNIT_VALUES = [
+    "tablets",
+    "capsules",
+    "sachets",
+    "lozenges",
+    "suppositories",
+    "bottles",
+    "drops",
+    "ampoules",
+    "vials",
+    "creams",
+    "ointments",
+    "gels",
+    "tubes",
+    "inhalers",
+    "nebules",
+    "patches",
+    "sprays",
+    "injections",
+];
+
+
+export type MedicineUnit = typeof MEDICINE_UNIT_VALUES[number];
