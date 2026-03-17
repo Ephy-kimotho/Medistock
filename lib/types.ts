@@ -3,6 +3,7 @@ import { getApplicationUsers } from "@/lib/actions/users"
 import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories } from "@/lib/actions/categories"
+import { getCategoryNames } from "@/lib/actions/medicines"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -11,6 +12,8 @@ export type Invitations = NonNullable<Awaited<ReturnType<typeof getInvitations>>
 export type InvitationRequest = NonNullable<Awaited<ReturnType<typeof getInvitationRequests>>>["requests"][number]
 export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
+export type CategoryInfo = NonNullable<Awaited<ReturnType<typeof getCategoryNames>>>
+export type StockStatus = "all" | "in_stock" | "low_stock" | "out_of_stock";
 
 export type Settings = {
     facilityName: string;
@@ -72,4 +75,34 @@ export interface StatCardProps {
     Icon: ComponentType<{ className?: string }>,
     details?: string
     theme?: string
+}
+
+export interface MedicineInput {
+    name: string;
+    unit: string;
+    reorderlevel: number;
+    categoryId: string;
+    manufacturer?: string;
+}
+
+export interface MedicineWithStock {
+  id: string;
+  name: string;
+  unit: string;
+  reorderlevel: number;
+  categoryId: string;
+  categoryName: string;
+  manufacturer: string | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  totalStock: number;
+  stockStatus: "in_stock" | "low_stock" | "out_of_stock";
+}
+
+export interface GetMedicinesParams {
+  page: number;
+  search: string;
+  categoryId: string;
+  status: StockStatus;
 }

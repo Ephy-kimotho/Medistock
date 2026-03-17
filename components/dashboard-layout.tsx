@@ -144,7 +144,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto py-4 px-4 md:px-6">
-            <section className="flex-1 flex flex-col min-h-[calc(100vh-10rem)]">
+            <section className="flex-1 flex flex-col min-h-full">
               {children}
             </section>
           </main>
