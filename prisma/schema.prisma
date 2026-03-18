@@ -221,7 +221,7 @@ model Medicines {
 
 model StockEntries {
   id          String @id @default(cuid())
-  batchNumber String
+  batchNumber String @unique
 
   medicineId String
   medicine   Medicines @relation(fields: [medicineId], references: [id], onDelete: Cascade)
