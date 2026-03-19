@@ -98,3 +98,17 @@ export const MEDICINE_UNIT_VALUES = [
 
 
 export type MedicineUnit = typeof MEDICINE_UNIT_VALUES[number];
+
+
+/* ------------------------- MEDICINE WASTAGE REASONS ------------------------- */
+export const WASTAGE_REASONS = [
+    { value: "expired", label: "Expired" },
+    { value: "recalled", label: "Recalled by Manufacturer" },
+    { value: "spillage", label: "Spillage" },
+    { value: "damage", label: "Damage" },
+    { value: "other", label: "Other" },
+] as const;
+
+export type WastageReason = (typeof WASTAGE_REASONS)[number]["value"];
+
+export const REASONS_REQUIRING_NOTES: WastageReason[] = ["damage", "other"];

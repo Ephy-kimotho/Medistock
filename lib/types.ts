@@ -139,3 +139,25 @@ export interface MedicineName {
     id: string;
     name: string;
 }
+
+export interface BatchInfo {
+    id: string;
+    batchNumber: string;
+    quantity: number;
+    expiryDate: Date;
+}
+
+export interface DispenseInput {
+    stockEntriesId: string;
+    quantity: number;
+    patient: string;
+    phone: string;
+    notes?: string | null;
+}
+
+export interface WastageInput {
+    stockEntriesId: string;
+    quantity: number;
+    reason: string;
+    notes?: string | null | undefined;
+}

@@ -33,7 +33,7 @@ async function StockInventoryPage({ searchParams }: StockPageProps) {
     redirect("/login");
   }
 
-  const isAdminOrManger =
+  const isAdminOrManager =
     user.role === "admin" || user.role === "inventory_manager";
 
   const params = await searchParams;
@@ -109,7 +109,7 @@ async function StockInventoryPage({ searchParams }: StockPageProps) {
           </div>
 
           {/* Add stock form goes here */}
-          {isAdminOrManger && <AddStockForm userId={user.id} />}
+          {isAdminOrManager && <AddStockForm userId={user.id} />}
         </header>
 
         {/* Stock stat cards goes here */}
