@@ -209,7 +209,7 @@ function MedicineForm({
                       >
                         <SelectValue placeholder="Select category..." />
                       </SelectTrigger>
-                      <SelectContent className="max-h-60">
+                      <SelectContent>
                         {categoryInfo.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}

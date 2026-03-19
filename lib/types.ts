@@ -14,6 +14,7 @@ export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>[
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
 export type CategoryInfo = NonNullable<Awaited<ReturnType<typeof getCategoryNames>>>
 export type StockStatus = "all" | "in_stock" | "low_stock" | "out_of_stock";
+export type StockExpiryStatus = "all" | "good" | "expiring_soon" | "expired";
 
 export type Settings = {
     facilityName: string;
@@ -86,23 +87,55 @@ export interface MedicineInput {
 }
 
 export interface MedicineWithStock {
-  id: string;
-  name: string;
-  unit: string;
-  reorderlevel: number;
-  categoryId: string;
-  categoryName: string;
-  manufacturer: string | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  totalStock: number;
-  stockStatus: "in_stock" | "low_stock" | "out_of_stock";
+    id: string;
+    name: string;
+    unit: string;
+    reorderlevel: number;
+    categoryId: string;
+    categoryName: string;
+    manufacturer: string | null;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    totalStock: number;
+    stockStatus: "in_stock" | "low_stock" | "out_of_stock";
 }
 
 export interface GetMedicinesParams {
-  page: number;
-  search: string;
-  categoryId: string;
-  status: StockStatus;
+    page: number;
+    search: string;
+    categoryId: string;
+    status: StockStatus;
+}
+
+export interface StockInput {
+    medicineId: string;
+    batchNumber: string;
+    quantity: number;
+    initialtQuantity: number;
+    expiryDate: string | Date;
+    purchaseDate: string | Date;
+    purchasePrice: number;
+    supplier?: string | null | undefined;
+    notes?: string | null | undefined;
+}
+
+export interface StockWithMedicine {
+    id: string;
+    medicineId: string;
+    medicineName: string;
+    batchNumber: string;
+    quantity: number;
+    initialQuantity: number;
+    expiryDate: Date;
+    purchaseDate: Date;
+    purchasePrice: number;
+    supplier: string | null;
+    notes: string | null;
+    stockStatus: StockExpiryStatus;
+}
+
+export interface MedicineName {
+    id: string;
+    name: string;
 }

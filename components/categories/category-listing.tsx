@@ -58,8 +58,8 @@ export function CategoriesListing({
   }
 
   return (
-    <div className="flex-1 flex flex-col justify-between">
-      <div className="space-y-4 flex-1">
+    <div className="flex-1 flex flex-col gap-5">
+      <div className="space-y-4 flex-1 mb-4">
         <CategorySearch
           value={searchValue}
           onChange={handleSearchChange}
