@@ -237,6 +237,7 @@ export function MedicineTable({ medicines }: MedicineTableProps) {
                               ? "text-princeton-orange focus:text-princeton-orange focus:bg-princeton-orange/10"
                               : "text-medium-jungle focus:text-medium-jungle focus:bg-medium-jungle/10",
                           )}
+                          disabled={medicine.stockStatus !== "out_of_stock"}
                           onClick={() => handleArchiveRestoreClick(medicine)}
                         >
                           {medicine.isActive ? (

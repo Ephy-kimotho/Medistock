@@ -221,7 +221,7 @@ model Medicines {
 
 model StockEntries {
   id          String @id @default(cuid())
-  batchNumber String
+  batchNumber String @unique
 
   medicineId String
   medicine   Medicines @relation(fields: [medicineId], references: [id], onDelete: Cascade)
@@ -251,14 +251,14 @@ model Transactions {
 
   type     TRANSACTION_TYPE @default(dispensed)
   quantity Int
-  reason   String?
+  reason   String
+  patient  String?
+  phone    String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  person    String
-  phone     String
 
   @@index([stockEntriesId, type])
   @@map("transactions")

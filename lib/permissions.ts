@@ -10,7 +10,8 @@ const statement = {
     category: ["create", "read", "update", "delete", "restore"],
     stockEntry: ["create", "read", "update", "delete"],
     invitation: ["request", "send"],
-    report: ["create", "read", "delete"]
+    report: ["create", "read", "delete"],
+    transaction: ["create", "read"],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -24,6 +25,7 @@ export const user = ac.newRole({
     medicine: ["read", "transact"],
     category: ["read"],
     stockEntry: ["read"],
+    transaction: ["create", "read",],
 })
 
 export const inventory_manager = ac.newRole({
@@ -31,7 +33,8 @@ export const inventory_manager = ac.newRole({
     medicine: ["create", "read", "update", "soft-delete", "transact"],
     category: ["create", "read", "update", "delete", "restore"],
     stockEntry: ["create", "read", "update"],
-    report: ["create", "read"]
+    report: ["create", "read"],
+    transaction: ["create", "read"],
 })
 
 export const auditor = ac.newRole({
@@ -39,7 +42,8 @@ export const auditor = ac.newRole({
     medicine: ["read"],
     category: ["read",],
     stockEntry: ["read",],
-    report: ["create", "read"]
+    report: ["create", "read"],
+    transaction: ["read",],
 })
 
 export const admin = ac.newRole({
@@ -49,6 +53,7 @@ export const admin = ac.newRole({
     stockEntry: ["create", "read", "update", "delete"],
     report: ["create", "read", "delete"],
     invitation: ["send"],
+    transaction: ["create", "read"],
 })
 
 export const hr = ac.newRole({
@@ -57,4 +62,5 @@ export const hr = ac.newRole({
     category: ["read"],
     stockEntry: ["read"],
     invitation: ["request", "send"],
+    transaction: ["read",],
 })

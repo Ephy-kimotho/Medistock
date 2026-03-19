@@ -62,9 +62,9 @@ async function Users({ searchParams }: UsersPageProps) {
       theme: "orange",
     },
     {
-      title: "Regular Staff",
+      title: "Pharmacists",
       metric: userStats.normalUsers || 0,
-      details: "Regular Staff count",
+      details: "Pharmacists' count",
       Icon: UsersIcon,
       theme: "blue",
     },

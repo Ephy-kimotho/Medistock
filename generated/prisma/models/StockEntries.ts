@@ -305,10 +305,10 @@ export type StockEntriesOrderByWithRelationInput = {
 
 export type StockEntriesWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  batchNumber?: string
   AND?: Prisma.StockEntriesWhereInput | Prisma.StockEntriesWhereInput[]
   OR?: Prisma.StockEntriesWhereInput[]
   NOT?: Prisma.StockEntriesWhereInput | Prisma.StockEntriesWhereInput[]
-  batchNumber?: Prisma.StringFilter<"StockEntries"> | string
   medicineId?: Prisma.StringFilter<"StockEntries"> | string
   quantity?: Prisma.IntFilter<"StockEntries"> | number
   initialtQuantity?: Prisma.IntFilter<"StockEntries"> | number
@@ -322,7 +322,7 @@ export type StockEntriesWhereUniqueInput = Prisma.AtLeast<{
   medicine?: Prisma.XOR<Prisma.MedicinesScalarRelationFilter, Prisma.MedicinesWhereInput>
   transactions?: Prisma.TransactionsListRelationFilter
   alerts?: Prisma.AlertsListRelationFilter
-}, "id">
+}, "id" | "batchNumber">
 
 export type StockEntriesOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
