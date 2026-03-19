@@ -190,7 +190,7 @@ export function AddStockForm() {
               {/* Quantity */}
               <div className="space-y-2">
                 <Label htmlFor="quantity" className="text-sm font-medium">
-                  Quantity (KSH) <span className="text-red-500">*</span>
+                  Quantity <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="quantity"
@@ -216,7 +216,7 @@ export function AddStockForm() {
               {/* Purchase Price */}
               <div className="space-y-2">
                 <Label htmlFor="purchasePrice" className="text-sm font-medium">
-                  Purchase Price <span className="text-red-500">*</span>
+                  Purchase Price (KSH) <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="purchasePrice"
