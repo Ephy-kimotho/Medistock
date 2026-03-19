@@ -50,8 +50,8 @@ export const useAddStock = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async (stock: StockInput) => {
-            return await addNewStock(stock)
+        mutationFn: async ({ stock, userId }: { stock: StockInput, userId: string }) => {
+            return await addNewStock(stock, userId)
         },
         onSettled: async (data) => {
 

@@ -233,7 +233,7 @@ export async function getStockInventory({
     }
 }
 
-export async function addNewStock(data: StockInput) {
+export async function addNewStock(data: StockInput, userId: string) {
     try {
         await requirePermission("stockEntry", "create")
 
@@ -247,16 +247,34 @@ export async function addNewStock(data: StockInput) {
             throw new Error("A batch with this batch number already exisits!")
         }
 
-        const stock = await prisma.stockEntries.create({
-            data
+
+        // use a transaction to ensure database atomicity
+        await prisma.$transaction(async (tx) => {
+            // 1. Add the new stock
+            const stock = await tx.stockEntries.create({
+                data
+            })
+
+            // 2. Create the transaction 
+            await tx.transactions.create({
+                data: {
+                    stockEntriesId: stock.id,
+                    quantity: stock.initialtQuantity,
+                    type: "stock_in",
+                    reason: "Medicine stock in",
+                    userId
+                }
+            })
+
+            return stock
         })
+
 
         revalidatePath("/inventory")
 
         return {
             success: true,
             message: "Batch added successfully.",
-            stock
         }
 
     } catch (error) {
