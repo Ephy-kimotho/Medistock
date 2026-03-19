@@ -19,7 +19,7 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { stockSchema, type StockFormData } from "@/lib/schemas/stock-inventory";
 import { useMedicineNames, useAddStock } from "@/hooks/useStockInventory";
-import { MedicineCombobox } from "./medicine-combobox";
+import { MedicineCombobox } from "../medicine-combobox";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import {} from "lucide-react";
@@ -32,7 +32,7 @@ import {
 
 import type { StockInput } from "@/lib/types";
 
-export function AddStockForm() {
+export function AddStockForm({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
 
   const { data: medicines, isLoading } = useMedicineNames();
@@ -72,11 +72,14 @@ export function AddStockForm() {
       notes: values.notes?.trim() || null,
     };
 
-    addStock(data, {
-      onSuccess: () => {
-        handleClose();
+    addStock(
+      { stock: data, userId },
+      {
+        onSuccess: () => {
+          handleClose();
+        },
       },
-    });
+    );
   };
 
   const handleClose = () => {

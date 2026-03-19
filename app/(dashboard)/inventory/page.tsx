@@ -97,7 +97,7 @@ async function StockInventoryPage({ searchParams }: StockPageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="flex-1 flex flex-col gap-6">
         <header className="flex flex-col items-start md:flex-row md:items-center gap-4 md:gap-0 md:justify-between">
           <div>
             <h2 className="text-2xl text-slate-900 font-bold">
@@ -109,7 +109,7 @@ async function StockInventoryPage({ searchParams }: StockPageProps) {
           </div>
 
           {/* Add stock form goes here */}
-          {isAdminOrManger && <AddStockForm />}
+          {isAdminOrManger && <AddStockForm userId={user.id} />}
         </header>
 
         {/* Stock stat cards goes here */}
