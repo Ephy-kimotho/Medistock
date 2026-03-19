@@ -227,10 +227,10 @@ export const TransactionsScalarFieldEnum = {
   type: 'type',
   quantity: 'quantity',
   reason: 'reason',
+  patient: 'patient',
+  phone: 'phone',
   userId: 'userId',
-  createdAt: 'createdAt',
-  person: 'person',
-  phone: 'phone'
+  createdAt: 'createdAt'
 } as const
 
 export type TransactionsScalarFieldEnum = (typeof TransactionsScalarFieldEnum)[keyof typeof TransactionsScalarFieldEnum]

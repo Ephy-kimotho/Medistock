@@ -40,10 +40,10 @@ export type TransactionsMinAggregateOutputType = {
   type: $Enums.TRANSACTION_TYPE | null
   quantity: number | null
   reason: string | null
+  patient: string | null
+  phone: string | null
   userId: string | null
   createdAt: Date | null
-  person: string | null
-  phone: string | null
 }
 
 export type TransactionsMaxAggregateOutputType = {
@@ -52,10 +52,10 @@ export type TransactionsMaxAggregateOutputType = {
   type: $Enums.TRANSACTION_TYPE | null
   quantity: number | null
   reason: string | null
+  patient: string | null
+  phone: string | null
   userId: string | null
   createdAt: Date | null
-  person: string | null
-  phone: string | null
 }
 
 export type TransactionsCountAggregateOutputType = {
@@ -64,10 +64,10 @@ export type TransactionsCountAggregateOutputType = {
   type: number
   quantity: number
   reason: number
+  patient: number
+  phone: number
   userId: number
   createdAt: number
-  person: number
-  phone: number
   _all: number
 }
 
@@ -86,10 +86,10 @@ export type TransactionsMinAggregateInputType = {
   type?: true
   quantity?: true
   reason?: true
+  patient?: true
+  phone?: true
   userId?: true
   createdAt?: true
-  person?: true
-  phone?: true
 }
 
 export type TransactionsMaxAggregateInputType = {
@@ -98,10 +98,10 @@ export type TransactionsMaxAggregateInputType = {
   type?: true
   quantity?: true
   reason?: true
+  patient?: true
+  phone?: true
   userId?: true
   createdAt?: true
-  person?: true
-  phone?: true
 }
 
 export type TransactionsCountAggregateInputType = {
@@ -110,10 +110,10 @@ export type TransactionsCountAggregateInputType = {
   type?: true
   quantity?: true
   reason?: true
+  patient?: true
+  phone?: true
   userId?: true
   createdAt?: true
-  person?: true
-  phone?: true
   _all?: true
 }
 
@@ -208,11 +208,11 @@ export type TransactionsGroupByOutputType = {
   stockEntriesId: string
   type: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason: string | null
+  reason: string
+  patient: string | null
+  phone: string | null
   userId: string
   createdAt: Date
-  person: string
-  phone: string
   _count: TransactionsCountAggregateOutputType | null
   _avg: TransactionsAvgAggregateOutputType | null
   _sum: TransactionsSumAggregateOutputType | null
@@ -243,11 +243,11 @@ export type TransactionsWhereInput = {
   stockEntriesId?: Prisma.StringFilter<"Transactions"> | string
   type?: Prisma.EnumTRANSACTION_TYPEFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFilter<"Transactions"> | number
-  reason?: Prisma.StringNullableFilter<"Transactions"> | string | null
+  reason?: Prisma.StringFilter<"Transactions"> | string
+  patient?: Prisma.StringNullableFilter<"Transactions"> | string | null
+  phone?: Prisma.StringNullableFilter<"Transactions"> | string | null
   userId?: Prisma.StringFilter<"Transactions"> | string
   createdAt?: Prisma.DateTimeFilter<"Transactions"> | Date | string
-  person?: Prisma.StringFilter<"Transactions"> | string
-  phone?: Prisma.StringFilter<"Transactions"> | string
   stockEntry?: Prisma.XOR<Prisma.StockEntriesScalarRelationFilter, Prisma.StockEntriesWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -257,11 +257,11 @@ export type TransactionsOrderByWithRelationInput = {
   stockEntriesId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  reason?: Prisma.SortOrderInput | Prisma.SortOrder
+  reason?: Prisma.SortOrder
+  patient?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  person?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
   stockEntry?: Prisma.StockEntriesOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -274,11 +274,11 @@ export type TransactionsWhereUniqueInput = Prisma.AtLeast<{
   stockEntriesId?: Prisma.StringFilter<"Transactions"> | string
   type?: Prisma.EnumTRANSACTION_TYPEFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFilter<"Transactions"> | number
-  reason?: Prisma.StringNullableFilter<"Transactions"> | string | null
+  reason?: Prisma.StringFilter<"Transactions"> | string
+  patient?: Prisma.StringNullableFilter<"Transactions"> | string | null
+  phone?: Prisma.StringNullableFilter<"Transactions"> | string | null
   userId?: Prisma.StringFilter<"Transactions"> | string
   createdAt?: Prisma.DateTimeFilter<"Transactions"> | Date | string
-  person?: Prisma.StringFilter<"Transactions"> | string
-  phone?: Prisma.StringFilter<"Transactions"> | string
   stockEntry?: Prisma.XOR<Prisma.StockEntriesScalarRelationFilter, Prisma.StockEntriesWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -288,11 +288,11 @@ export type TransactionsOrderByWithAggregationInput = {
   stockEntriesId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  reason?: Prisma.SortOrderInput | Prisma.SortOrder
+  reason?: Prisma.SortOrder
+  patient?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  person?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
   _count?: Prisma.TransactionsCountOrderByAggregateInput
   _avg?: Prisma.TransactionsAvgOrderByAggregateInput
   _max?: Prisma.TransactionsMaxOrderByAggregateInput
@@ -308,21 +308,21 @@ export type TransactionsScalarWhereWithAggregatesInput = {
   stockEntriesId?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
   type?: Prisma.EnumTRANSACTION_TYPEWithAggregatesFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntWithAggregatesFilter<"Transactions"> | number
-  reason?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
+  reason?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
+  patient?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transactions"> | Date | string
-  person?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
-  phone?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
 }
 
 export type TransactionsCreateInput = {
   id?: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   createdAt?: Date | string
-  person: string
-  phone: string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
 }
@@ -332,21 +332,21 @@ export type TransactionsUncheckedCreateInput = {
   stockEntriesId: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   userId: string
   createdAt?: Date | string
-  person: string
-  phone: string
 }
 
 export type TransactionsUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
 }
@@ -356,11 +356,11 @@ export type TransactionsUncheckedUpdateInput = {
   stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TransactionsCreateManyInput = {
@@ -368,21 +368,21 @@ export type TransactionsCreateManyInput = {
   stockEntriesId: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   userId: string
   createdAt?: Date | string
-  person: string
-  phone: string
 }
 
 export type TransactionsUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TransactionsUncheckedUpdateManyInput = {
@@ -390,11 +390,11 @@ export type TransactionsUncheckedUpdateManyInput = {
   stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TransactionsListRelationFilter = {
@@ -413,10 +413,10 @@ export type TransactionsCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  patient?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  person?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
 }
 
 export type TransactionsAvgOrderByAggregateInput = {
@@ -429,10 +429,10 @@ export type TransactionsMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  patient?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  person?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
 }
 
 export type TransactionsMinOrderByAggregateInput = {
@@ -441,10 +441,10 @@ export type TransactionsMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  patient?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  person?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
 }
 
 export type TransactionsSumOrderByAggregateInput = {
@@ -543,10 +543,10 @@ export type TransactionsCreateWithoutUserInput = {
   id?: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   createdAt?: Date | string
-  person: string
-  phone: string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
 }
 
@@ -555,10 +555,10 @@ export type TransactionsUncheckedCreateWithoutUserInput = {
   stockEntriesId: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   createdAt?: Date | string
-  person: string
-  phone: string
 }
 
 export type TransactionsCreateOrConnectWithoutUserInput = {
@@ -595,21 +595,21 @@ export type TransactionsScalarWhereInput = {
   stockEntriesId?: Prisma.StringFilter<"Transactions"> | string
   type?: Prisma.EnumTRANSACTION_TYPEFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFilter<"Transactions"> | number
-  reason?: Prisma.StringNullableFilter<"Transactions"> | string | null
+  reason?: Prisma.StringFilter<"Transactions"> | string
+  patient?: Prisma.StringNullableFilter<"Transactions"> | string | null
+  phone?: Prisma.StringNullableFilter<"Transactions"> | string | null
   userId?: Prisma.StringFilter<"Transactions"> | string
   createdAt?: Prisma.DateTimeFilter<"Transactions"> | Date | string
-  person?: Prisma.StringFilter<"Transactions"> | string
-  phone?: Prisma.StringFilter<"Transactions"> | string
 }
 
 export type TransactionsCreateWithoutStockEntryInput = {
   id?: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   createdAt?: Date | string
-  person: string
-  phone: string
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
 }
 
@@ -617,11 +617,11 @@ export type TransactionsUncheckedCreateWithoutStockEntryInput = {
   id?: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   userId: string
   createdAt?: Date | string
-  person: string
-  phone: string
 }
 
 export type TransactionsCreateOrConnectWithoutStockEntryInput = {
@@ -655,20 +655,20 @@ export type TransactionsCreateManyUserInput = {
   stockEntriesId: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   createdAt?: Date | string
-  person: string
-  phone: string
 }
 
 export type TransactionsUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
 }
 
@@ -677,10 +677,10 @@ export type TransactionsUncheckedUpdateWithoutUserInput = {
   stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TransactionsUncheckedUpdateManyWithoutUserInput = {
@@ -688,31 +688,31 @@ export type TransactionsUncheckedUpdateManyWithoutUserInput = {
   stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TransactionsCreateManyStockEntryInput = {
   id?: string
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
-  reason?: string | null
+  reason: string
+  patient?: string | null
+  phone?: string | null
   userId: string
   createdAt?: Date | string
-  person: string
-  phone: string
 }
 
 export type TransactionsUpdateWithoutStockEntryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
 }
 
@@ -720,22 +720,22 @@ export type TransactionsUncheckedUpdateWithoutStockEntryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TransactionsUncheckedUpdateManyWithoutStockEntryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  person?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -746,10 +746,10 @@ export type TransactionsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   type?: boolean
   quantity?: boolean
   reason?: boolean
+  patient?: boolean
+  phone?: boolean
   userId?: boolean
   createdAt?: boolean
-  person?: boolean
-  phone?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transactions"]>
@@ -760,10 +760,10 @@ export type TransactionsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   type?: boolean
   quantity?: boolean
   reason?: boolean
+  patient?: boolean
+  phone?: boolean
   userId?: boolean
   createdAt?: boolean
-  person?: boolean
-  phone?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transactions"]>
@@ -774,10 +774,10 @@ export type TransactionsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   type?: boolean
   quantity?: boolean
   reason?: boolean
+  patient?: boolean
+  phone?: boolean
   userId?: boolean
   createdAt?: boolean
-  person?: boolean
-  phone?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transactions"]>
@@ -788,13 +788,13 @@ export type TransactionsSelectScalar = {
   type?: boolean
   quantity?: boolean
   reason?: boolean
+  patient?: boolean
+  phone?: boolean
   userId?: boolean
   createdAt?: boolean
-  person?: boolean
-  phone?: boolean
 }
 
-export type TransactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stockEntriesId" | "type" | "quantity" | "reason" | "userId" | "createdAt" | "person" | "phone", ExtArgs["result"]["transactions"]>
+export type TransactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stockEntriesId" | "type" | "quantity" | "reason" | "patient" | "phone" | "userId" | "createdAt", ExtArgs["result"]["transactions"]>
 export type TransactionsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -819,11 +819,11 @@ export type $TransactionsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     stockEntriesId: string
     type: $Enums.TRANSACTION_TYPE
     quantity: number
-    reason: string | null
+    reason: string
+    patient: string | null
+    phone: string | null
     userId: string
     createdAt: Date
-    person: string
-    phone: string
   }, ExtArgs["result"]["transactions"]>
   composites: {}
 }
@@ -1254,10 +1254,10 @@ export interface TransactionsFieldRefs {
   readonly type: Prisma.FieldRef<"Transactions", 'TRANSACTION_TYPE'>
   readonly quantity: Prisma.FieldRef<"Transactions", 'Int'>
   readonly reason: Prisma.FieldRef<"Transactions", 'String'>
+  readonly patient: Prisma.FieldRef<"Transactions", 'String'>
+  readonly phone: Prisma.FieldRef<"Transactions", 'String'>
   readonly userId: Prisma.FieldRef<"Transactions", 'String'>
   readonly createdAt: Prisma.FieldRef<"Transactions", 'DateTime'>
-  readonly person: Prisma.FieldRef<"Transactions", 'String'>
-  readonly phone: Prisma.FieldRef<"Transactions", 'String'>
 }
     
 
