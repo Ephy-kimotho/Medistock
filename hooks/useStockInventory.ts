@@ -55,9 +55,15 @@ export const useAddStock = () => {
         },
         onSettled: async (data) => {
 
-            await queryClient.invalidateQueries({
-                queryKey: StockInventoryKeys.lists()
-            })
+            await Promise.all([
+                queryClient.invalidateQueries({
+                    queryKey: ["transactions", "stats"]
+                }),
+                
+                queryClient.invalidateQueries({
+                    queryKey: StockInventoryKeys.lists()
+                })
+            ])
 
             toast.success(data?.message)
 

@@ -117,6 +117,8 @@ function AppSidebar() {
     canViewReports,
     canManageInvitations,
     canManageSettings,
+    isAuditor,
+    isHR,
   } = usePermissions();
 
   const handleLogout = async () => {
@@ -153,6 +155,8 @@ function AppSidebar() {
         return canManageInvitations;
       case "Onboarding":
         return canManageInvitations;
+      case "Dashboard":
+        return !isAuditor;
       default:
         return true;
     }
@@ -231,7 +235,15 @@ function AppSidebar() {
                           )}
                           {/* Sub-items */}
                           {item.subItems.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubItem
+                              key={subItem.title}
+                              className={cn(
+                                (subItem.title === "Dispense" ||
+                                  subItem.title === "Wastage") &&
+                                  isHR &&
+                                  "hidden",
+                              )}
+                            >
                               <SidebarMenuSubButton
                                 asChild
                                 isActive={isActive(subItem.url)}

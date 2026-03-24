@@ -96,9 +96,7 @@ export const MEDICINE_UNIT_VALUES = [
     "injections",
 ];
 
-
 export type MedicineUnit = typeof MEDICINE_UNIT_VALUES[number];
-
 
 /* ------------------------- MEDICINE WASTAGE REASONS ------------------------- */
 export const WASTAGE_REASONS = [
@@ -112,3 +110,38 @@ export const WASTAGE_REASONS = [
 export type WastageReason = (typeof WASTAGE_REASONS)[number]["value"];
 
 export const REASONS_REQUIRING_NOTES: WastageReason[] = ["damage", "other"];
+
+
+/* ------------------------- TRANSACTIONS TYPES AND UTILITY FUNCTIONS ------------------------- */
+export const TRANSACTION_TYPES = [
+    { value: "all", label: "All Transactions" },
+    { value: "stock_in", label: "Stock In" },
+    { value: "dispensed", label: "Dispense" },
+    { value: "wastage", label: "Wastage" },
+] as const;
+
+export const getTransactionTypeLabel = (type: string) => {
+    switch (type) {
+        case "stock_in":
+            return "Stock In";
+        case "dispensed":
+            return "Dispense";
+        case "wastage":
+            return "Wastage";
+        default:
+            return type;
+    }
+};
+
+export const getTransactionTypeStyles = (type: string) => {
+    switch (type) {
+        case "stock_in":
+            return "text-medium-jungle bg-medium-jungle/10";
+        case "dispensed":
+            return "text-princeton-orange bg-princeton-orange/10";
+        case "wastage":
+            return "text-crimson-red bg-crimson-red/10";
+        default:
+            return "text-muted-foreground bg-muted";
+    }
+};

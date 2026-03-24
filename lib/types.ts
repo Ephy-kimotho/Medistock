@@ -13,6 +13,9 @@ export type InvitationRequest = NonNullable<Awaited<ReturnType<typeof getInvitat
 export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
 export type CategoryInfo = NonNullable<Awaited<ReturnType<typeof getCategoryNames>>>
+
+
+
 export type StockStatus = "all" | "in_stock" | "low_stock" | "out_of_stock";
 export type StockExpiryStatus = "all" | "good" | "expiring_soon" | "expired";
 
@@ -28,6 +31,7 @@ export type CreateCategory = {
     description?: string
 }
 
+export type TransactionType = "all" | "stock_in" | "dispensed" | "wastage" | "adjustment";
 export type UpdateCategory = Partial<CreateCategory>
 
 // ==================== INTERFACES ====================
@@ -160,4 +164,51 @@ export interface WastageInput {
     quantity: number;
     reason: string;
     notes?: string | null | undefined;
+}
+
+export interface TransactionWithDetails {
+    id: string;
+    date: Date;
+    type: "stock_in" | "dispensed" | "wastage" | "adjustment";
+    medicineName: string;
+    quantity: number;
+    batchNumber: string;
+    userName: string;
+    userRole: string;
+    patient: string | null;
+    phone: string | null;
+    reason: string;
+}
+
+export interface TransactionFilters {
+    page?: number;
+    search?: string;
+    type?: string;
+    medicineId?: string;
+    userId?: string;
+    fromDate?: string;
+    toDate?: string;
+}
+
+export interface UserInfo {
+    id: string;
+    name: string;
+}
+
+export interface RecentTransactionAdmin {
+    id: string;
+    medicineName: string;
+    userName: string;
+    quantity: number;
+    type: "stock_in" | "dispensed" | "wastage";
+    createdAt: Date;
+}
+
+export interface RecentTransactionStaff {
+    id: string;
+    medicineName: string;
+    quantity: number;
+    patient: string | null;
+    phone: string | null;
+    createdAt: Date;
 }
