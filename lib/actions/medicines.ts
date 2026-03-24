@@ -270,6 +270,7 @@ export async function createMedicine(data: MedicineInput) {
         });
 
         revalidatePath("/inventory/medicines");
+        revalidatePath("/dashboard");
 
         return {
             success: true,
@@ -365,6 +366,7 @@ export async function archiveMedicine(id: string) {
         });
 
         revalidatePath("/inventory/medicines");
+        revalidatePath("/dashboard");
 
         return {
             success: true,
@@ -404,6 +406,7 @@ export async function restoreMedicine(id: string) {
         });
 
         revalidatePath("/inventory/medicines");
+        revalidatePath("/dashboard");
 
         return {
             success: true,

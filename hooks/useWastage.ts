@@ -43,9 +43,16 @@ export const useRecordWastage = () => {
             return await recordWastage(data, userId);
         },
         onSuccess: async (result) => {
-            await queryClient.invalidateQueries({
-                queryKey: ["stock-inventory"],
-            });
+            // Invalidation of queries
+            await Promise.all([
+                queryClient.invalidateQueries({
+                    queryKey: ["transactions", "stats"]
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: ["stock-inventory"],
+                })
+
+            ])
 
             toast.success(result.message);
         },

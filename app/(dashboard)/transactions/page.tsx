@@ -6,13 +6,33 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { getMedicineNames } from "@/lib/actions/stock-inventory";
+import {
+  getTransactions,
+  getTransactionStats,
+  getTransactionMedicines,
+  getTransactionUsers,
+} from "@/lib/actions/transactions";
 import { AddStockForm } from "@/components/inventory/add-stock";
-import { getTransactionStats } from "@/lib/actions/transactions";
+import { TransactionListing } from "@/components/transactions/transaction-listing";
 import { Statcards } from "@/components/stat-cards";
 import { Move, TrendingUp, TrendingDown, CircleAlert } from "lucide-react";
 import type { StatCardProps } from "@/lib/types";
 
-async function TransactionsHistoryPage() {
+interface TransactionsPageProps {
+  searchParams: Promise<{
+    page?: string;
+    search?: string;
+    type?: string;
+    medicine?: string;
+    user?: string;
+    from?: string;
+    to?: string;
+  }>;
+}
+
+async function TransactionsHistoryPage({
+  searchParams,
+}: TransactionsPageProps) {
   const session = await getServerSession();
   const user = session?.user;
 
@@ -23,16 +43,63 @@ async function TransactionsHistoryPage() {
   const isAdminOrManager =
     user.role === "admin" || user.role === "inventory_manager";
 
-  // prefetch medicine info on the server
-  const queryClient = new QueryClient();
-  const statsPromise = getTransactionStats();
+  const params = await searchParams;
+  const currentPage = Number(params.page) || 1;
+  const search = params.search || "";
+  const type = params.type || "all";
+  const medicineId = params.medicine || "all";
+  const userId = params.user || "all";
+  const fromDate = params.from || "";
+  const toDate = params.to || "";
 
+  const queryClient = new QueryClient();
+
+  // Parallel fetching
   const [stats] = await Promise.all([
-    statsPromise,
+    getTransactionStats(isAdminOrManager ? userId : undefined),
+    // Prefetch medicine info for AddStockForm
     queryClient.prefetchQuery({
       queryKey: ["medicine-info"],
       queryFn: () => getMedicineNames(),
     }),
+    // Prefetch transactions list
+    queryClient.prefetchQuery({
+      queryKey: [
+        "transactions",
+        "list",
+        {
+          page: currentPage,
+          search,
+          type,
+          medicineId,
+          userId,
+          fromDate,
+          toDate,
+        },
+      ],
+      queryFn: () =>
+        getTransactions({
+          page: currentPage,
+          search,
+          type,
+          medicineId,
+          userId,
+          fromDate,
+          toDate,
+        }),
+    }),
+    // Prefetch medicines for filter dropdown
+    queryClient.prefetchQuery({
+      queryKey: ["transactions", "medicines"],
+      queryFn: () => getTransactionMedicines(),
+    }),
+    // Prefetch users for filter dropdown (admin only)
+    isAdminOrManager
+      ? queryClient.prefetchQuery({
+          queryKey: ["transactions", "users"],
+          queryFn: () => getTransactionUsers(),
+        })
+      : Promise.resolve(),
   ]);
 
   const statsInfo: StatCardProps[] = [
@@ -68,7 +135,7 @@ async function TransactionsHistoryPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="flex-1 flex flex-col gap-2">
         <header className="flex flex-col items-start md:flex-row md:items-center gap-4 md:gap-0 md:justify-between">
           <div>
             <h2 className="text-2xl text-slate-900 font-bold">
@@ -82,10 +149,20 @@ async function TransactionsHistoryPage() {
           {isAdminOrManager && <AddStockForm userId={user.id} />}
         </header>
 
-        {/* Stat cards goes here */}
+        {/* Stat cards */}
         <Statcards stats={statsInfo} />
 
-        {/* Transaction listings goes here */}
+        {/* Transaction listings */}
+        <TransactionListing
+          initialSearch={search}
+          initialType={type}
+          initialMedicineId={medicineId}
+          initialUserId={userId}
+          initialFromDate={fromDate}
+          initialToDate={toDate}
+          currentPage={currentPage}
+          isAdmin={isAdminOrManager}
+        />
       </div>
     </HydrationBoundary>
   );

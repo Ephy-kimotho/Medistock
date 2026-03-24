@@ -42,15 +42,24 @@ export const useDispenseMedicine = () => {
             return await dispenseMedicine(data, userId);
         },
         onSuccess: async (result) => {
-            // Invalidate batches to refresh available quantities
-            await queryClient.invalidateQueries({
-                queryKey: ["dispense", "batches"],
-            });
+            // Invalidation of queries
+            await Promise.all([
+                // Invalidate transaction stats
+                queryClient.invalidateQueries({
+                    queryKey: ["transactions", "stats"]
+                }),
 
-            // Invalidate stock inventory
-            await queryClient.invalidateQueries({
-                queryKey: ["stock-inventory"],
-            });
+                // Invalidate stock inventory
+                queryClient.invalidateQueries({
+                    queryKey: ["stock-inventory"],
+                }),
+
+                // Invalidate batches to refresh available quantities
+                queryClient.invalidateQueries({
+                    queryKey: ["dispense", "batches"],
+                })
+
+            ])
 
             toast.success(result.message);
         },
