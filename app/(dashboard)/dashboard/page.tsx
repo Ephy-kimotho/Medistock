@@ -10,7 +10,6 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentTransactionsAdmin } from "@/components/dashboard/recent-transactions-admin";
 import { RecentTransactionsStaff } from "@/components/dashboard/recent-transactions-staff";
 import { RecentAlerts } from "@/components/dashboard/recent-alerts";
-import { UnauthorizedUI } from "@/components/dashboard/unauthorized-ui";
 import { Statcards } from "@/components/stat-cards";
 import { Pill, TrendingDown, CalendarClock, AlertCircle } from "lucide-react";
 import type {
@@ -32,7 +31,7 @@ async function DashboardPage() {
 
   // Auditors cannot access the dashboard
   if (userRole === "auditor") {
-    return <UnauthorizedUI />;
+    redirect("/inventory");
   }
 
   const isStaff = userRole === "user";

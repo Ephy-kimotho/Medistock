@@ -88,9 +88,14 @@ function Layout({ children }: { children: React.ReactNode }) {
                           .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden md:inline-flex">
-                      {currentUser?.name || "John Doe"}
-                    </span>
+                    <div className="flex flex-col itme-center">
+                      <span className="hidden md:inline-flex">
+                        {currentUser?.name || "John Doe"}
+                      </span>
+                      <span className="hidden md:inline-flex text-xs  text-muted-foreground capitalize">
+                        {currentUser?.role || "pharmacist"}
+                      </span>
+                    </div>
                     <ChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>

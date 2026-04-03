@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ import {
   type InvitationRequestInput,
 } from "@/lib/schemas/invitation-request";
 import { useCreateInvitationRequest } from "@/hooks/useInvitationRequests";
+import { useNextEmployeeId } from "@/hooks/useEmployeeId";
 import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
 
@@ -42,12 +43,18 @@ export function InvitationRequestForm({
   const [open, setOpen] = useState(false);
 
   const { mutate: createRequest, isPending } = useCreateInvitationRequest();
+  const {
+    data: nextEmployeeId,
+    isLoading: isLoadingEmployeeId,
+    refetch: refetchEmployeeId,
+  } = useNextEmployeeId(open); // Only fetch when dialog is open
 
   const {
     register,
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<InvitationRequestInput>({
     mode: "all",
@@ -59,6 +66,13 @@ export function InvitationRequestForm({
       employeeId: "",
     },
   });
+
+  // Set employee ID when it's fetched
+  useEffect(() => {
+    if (nextEmployeeId && open) {
+      setValue("employeeId", nextEmployeeId);
+    }
+  }, [nextEmployeeId, open, setValue]);
 
   const onSubmit: SubmitHandler<InvitationRequestInput> = (values) => {
     createRequest(
@@ -75,7 +89,12 @@ export function InvitationRequestForm({
   const handleOpenChange = (open: boolean) => {
     if (!isPending) {
       setOpen(open);
-      if (!open) reset();
+      if (!open) {
+        reset();
+      } else {
+        // Refetch employee ID when dialog opens
+        refetchEmployeeId();
+      }
     }
   };
 
@@ -115,6 +134,42 @@ export function InvitationRequestForm({
             )}
           </div>
 
+          {/* Employee ID - Auto Generated */}
+          <div className="space-y-2">
+            <Label htmlFor="employeeId" className="text-sm font-medium">
+              Employee ID
+            </Label>
+            <div className="relative">
+              <Input
+                id="employeeId"
+                placeholder="e.g., EMP-0001"
+                disabled={isPending || isLoadingEmployeeId}
+                readOnly
+                className={cn(
+                  "h-11 text-base bg-muted/50 font-mono",
+                  errors.employeeId
+                    ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                    : "focus-visible:ring-azure focus-visible:border-azure",
+                )}
+                {...register("employeeId")}
+              />
+              {isLoadingEmployeeId && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <Loader className="size-4 text-muted-foreground animate-spin" />
+                </div>
+              )}
+            </div>
+            {errors.employeeId && (
+              <p className="text-red-500 text-sm">
+                {errors.employeeId.message}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Auto-generated. This will be the employee&apos;s unique
+              identifier.
+            </p>
+          </div>
+
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium">
@@ -135,30 +190,6 @@ export function InvitationRequestForm({
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Employee ID */}
-          <div className="space-y-2">
-            <Label htmlFor="employeeId" className="text-sm font-medium">
-              Employee ID
-            </Label>
-            <Input
-              id="employeeId"
-              placeholder="e.g., EMP001"
-              disabled={isPending}
-              className={cn(
-                "h-11 text-base",
-                errors.employeeId
-                  ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                  : "focus-visible:ring-azure focus-visible:border-azure",
-              )}
-              {...register("employeeId")}
-            />
-            {errors.employeeId && (
-              <p className="text-red-500 text-sm">
-                {errors.employeeId.message}
-              </p>
             )}
           </div>
 
@@ -216,15 +247,15 @@ export function InvitationRequestForm({
               size="lg"
               type="submit"
               className="flex-1 sm:flex-none sm:w-44 bg-azure hover:bg-blue-600"
-              disabled={isPending}
+              disabled={isPending || isLoadingEmployeeId}
             >
               {isPending ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader className="size-4 animate-spin" />
-                  Creating...
+                  Adding
                 </span>
               ) : (
-                "Create Request"
+                "Add Employee"
               )}
             </Button>
           </DialogFooter>
