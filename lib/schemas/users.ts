@@ -36,7 +36,8 @@ export const acceptInvitationSchema = z.object({
         .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
         .regex(/\d/, 'Password must contain at least one number')
         .regex(/[\W_]/, 'Password must contain at least one special character'),
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+    image: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],

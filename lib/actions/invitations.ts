@@ -157,17 +157,19 @@ export async function createInvitation(requestId: string, invitorId: string) {
         // Build the invite URL
         const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
 
-        // send email before creating invitation
+        // Send email before creating invitation
         const { error: emailError } = await resend.emails.send({
             from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
             to: invitationRequest.email,
             subject: "You've been invited to join MediStock",
             react: InviteEmail({
                 name: invitationRequest.name,
+                email: invitationRequest.email,
+                employeeId: invitationRequest.employeeId,
                 expiryDate: expiresAt,
                 role: invitationRequest.role,
                 inviteURL,
-                invitor: invitor.name
+                invitor: invitor.name,
             })
         })
 
@@ -210,7 +212,7 @@ export async function createInvitation(requestId: string, invitorId: string) {
     }
 }
 
-export async function acceptInvitation({ fields: { token, name, password }, employeeId }: AcceptInvitationProps) {
+export async function acceptInvitation({ fields: { token, name, password, image }, employeeId }: AcceptInvitationProps) {
 
     // Validate input
     const validation = acceptInvitationSchema.safeParse({
@@ -289,7 +291,8 @@ export async function acceptInvitation({ fields: { token, name, password }, empl
                 data: {
                     emailVerified: true,
                     emailAlertEnabled: allowEmailNotifications,
-                    employeeId
+                    employeeId,
+                    image
                 }
 
             }
@@ -370,7 +373,8 @@ export async function resendInvite(token: string) {
                     select: {
                         name: true,
                         email: true,
-                        role: true
+                        role: true,
+                        employeeId: true
                     }
                 }
             }
@@ -409,6 +413,8 @@ export async function resendInvite(token: string) {
             subject: "Reminder - You've been invited to join MediStock",
             react: ReminderInviteEmail({
                 name: invitation.request.name,
+                email: invitation.request.email,
+                employeeId: invitation.request.employeeId,
                 expiryDate: expiresAt,
                 role: invitation.request.role,
                 inviteURL,

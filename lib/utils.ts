@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const LIMIT = 15;
+export const LIMIT = 9;
 
 export function formatRole(role: string): string {
   const roleMap: Record<string, string> = {
@@ -16,4 +16,12 @@ export function formatRole(role: string): string {
     hr: "Human Resource"
   };
   return roleMap[role.toLowerCase()] || role;
+}
+
+export function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((part) => part.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join("");
 }

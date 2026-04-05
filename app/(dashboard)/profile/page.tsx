@@ -1,6 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User as UserIcon, Mail, Shield, Calendar, IdCard } from "lucide-react";
+import {
+  User as UserIcon,
+  Mail,
+  Shield,
+  Calendar,
+  IdCard,
+  SquarePen,
+} from "lucide-react";
 import { format } from "date-fns";
 import { getUserProfile } from "@/lib/actions/users";
 import { getServerSession } from "@/lib/check-permissions";
@@ -9,6 +16,8 @@ import { QuickActions } from "./quick-action";
 import { AlertConfig } from "./alert-config";
 import { UserNotFoundUI } from "./no-user-ui";
 import { cn, formatRole } from "@/lib/utils";
+import { UpdatePhotoDialog } from "@/components/update-photo-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 async function ProfilePage() {
   const session = await getServerSession();
@@ -40,16 +49,29 @@ async function ProfilePage() {
 
       {/* Banner */}
       <Card className="bg-white rounded-lg border border-border p-6 sm:p-8">
-        <CardContent className="flex flex-col sm:flex-row sm:items-center gap-6">
+        <CardContent className="flex  flex-col sm:flex-row sm:items-center gap-6">
           {/* Avatar */}
-          <div className="shrink-0">
-            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center">
+          <Avatar className="size-28 relative">
+            <AvatarImage
+              src={user.image || ""}
+              alt={`An image of ${user.name}`}
+            />
+            <AvatarFallback className="bg-primary">
               <UserIcon
-                className="w-12 h-12 text-primary-foreground"
+                className="size-12 text-primary-foreground"
                 strokeWidth={1.5}
               />
-            </div>
-          </div>
+            </AvatarFallback>
+
+            <UpdatePhotoDialog userId={userId} currentImageUrl={user.image}>
+              <button
+                type="button"
+                className="absolute -bottom-1 -right-1 rounded-full bg-muted-foreground/90 p-2 text-white shadow-md hover:bg-blue-600 transition-colors cursor-pointer"
+              >
+                <SquarePen className="size-4" />
+              </button>
+            </UpdatePhotoDialog>
+          </Avatar>
 
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-foreground">{user.name}</h2>
@@ -177,7 +199,7 @@ async function ProfilePage() {
       )}
 
       {/* Quick Actions */}
-      <QuickActions userId={userId} />
+      <QuickActions userId={userId} employeeId={user.employeeId || ""} />
     </section>
   );
 }

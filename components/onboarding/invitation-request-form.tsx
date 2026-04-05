@@ -104,10 +104,10 @@ export function InvitationRequestForm({
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-slate-900">
-            New Invitation Request
+            New Employee Form
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Create a request to invite a new employee to the system.
+            Enter new employee details to the system.
           </DialogDescription>
         </DialogHeader>
 
@@ -219,9 +219,7 @@ export function InvitationRequestForm({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Administrator</SelectItem>
-                    <SelectItem value="inventory_manager">
-                      Inventory Manager
-                    </SelectItem>
+                    <SelectItem value="inventory_manager">Manager</SelectItem>
                     <SelectItem value="user">Pharmacist</SelectItem>
                     <SelectItem value="auditor">Auditor</SelectItem>
                   </SelectContent>

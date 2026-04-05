@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   SidebarProvider,
   SidebarInset,
@@ -43,7 +43,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     }
   };
 
-  if (isSessionPending && !currentUser) {
+  if (isSessionPending || !currentUser) {
     return <AppSkeleton />;
   }
 
@@ -81,6 +81,11 @@ function Layout({ children }: { children: React.ReactNode }) {
                     className="hover:bg-transparent data-[state=open]:bg-transparent hover:cursor-pointer flex items-center gap-2"
                   >
                     <Avatar className="size-8">
+                      <AvatarImage
+                        src={currentUser.image || ""}
+                        alt={`An image of ${currentUser.name}`}
+                      />
+
                       <AvatarFallback className="bg-blue-600 text-white">
                         {currentUser?.name
                           .split(" ")[0]
@@ -93,7 +98,7 @@ function Layout({ children }: { children: React.ReactNode }) {
                         {currentUser?.name || "John Doe"}
                       </span>
                       <span className="hidden md:inline-flex text-xs  text-muted-foreground capitalize">
-                        {currentUser?.role || "pharmacist"}
+                        {formatRole(currentUser?.role || "user")}
                       </span>
                     </div>
                     <ChevronDown className="size-4" />

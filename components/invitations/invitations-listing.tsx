@@ -77,7 +77,9 @@ export function InvitationsListing({
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center gap-4 md:gap-0 md:justify-between mb-5">
         <div>
-          <h2 className="text-2xl text-slate-900 font-bold">User Invitations</h2>
+          <h2 className="text-2xl text-slate-900 font-bold">
+            Employee Invitations
+          </h2>
           <p className="text-muted-foreground">
             View and manage sent invitations
           </p>

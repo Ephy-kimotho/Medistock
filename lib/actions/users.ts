@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth";
 import { requireRole, getServerSession } from "@/lib/check-permissions";
 import { Prisma } from "@/generated/prisma/client";
@@ -186,4 +187,39 @@ export async function allowEmailNotifications(allow: boolean, userId: string) {
         throw error
     }
 
+}
+
+export async function updateUserImage(userId: string, imageUrl: string) {
+    try {
+        const session = await getServerSession();
+
+        if (!session) {
+            redirect("/login");
+        }
+
+        if (session.user.id !== userId) {
+            return {
+                success: false,
+                message: "You can only update your own profile image.",
+            };
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { image: imageUrl },
+        });
+
+        revalidatePath("/profile");
+
+        return {
+            success: true,
+            message: "Profile image updated successfully.",
+        };
+    } catch (error) {
+        console.error("Error updating user image:", error);
+        return {
+            success: false,
+            message: "Failed to update profile image. Please try again.",
+        };
+    }
 }
