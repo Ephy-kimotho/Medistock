@@ -17,7 +17,7 @@ interface OnboardingListingProps {
   initialSearch: string;
   currentPage: number;
   userId: string;
-  email:string
+  email: string;
 }
 
 export function OnboardingListing({
@@ -35,7 +35,7 @@ export function OnboardingListing({
   const { data, isLoading } = useInvitationRequests({
     page: currentPage,
     search: initialSearch,
-    email
+    email,
   });
 
   const debouncedUpdateURL = useDebouncedCallback((value: string) => {
@@ -79,7 +79,7 @@ export function OnboardingListing({
           <InvitationRequestForm requestorId={userId}>
             <Button className="h-11 px-8 text-white bg-azure self-start hover:bg-blue-600 inline-flex items-center gap-2">
               <Plus className="size-4 text-white" />
-              New Request
+              Add Employee
             </Button>
           </InvitationRequestForm>
         )}

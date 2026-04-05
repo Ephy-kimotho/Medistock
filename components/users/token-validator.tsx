@@ -22,7 +22,7 @@ export async function TokenValidator({ token }: TokenValidatorProps) {
           name: true,
           email: true,
           role: true,
-          employeeId:true
+          employeeId: true,
         },
       },
     },

@@ -39,7 +39,6 @@ function LoginForm() {
       reset();
       toast.success("Login successful");
 
-      router.prefetch("/dashboard");
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);

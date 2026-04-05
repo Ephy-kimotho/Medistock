@@ -47,5 +47,20 @@ export const auth = betterAuth({
             }
         }),
         nextCookies()
-    ]
+    ],
+    user: {
+        additionalFields: {
+            employeeId: {
+                type: "string",
+                required: false,
+                input: true,
+            },
+            emailAlertEnabled: {
+                type: "boolean",
+                required: false,
+                input: true,
+            },
+        }
+    }
+
 })

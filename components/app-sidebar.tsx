@@ -87,14 +87,14 @@ const mainNavItems = [
     icon: Users,
   },
   {
-    title: "Invitations",
-    url: "/invitations",
-    icon: Mail,
-  },
-  {
     title: "Onboarding",
     url: "/onboarding",
     icon: UserPlus,
+  },
+  {
+    title: "Invitations",
+    url: "/invitations",
+    icon: Mail,
   },
 ];
 

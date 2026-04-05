@@ -31,7 +31,7 @@ export function EmptyState({ hasFilters, onClear }: EmptyStateProps) {
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
             Invitations that have not been accepted, will appear here once they
-            are sent from the onboarding page by HR.
+            are sent by the system administrator or HR to the new employee.
           </p>
         </>
       )}

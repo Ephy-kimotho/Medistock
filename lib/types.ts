@@ -71,7 +71,8 @@ export interface InviteUserInput {
 export interface AcceptInvitationInput {
     token: string,
     name: string,
-    password: string
+    password: string,
+    image?: string
 }
 
 export interface StatCardProps {
@@ -211,4 +212,33 @@ export interface RecentTransactionStaff {
     patient: string | null;
     phone: string | null;
     createdAt: Date;
+}
+
+export interface ImageValidationResult {
+    valid: boolean;
+    error?: string;
+}
+
+export interface ImageUploadResult {
+    success: boolean;
+    url?: string;
+    error?: string;
+    filename?: string;
+}
+
+export interface ImageServiceConfig {
+    bucket: string;
+    maxSizeMB: number;
+    compressionThresholdMB: number;
+    allowedTypes: string[];
+    folder?: string;
+}
+
+
+export interface EmployeeCardData {
+    name: string,
+    role: Role,
+    employeeId: string,
+    facilityName: string,
+    imageBuffer: Buffer | null,
 }

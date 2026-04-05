@@ -6,8 +6,15 @@ import { LockKeyhole, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/lib/auth-client";
 import { ChangePasswordForm } from "./change-password";
+import { DownloadCardButton } from "@/components/download-card-button";
 
-export function QuickActions({ userId }: { userId: string }) {
+export function QuickActions({
+  userId,
+  employeeId,
+}: {
+  userId: string;
+  employeeId: string;
+}) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -26,7 +33,7 @@ export function QuickActions({ userId }: { userId: string }) {
             Quick Actions
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <ChangePasswordForm userId={userId}>
             <Button
               size="lg"
@@ -44,6 +51,7 @@ export function QuickActions({ userId }: { userId: string }) {
             <LogOut className="text-white size-4" />
             <span className="text-white">Sign out</span>
           </Button>
+          <DownloadCardButton userId={userId} employeeId={employeeId} />
         </CardContent>
       </Card>
     </>

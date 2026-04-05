@@ -205,7 +205,7 @@ export async function createInvitationRequest(data: InvitationRequestInput, requ
 
         return {
             success: true,
-            message: `Request created and notifed ${notificationResult.notified} admin(s)`,
+            message: `Request created and notifed ${notificationResult.notified} ${notificationResult.notified > 1 ? "admins" : "admin"}`,
         };
     } catch (error) {
         console.error("Error creating invitation request:", error);
