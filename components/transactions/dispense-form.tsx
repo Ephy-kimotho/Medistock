@@ -1,12 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Loader, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useForm, SubmitHandler, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dispenseSchema, type DispenseFormData } from "@/lib/schemas/dispense";
 import {
@@ -17,8 +24,14 @@ import {
 import { MedicineCombobox } from "@/components/medicine-combobox";
 import { BatchCombobox } from "./batch-combobox";
 import { cn } from "@/lib/utils";
+import { AGE_GROUPS, getAgeGroupLabel } from "@/constants";
 import type { DispenseInput } from "@/lib/types";
 import { toast } from "sonner";
+
+// Patient age groups (exclude "all_ages" since patients must have a specific age group)
+const PATIENT_AGE_GROUPS = AGE_GROUPS.filter(
+  (group) => group.value !== "all_ages",
+);
 
 interface DispenseFormProps {
   userId: string;
@@ -35,6 +48,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
   const { mutate: dispense, isPending } = useDispenseMedicine();
 
   const selectedBatch = batches?.find((b) => b.id === selectedBatchId);
+  const selectedMedicine = medicines?.find((m) => m.id === selectedMedicineId);
 
   const {
     register,
@@ -52,9 +66,22 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       quantity: undefined,
       patient: "",
       phone: "",
+      patientAgeGroup: undefined,
       notes: "",
     },
   });
+
+  const patientAgeGroup = useWatch({
+    control,
+    name: "patientAgeGroup",
+  });
+
+  // Check if there's an age group mismatch
+  const hasAgeGroupMismatch = (() => {
+    if (!selectedMedicine || !patientAgeGroup) return false;
+    if (selectedMedicine.ageGroup === "all_ages") return false;
+    return selectedMedicine.ageGroup !== patientAgeGroup;
+  })();
 
   // Sync medicine selection with form
   const handleMedicineChange = (value: string) => {
@@ -72,6 +99,13 @@ export function DispenseForm({ userId }: DispenseFormProps) {
   };
 
   const onSubmit: SubmitHandler<DispenseFormData> = (values) => {
+    // Double-check age group validation
+    if (hasAgeGroupMismatch) {
+      return toast.error(
+        `Cannot dispense: Medicine is for ${getAgeGroupLabel(selectedMedicine!.ageGroup)} patients, but patient is ${getAgeGroupLabel(values.patientAgeGroup)}.`,
+      );
+    }
+
     // Validate quantity against available stock
     if (selectedBatch && values.quantity > selectedBatch.quantity) {
       return toast.warning(
@@ -84,6 +118,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       quantity: values.quantity,
       patient: values.patient.trim(),
       phone: values.phone.trim(),
+      patientAgeGroup: values.patientAgeGroup,
       notes: values.notes?.trim() || null,
     };
 
@@ -91,7 +126,6 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       { data, userId },
       {
         onSuccess: () => {
-          // Reset form
           reset();
           setSelectedMedicineId("");
           setSelectedBatchId("");
@@ -108,6 +142,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
 
   const isBatchSelectEnabled = !!selectedMedicineId && !isLoadingBatches;
   const isFormEnabled = !!selectedBatchId;
+  const isSubmitDisabled = !isFormEnabled || isPending || hasAgeGroupMismatch;
 
   if (isLoadingMedicines) {
     return (
@@ -202,28 +237,98 @@ export function DispenseForm({ userId }: DispenseFormProps) {
           )}
         </div>
 
-        {/* Patient Phone */}
-        <div className="space-y-2">
-          <Label htmlFor="patient" className="text-sm font-medium">
-            Patient Phone Number <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="patient"
-            placeholder="e.g. 07xxxxxxxx"
-            disabled={!isFormEnabled || isPending}
-            className={cn(
-              "h-11",
-              errors.phone
-                ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                : "focus-visible:ring-azure focus-visible:border-azure",
-              !isFormEnabled && "opacity-50 cursor-not-allowed",
+        {/* Patient Phone and Age Group Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Patient Phone */}
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-sm font-medium">
+              Phone Number <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="phone"
+              placeholder="e.g. 07xxxxxxxx"
+              disabled={!isFormEnabled || isPending}
+              className={cn(
+                "h-11",
+                errors.phone
+                  ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                  : "focus-visible:ring-azure focus-visible:border-azure",
+                !isFormEnabled && "opacity-50 cursor-not-allowed",
+              )}
+              {...register("phone")}
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm">{errors.phone.message}</p>
             )}
-            {...register("phone")}
-          />
-          {errors.phone && (
-            <p className="text-red-500 text-sm">{errors.phone.message}</p>
-          )}
+          </div>
+
+          {/* Patient Age Group */}
+          <div className="space-y-2">
+            <Label htmlFor="patientAgeGroup" className="text-sm font-medium">
+              Patient Age Group <span className="text-red-500">*</span>
+            </Label>
+            <Controller
+              control={control}
+              name="patientAgeGroup"
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={!isFormEnabled || isPending}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      "h-11",
+                      errors.patientAgeGroup
+                        ? "border-red-400 focus:ring-red-400"
+                        : "focus:ring-azure",
+                      !isFormEnabled && "opacity-50 cursor-not-allowed",
+                    )}
+                  >
+                    <SelectValue placeholder="Select age group..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PATIENT_AGE_GROUPS.map((group) => (
+                      <SelectItem key={group.value} value={group.value}>
+                        {group.label}{" "}
+                        <span className="text-muted-foreground">
+                          ({group.description})
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.patientAgeGroup && (
+              <p className="text-red-500 text-sm">
+                {errors.patientAgeGroup.message}
+              </p>
+            )}
+          </div>
         </div>
+
+        {/* Age Group Mismatch Warning */}
+        {hasAgeGroupMismatch && (
+          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <AlertTriangle className="size-5 text-red-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-red-800">
+                Age Group Mismatch — Cannot Dispense
+              </p>
+              <p className="text-sm text-red-700 mt-1">
+                This medicine ({selectedMedicine?.name}) is designated for{" "}
+                <strong>{getAgeGroupLabel(selectedMedicine!.ageGroup)}</strong>{" "}
+                patients, but the selected patient age group is{" "}
+                <strong>{getAgeGroupLabel(patientAgeGroup)}</strong>.
+              </p>
+              <p className="text-sm text-red-700 mt-2">
+                Please select a different medicine or correct the patient&apos;s
+                age group.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Quantity */}
         <div className="space-y-2">
@@ -286,7 +391,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
             type="submit"
             size="lg"
             className="flex-1 bg-azure hover:bg-blue-600"
-            disabled={!isFormEnabled || isPending}
+            disabled={isSubmitDisabled}
           >
             {isPending ? (
               <span className="inline-flex items-center gap-2">

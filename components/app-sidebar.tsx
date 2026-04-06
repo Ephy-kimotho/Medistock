@@ -202,7 +202,7 @@ function AppSidebar() {
                         <SidebarMenuButton
                           tooltip={item.title}
                           className={cn(
-                            "text-sidebar-primary-foreground hover:bg-sidebar-accent",
+                            "text-sidebar-primary-foreground hover:bg-sidebar-accent cursor-pointer",
                           )}
                         >
                           <item.icon className="size-4" />

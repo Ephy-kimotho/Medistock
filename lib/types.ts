@@ -3,7 +3,7 @@ import { getApplicationUsers } from "@/lib/actions/users"
 import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories } from "@/lib/actions/categories"
-import { getCategoryNames } from "@/lib/actions/medicines"
+import { getCategoryNames, } from "@/lib/actions/medicines"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -13,8 +13,6 @@ export type InvitationRequest = NonNullable<Awaited<ReturnType<typeof getInvitat
 export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
 export type CategoryInfo = NonNullable<Awaited<ReturnType<typeof getCategoryNames>>>
-
-
 
 export type StockStatus = "all" | "in_stock" | "low_stock" | "out_of_stock";
 export type StockExpiryStatus = "all" | "good" | "expiring_soon" | "expired";
@@ -31,6 +29,8 @@ export type CreateCategory = {
     description?: string
 }
 
+export type AgeGroup = "infant" | "pediatric" | "adult" | "geriatric" | "all_ages"
+
 export type TransactionType = "all" | "stock_in" | "dispensed" | "wastage" | "adjustment";
 export type UpdateCategory = Partial<CreateCategory>
 
@@ -45,6 +45,13 @@ export interface GetInvitationProps {
     page: number,
     search: string,
     role: string
+}
+
+export interface GetStockInventoryProps {
+    page?: number;
+    search?: string;
+    medicineId?: string;
+    status?: string;
 }
 
 export interface NotifyAdminsParams {
@@ -89,6 +96,7 @@ export interface MedicineInput {
     reorderlevel: number;
     categoryId: string;
     manufacturer?: string;
+    ageGroup: AgeGroup;
 }
 
 export interface MedicineWithStock {
@@ -100,10 +108,17 @@ export interface MedicineWithStock {
     categoryName: string;
     manufacturer: string | null;
     isActive: boolean;
+    ageGroup: AgeGroup;
     createdAt: Date;
     updatedAt: Date;
     totalStock: number;
     stockStatus: "in_stock" | "low_stock" | "out_of_stock";
+}
+
+export interface MedicineName {
+    id: string;
+    name: string;
+    ageGroup: AgeGroup;
 }
 
 export interface GetMedicinesParams {
@@ -140,11 +155,6 @@ export interface StockWithMedicine {
     stockStatus: StockExpiryStatus;
 }
 
-export interface MedicineName {
-    id: string;
-    name: string;
-}
-
 export interface BatchInfo {
     id: string;
     batchNumber: string;
@@ -157,6 +167,7 @@ export interface DispenseInput {
     quantity: number;
     patient: string;
     phone: string;
+    patientAgeGroup: AgeGroup;
     notes?: string | null;
 }
 
@@ -233,7 +244,6 @@ export interface ImageServiceConfig {
     allowedTypes: string[];
     folder?: string;
 }
-
 
 export interface EmployeeCardData {
     name: string,

@@ -79,9 +79,6 @@ export function CategoriesTable({
               <TableHead className="font-semibold text-center">
                 Medicine count
               </TableHead>
-              <TableHead className="font-semibold text-center">
-                Current stock
-              </TableHead>
               {canViewArchived && (
                 <TableHead className="font-semibold text-center">
                   Status
@@ -107,9 +104,6 @@ export function CategoriesTable({
 
                 <TableCell className="text-center font-bold">
                   {category.medicineCount ?? 0}
-                </TableCell>
-                <TableCell className="text-center font-bold">
-                  {category.totalStock ?? 0}
                 </TableCell>
                 {canViewArchived && (
                   <TableCell className="text-center">

@@ -24,7 +24,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { medicineSchema, type MedicineFormData } from "@/lib/schemas/medicines";
-import { MEDICINE_UNIT_GROUPS, type MedicineUnit } from "@/constants";
+import {
+  MEDICINE_UNIT_GROUPS,
+  type MedicineUnit,
+  AGE_GROUPS,
+} from "@/constants";
 import { useCreateMedicine, useUpdateMedicine } from "@/hooks/useMedicines";
 import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
@@ -68,6 +72,7 @@ function MedicineForm({
       reorderlevel: initialValues?.reorderlevel ?? 10,
       categoryId: initialValues?.categoryId ?? "",
       manufacturer: initialValues?.manufacturer ?? "",
+      ageGroup: initialValues?.ageGroup ?? "all_ages",
     },
   });
 
@@ -80,6 +85,7 @@ function MedicineForm({
         reorderlevel: initialValues.reorderlevel,
         categoryId: initialValues.categoryId,
         manufacturer: initialValues.manufacturer ?? "",
+        ageGroup: initialValues.ageGroup ?? "all_ages",
       });
     }
   }, [isEditing, initialValues, reset]);
@@ -91,6 +97,7 @@ function MedicineForm({
       unit: values.unit,
       reorderlevel: values.reorderlevel,
       categoryId: values.categoryId,
+      ageGroup: values.ageGroup || "all_ages",
       manufacturer: values.manufacturer?.trim() || undefined,
     };
 
@@ -226,52 +233,97 @@ function MedicineForm({
                 )}
               </div>
 
-              {/* Unit */}
+              {/* Age Group */}
               <div className="space-y-2">
-                <Label htmlFor="unit" className="text-sm font-medium">
-                  Unit <span className="text-red-500">*</span>
+                <Label htmlFor="ageGroup" className="text-sm font-medium">
+                  Age Group
                 </Label>
                 <Controller
                   control={control}
-                  name="unit"
+                  name="ageGroup"
                   render={({ field }) => (
                     <Select
-                      onValueChange={field.onChange}
                       value={field.value}
+                      onValueChange={field.onChange}
                       disabled={isPending}
                     >
                       <SelectTrigger
-                        id="unit"
                         className={cn(
                           "h-11 w-full",
-                          errors.unit
+                          errors.ageGroup
                             ? "border-red-400 focus:ring-red-400"
                             : "focus:ring-azure",
                         )}
                       >
-                        <SelectValue placeholder="Select unit..." />
+                        <SelectValue placeholder="Select age group" />
                       </SelectTrigger>
-                      <SelectContent className="max-h-72">
-                        {MEDICINE_UNIT_GROUPS.map((group) => (
-                          <SelectGroup key={group.label}>
-                            <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                              {group.label}
-                            </SelectLabel>
-                            {group.units.map((unit) => (
-                              <SelectItem key={unit.value} value={unit.value}>
-                                {unit.label}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
+                      <SelectContent>
+                        {AGE_GROUPS.map((group) => (
+                          <SelectItem key={group.value} value={group.value}>
+                            {group.label}{" "}
+                            <span className="text-muted-foreground">
+                              ({group.description})
+                            </span>
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   )}
                 />
-                {errors.unit && (
-                  <p className="text-red-500 text-sm">{errors.unit.message}</p>
+
+                {errors.ageGroup && (
+                  <p className="text-red-500 text-sm">
+                    {errors.ageGroup.message}
+                  </p>
                 )}
               </div>
+            </div>
+
+            {/* Unit */}
+            <div>
+              <Label htmlFor="unit" className="text-sm font-medium">
+                Unit <span className="text-red-500">*</span>
+              </Label>
+              <Controller
+                control={control}
+                name="unit"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isPending}
+                  >
+                    <SelectTrigger
+                      id="unit"
+                      className={cn(
+                        "h-11 w-full",
+                        errors.unit
+                          ? "border-red-400 focus:ring-red-400"
+                          : "focus:ring-azure",
+                      )}
+                    >
+                      <SelectValue placeholder="Select unit..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {MEDICINE_UNIT_GROUPS.map((group) => (
+                        <SelectGroup key={group.label}>
+                          <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                            {group.label}
+                          </SelectLabel>
+                          {group.units.map((unit) => (
+                            <SelectItem key={unit.value} value={unit.value}>
+                              {unit.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.unit && (
+                <p className="text-red-500 text-sm">{errors.unit.message}</p>
+              )}
             </div>
           </section>
 
@@ -288,7 +340,7 @@ function MedicineForm({
                 <Input
                   id="reorderlevel"
                   type="number"
-                  min={0}
+                  min={5}
                   placeholder="10"
                   disabled={isPending}
                   className={cn(

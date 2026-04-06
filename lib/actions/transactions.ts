@@ -244,33 +244,3 @@ export async function getTransactionUsers() {
         throw new Error("Failed to fetch users list!");
     }
 }
-
-export async function getTransactionMedicines() {
-    try {
-        const session = await getServerSession();
-
-        if (!session?.user) {
-            redirect("/login");
-        }
-
-        const medicines = await prisma.medicines.findMany({
-            where: {
-                isActive: true,
-                deletedAt: null,
-            },
-            select: {
-                id: true,
-                name: true,
-            },
-            orderBy: { name: "asc" },
-        });
-
-        return medicines;
-    } catch (error) {
-        console.error("Error fetching transaction medicines: ", error);
-        if (error instanceof Error) {
-            throw error;
-        }
-        throw new Error("Failed to fetch medicines list!");
-    }
-}

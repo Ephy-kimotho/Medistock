@@ -17,6 +17,7 @@ export const medicineSchema = z.object({
         .min(0, "Reorder level cannot be negative"),
 
     categoryId: z.string().min(1, "Please select a category"),
+    ageGroup: z.enum(["infant", "pediatric", "adult", "geriatric", "all_ages"]),
 
     manufacturer: z
         .string()

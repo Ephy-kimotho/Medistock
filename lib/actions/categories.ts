@@ -105,14 +105,6 @@ export async function getCategories({
         const formattedCategories = categories.map((category) => {
             const medicineCount = category.medicines.length;
 
-            const totalStock = category.medicines.reduce((sum, medicine) => {
-                const medicineStock = medicine.stockEntries.reduce(
-                    (entrySum, entry) => entrySum + entry.quantity,
-                    0
-                );
-                return sum + medicineStock;
-            }, 0);
-
             return {
                 id: category.id,
                 name: category.name,
@@ -122,7 +114,6 @@ export async function getCategories({
                 deletedAt: category.deletedAt,
                 isArchived: category.deletedAt !== null,
                 medicineCount,
-                totalStock,
             };
         });
 

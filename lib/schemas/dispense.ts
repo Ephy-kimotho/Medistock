@@ -17,6 +17,7 @@ export const dispenseSchema = z.object({
         .regex(/^[\p{L}\s]+$/u, "Patient Name can only contain letters and spaces."),
 
     phone: z.string().regex(/^\+?[0-9]\d{1,14}$/, "Invalid phone number."),
+    patientAgeGroup: z.enum(["infant", "pediatric", "adult", "geriatric"]),
 
     notes: z
         .string()

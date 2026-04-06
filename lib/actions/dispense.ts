@@ -47,13 +47,24 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
                 quantity: true,
                 expiryDate: true,
                 medicine: {
-                    select: { name: true },
+                    select: { name: true, ageGroup: true },
                 },
             },
         });
 
         if (!batch) {
             throw new Error("Batch not found.");
+        }
+
+        // Validate age group match
+        if (
+            batch.medicine.ageGroup !== "all_ages" &&
+            batch.medicine.ageGroup !== data.patientAgeGroup
+        ) {
+            return {
+                success: false,
+                message: `Cannot dispense: ${batch.medicine.name} is for ${batch.medicine.ageGroup} patients, but patient is ${data.patientAgeGroup}.`,
+            };
         }
 
         // Check if batch has expired
@@ -76,6 +87,7 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
                     stockEntriesId: data.stockEntriesId,
                     type: "dispensed",
                     quantity: data.quantity,
+                    patientAgeGroup: data.patientAgeGroup,
                     reason: "Dispensed to patient",
                     patient: data.patient,
                     phone: data.phone,
@@ -91,8 +103,9 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
             }),
         ]);
 
-        revalidatePath("/transactions/dispense");
+        revalidatePath("/transactions");
         revalidatePath("/inventory/stock");
+        revalidatePath("/transactions/dispense");
 
         return {
             success: true,

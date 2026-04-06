@@ -7,13 +7,8 @@ import { addDays, isBefore, isAfter } from "date-fns";
 import { StockInput } from "@/lib/types"
 import { LIMIT } from "@/lib/utils";
 import { Prisma } from "@/generated/prisma/client"
+import type { GetStockInventoryProps } from "@/lib/types"
 
-interface GetStockInventoryProps {
-    page?: number;
-    search?: string;
-    medicineId?: string;
-    status?: string;
-}
 
 export async function getInventoryStats() {
     try {
@@ -94,6 +89,7 @@ export async function getMedicineNames() {
             select: {
                 id: true,
                 name: true,
+                ageGroup: true
             },
             orderBy: { name: "asc" },
         })

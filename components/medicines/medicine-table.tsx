@@ -33,6 +33,7 @@ import { Alert } from "@/components/alert";
 import { useArchiveMedicine, useRestoreMedicine } from "@/hooks/useMedicines";
 import { usePermissions } from "@/hooks/usePermissions";
 import { cn } from "@/lib/utils";
+import { getAgeGroupLabel } from "@/constants";
 import type { MedicineWithStock } from "@/lib/types";
 
 interface MedicineTableProps {
@@ -135,6 +136,7 @@ export function MedicineTable({ medicines }: MedicineTableProps) {
               <TableHead className="font-semibold">Medicine Name</TableHead>
               <TableHead className="font-semibold">Category</TableHead>
               <TableHead className="font-semibold">Unit</TableHead>
+              <TableHead className="font-semibold">Age Group</TableHead>
               <TableHead className="font-semibold text-center">
                 Total Stock
               </TableHead>
@@ -165,6 +167,11 @@ export function MedicineTable({ medicines }: MedicineTableProps) {
                 </TableCell>
                 <TableCell className="text-muted-foreground capitalize">
                   {medicine.unit}
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">
+                    {getAgeGroupLabel(medicine.ageGroup)}
+                  </span>
                 </TableCell>
                 <TableCell className="text-center font-semibold">
                   {medicine.totalStock}

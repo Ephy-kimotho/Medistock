@@ -18,18 +18,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-interface Medicine {
-  id: string;
-  name: string;
-}
+import { getAgeGroupLabel } from "@/constants";
+import type { MedicineName } from "@/lib/types";
 
 interface MedicineComboboxProps {
-  medicines: Medicine[];
+  medicines: MedicineName[];
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   error?: boolean;
+  placeholder?: string;
 }
 
 export function MedicineCombobox({
@@ -38,10 +36,15 @@ export function MedicineCombobox({
   onChange,
   disabled,
   error,
+  placeholder = "Select a medicine...",
 }: MedicineComboboxProps) {
   const [open, setOpen] = useState(false);
 
   const selectedMedicine = medicines.find((m) => m.id === value);
+
+  const formatMedicineDisplay = (medicine: MedicineName) => {
+    return `${medicine.name} - ${getAgeGroupLabel(medicine.ageGroup)}`;
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -57,7 +60,9 @@ export function MedicineCombobox({
             error && "border-red-400 focus:ring-red-400",
           )}
         >
-          {selectedMedicine ? selectedMedicine.name : "Select a medicine..."}
+          {selectedMedicine
+            ? formatMedicineDisplay(selectedMedicine)
+            : placeholder}
           <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -90,7 +95,10 @@ export function MedicineCombobox({
                       value === medicine.id ? "opacity-100" : "opacity-0",
                     )}
                   />
-                  {medicine.name}
+                  <span>{medicine.name}</span>
+                  <span className="ml-2 text-muted-foreground">
+                    - {getAgeGroupLabel(medicine.ageGroup)}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

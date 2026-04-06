@@ -35,6 +35,7 @@ export function EditMedicineForm({
         reorderlevel: medicine.reorderlevel,
         categoryId: medicine.categoryId,
         manufacturer: medicine.manufacturer ?? "",
+        ageGroup: medicine.ageGroup ?? "",
       }}
     />
   );

@@ -76,7 +76,7 @@ export async function getMedicines({
         const allMedicines = await prisma.medicines.findMany({
             where,
             orderBy: {
-                name: "asc",
+                createdAt: "desc",
             },
             include: {
                 category: {
@@ -122,6 +122,7 @@ export async function getMedicines({
                 isActive: medicine.isActive,
                 createdAt: medicine.createdAt,
                 updatedAt: medicine.updatedAt,
+                ageGroup: medicine.ageGroup as "infant" | "pediatric" | "adult" | "geriatric" | "all_ages",
                 totalStock,
                 stockStatus,
             };
@@ -265,6 +266,7 @@ export async function createMedicine(data: MedicineInput) {
                 unit: data.unit,
                 reorderlevel: data.reorderlevel,
                 categoryId: data.categoryId,
+                ageGroup: data.ageGroup,
                 manufacturer: data.manufacturer || null,
             },
         });
@@ -309,6 +311,7 @@ export async function updateMedicine(id: string, data: MedicineInput) {
                 unit: data.unit,
                 reorderlevel: data.reorderlevel,
                 categoryId: data.categoryId,
+                ageGroup: data.ageGroup,
                 manufacturer: data.manufacturer || null,
             },
         });
