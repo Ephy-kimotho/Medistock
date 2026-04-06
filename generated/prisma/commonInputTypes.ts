@@ -246,6 +246,13 @@ export type EnumTRANSACTION_TYPEFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumTRANSACTION_TYPEFilter<$PrismaModel> | $Enums.TRANSACTION_TYPE
 }
 
+export type EnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP | null
+}
+
 export type EnumTRANSACTION_TYPEWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.TRANSACTION_TYPE | Prisma.EnumTRANSACTION_TYPEFieldRefInput<$PrismaModel>
   in?: $Enums.TRANSACTION_TYPE[] | Prisma.ListEnumTRANSACTION_TYPEFieldRefInput<$PrismaModel>
@@ -254,6 +261,16 @@ export type EnumTRANSACTION_TYPEWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTRANSACTION_TYPEFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTRANSACTION_TYPEFilter<$PrismaModel>
+}
+
+export type EnumMEDICINE_AGE_GROUPNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableWithAggregatesFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel>
 }
 
 export type EnumALERT_TYPEFilter<$PrismaModel = never> = {
@@ -569,6 +586,13 @@ export type NestedEnumTRANSACTION_TYPEFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumTRANSACTION_TYPEFilter<$PrismaModel> | $Enums.TRANSACTION_TYPE
 }
 
+export type NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP | null
+}
+
 export type NestedEnumTRANSACTION_TYPEWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.TRANSACTION_TYPE | Prisma.EnumTRANSACTION_TYPEFieldRefInput<$PrismaModel>
   in?: $Enums.TRANSACTION_TYPE[] | Prisma.ListEnumTRANSACTION_TYPEFieldRefInput<$PrismaModel>
@@ -577,6 +601,16 @@ export type NestedEnumTRANSACTION_TYPEWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTRANSACTION_TYPEFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTRANSACTION_TYPEFilter<$PrismaModel>
+}
+
+export type NestedEnumMEDICINE_AGE_GROUPNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableWithAggregatesFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMEDICINE_AGE_GROUPNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumALERT_TYPEFilter<$PrismaModel = never> = {

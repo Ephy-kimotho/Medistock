@@ -255,8 +255,10 @@ model Transactions {
   type     TRANSACTION_TYPE @default(dispensed)
   quantity Int
   reason   String
-  patient  String?
-  phone    String?
+
+  patient         String?
+  phone           String?
+  patientAgeGroup MEDICINE_AGE_GROUP?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

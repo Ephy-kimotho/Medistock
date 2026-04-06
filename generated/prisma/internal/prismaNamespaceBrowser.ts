@@ -230,6 +230,7 @@ export const TransactionsScalarFieldEnum = {
   reason: 'reason',
   patient: 'patient',
   phone: 'phone',
+  patientAgeGroup: 'patientAgeGroup',
   userId: 'userId',
   createdAt: 'createdAt'
 } as const
