@@ -1529,6 +1529,7 @@ export const MedicinesScalarFieldEnum = {
   reorderlevel: 'reorderlevel',
   categoryId: 'categoryId',
   manufacturer: 'manufacturer',
+  ageGroup: 'ageGroup',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

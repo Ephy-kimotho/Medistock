@@ -206,6 +206,7 @@ model Medicines {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   manufacturer String?
+  ageGroup     String  @default("all_ages")
   isActive     Boolean @default(true)
 
   createdAt DateTime  @default(now())
