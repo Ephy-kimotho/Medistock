@@ -145,3 +145,24 @@ export const getTransactionTypeStyles = (type: string) => {
             return "text-muted-foreground bg-muted";
     }
 };
+
+/* ------------------------- MEDICINE AGE GROUPS ------------------------- */
+export const AGE_GROUPS = [
+    { value: "infant", label: "Infant", description: "< 1 year" },
+    { value: "pediatric", label: "Pediatric", description: "1-17 years" },
+    { value: "adult", label: "Adult", description: "18-64 years" },
+    { value: "geriatric", label: "Geriatric", description: "65+ years" },
+    { value: "all_ages", label: "All Ages", description: "Universal" },
+] as const;
+
+export type AgeGroup = (typeof AGE_GROUPS)[number]["value"];
+
+export function getAgeGroupLabel(value: string): string {
+    const group = AGE_GROUPS.find((g) => g.value === value);
+    return group?.label || value;
+}
+
+export function getAgeGroupDescription(value: string): string {
+    const group = AGE_GROUPS.find((g) => g.value === value);
+    return group?.description || "";
+}
