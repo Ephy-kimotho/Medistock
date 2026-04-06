@@ -1722,6 +1722,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'MEDICINE_AGE_GROUP'
+ */
+export type EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MEDICINE_AGE_GROUP'>
+    
+
+
+/**
+ * Reference to a field of type 'MEDICINE_AGE_GROUP[]'
+ */
+export type ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MEDICINE_AGE_GROUP[]'>
+    
+
+
+/**
  * Reference to a field of type 'TRANSACTION_TYPE'
  */
 export type EnumTRANSACTION_TYPEFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TRANSACTION_TYPE'>

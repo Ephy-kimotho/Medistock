@@ -206,6 +206,13 @@ export type IntFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntFilter<$PrismaModel> | number
 }
 
+export type EnumMEDICINE_AGE_GROUPFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP
+}
+
 export type IntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -220,6 +227,16 @@ export type IntWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedIntFilter<$PrismaModel>
   _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type EnumMEDICINE_AGE_GROUPWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPWithAggregatesFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
 }
 
 export type EnumTRANSACTION_TYPEFilter<$PrismaModel = never> = {
@@ -501,6 +518,13 @@ export type NestedEnumREQUEST_STATUSWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumREQUEST_STATUSFilter<$PrismaModel>
 }
 
+export type NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP
+}
+
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -526,6 +550,16 @@ export type NestedFloatFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type NestedEnumMEDICINE_AGE_GROUPWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MEDICINE_AGE_GROUP | Prisma.EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  in?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MEDICINE_AGE_GROUP[] | Prisma.ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMEDICINE_AGE_GROUPWithAggregatesFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
 }
 
 export type NestedEnumTRANSACTION_TYPEFilter<$PrismaModel = never> = {
