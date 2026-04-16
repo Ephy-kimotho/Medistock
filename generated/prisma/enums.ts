@@ -87,3 +87,13 @@ export const MEDICINE_AGE_GROUP = {
 } as const
 
 export type MEDICINE_AGE_GROUP = (typeof MEDICINE_AGE_GROUP)[keyof typeof MEDICINE_AGE_GROUP]
+
+
+export const PAYMENT_METHOD = {
+  cash: 'cash',
+  mpesa: 'mpesa',
+  card: 'card',
+  insurance: 'insurance'
+} as const
+
+export type PAYMENT_METHOD = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD]

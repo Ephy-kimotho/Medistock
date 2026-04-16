@@ -67,6 +67,13 @@ enum MEDICINE_AGE_GROUP {
   all_ages
 }
 
+enum PAYMENT_METHOD {
+  cash
+  mpesa
+  card
+  insurance
+}
+
 /**
  * -------------------------------- MODELS --------------------------------
  */
@@ -265,6 +272,8 @@ model Transactions {
 
   createdAt DateTime @default(now())
 
+  payment Payment?
+
   @@index([stockEntriesId, type])
   @@map("transactions")
 }
@@ -316,4 +325,21 @@ model Settings {
   updatedAt              DateTime @updatedAt
 
   @@map("settings")
+}
+
+model Payment {
+  id String @id @default(cuid())
+
+  transactionId String       @unique
+  transaction   Transactions @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  amount      Int
+  paymentCode String         @unique
+  method      PAYMENT_METHOD
+
+  createdAt DateTime @default(now())
+
+  @@index([transactionId])
+  @@index([paymentCode])
+  @@map("payments")
 }

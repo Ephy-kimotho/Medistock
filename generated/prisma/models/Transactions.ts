@@ -258,6 +258,7 @@ export type TransactionsWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Transactions"> | Date | string
   stockEntry?: Prisma.XOR<Prisma.StockEntriesScalarRelationFilter, Prisma.StockEntriesWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
 }
 
 export type TransactionsOrderByWithRelationInput = {
@@ -273,6 +274,7 @@ export type TransactionsOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   stockEntry?: Prisma.StockEntriesOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  payment?: Prisma.PaymentOrderByWithRelationInput
 }
 
 export type TransactionsWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +293,7 @@ export type TransactionsWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Transactions"> | Date | string
   stockEntry?: Prisma.XOR<Prisma.StockEntriesScalarRelationFilter, Prisma.StockEntriesWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
 }, "id">
 
 export type TransactionsOrderByWithAggregationInput = {
@@ -338,6 +341,7 @@ export type TransactionsCreateInput = {
   createdAt?: Date | string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionsUncheckedCreateInput = {
@@ -351,6 +355,7 @@ export type TransactionsUncheckedCreateInput = {
   patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   userId: string
   createdAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionsUpdateInput = {
@@ -364,6 +369,7 @@ export type TransactionsUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionsUncheckedUpdateInput = {
@@ -377,6 +383,7 @@ export type TransactionsUncheckedUpdateInput = {
   patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionsCreateManyInput = {
@@ -473,6 +480,11 @@ export type TransactionsSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
 }
 
+export type TransactionsScalarRelationFilter = {
+  is?: Prisma.TransactionsWhereInput
+  isNot?: Prisma.TransactionsWhereInput
+}
+
 export type TransactionsCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.TransactionsCreateWithoutUserInput, Prisma.TransactionsUncheckedCreateWithoutUserInput> | Prisma.TransactionsCreateWithoutUserInput[] | Prisma.TransactionsUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.TransactionsCreateOrConnectWithoutUserInput | Prisma.TransactionsCreateOrConnectWithoutUserInput[]
@@ -565,6 +577,20 @@ export type NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput = {
   set?: $Enums.MEDICINE_AGE_GROUP | null
 }
 
+export type TransactionsCreateNestedOneWithoutPaymentInput = {
+  create?: Prisma.XOR<Prisma.TransactionsCreateWithoutPaymentInput, Prisma.TransactionsUncheckedCreateWithoutPaymentInput>
+  connectOrCreate?: Prisma.TransactionsCreateOrConnectWithoutPaymentInput
+  connect?: Prisma.TransactionsWhereUniqueInput
+}
+
+export type TransactionsUpdateOneRequiredWithoutPaymentNestedInput = {
+  create?: Prisma.XOR<Prisma.TransactionsCreateWithoutPaymentInput, Prisma.TransactionsUncheckedCreateWithoutPaymentInput>
+  connectOrCreate?: Prisma.TransactionsCreateOrConnectWithoutPaymentInput
+  upsert?: Prisma.TransactionsUpsertWithoutPaymentInput
+  connect?: Prisma.TransactionsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TransactionsUpdateToOneWithWhereWithoutPaymentInput, Prisma.TransactionsUpdateWithoutPaymentInput>, Prisma.TransactionsUncheckedUpdateWithoutPaymentInput>
+}
+
 export type TransactionsCreateWithoutUserInput = {
   id?: string
   type?: $Enums.TRANSACTION_TYPE
@@ -575,6 +601,7 @@ export type TransactionsCreateWithoutUserInput = {
   patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   createdAt?: Date | string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionsUncheckedCreateWithoutUserInput = {
@@ -587,6 +614,7 @@ export type TransactionsUncheckedCreateWithoutUserInput = {
   phone?: string | null
   patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   createdAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionsCreateOrConnectWithoutUserInput = {
@@ -641,6 +669,7 @@ export type TransactionsCreateWithoutStockEntryInput = {
   patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionsUncheckedCreateWithoutStockEntryInput = {
@@ -653,6 +682,7 @@ export type TransactionsUncheckedCreateWithoutStockEntryInput = {
   patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   userId: string
   createdAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutTransactionInput
 }
 
 export type TransactionsCreateOrConnectWithoutStockEntryInput = {
@@ -681,6 +711,74 @@ export type TransactionsUpdateManyWithWhereWithoutStockEntryInput = {
   data: Prisma.XOR<Prisma.TransactionsUpdateManyMutationInput, Prisma.TransactionsUncheckedUpdateManyWithoutStockEntryInput>
 }
 
+export type TransactionsCreateWithoutPaymentInput = {
+  id?: string
+  type?: $Enums.TRANSACTION_TYPE
+  quantity: number
+  reason: string
+  patient?: string | null
+  phone?: string | null
+  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
+  createdAt?: Date | string
+  stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
+  user: Prisma.UserCreateNestedOneWithoutTransactionsInput
+}
+
+export type TransactionsUncheckedCreateWithoutPaymentInput = {
+  id?: string
+  stockEntriesId: string
+  type?: $Enums.TRANSACTION_TYPE
+  quantity: number
+  reason: string
+  patient?: string | null
+  phone?: string | null
+  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
+  userId: string
+  createdAt?: Date | string
+}
+
+export type TransactionsCreateOrConnectWithoutPaymentInput = {
+  where: Prisma.TransactionsWhereUniqueInput
+  create: Prisma.XOR<Prisma.TransactionsCreateWithoutPaymentInput, Prisma.TransactionsUncheckedCreateWithoutPaymentInput>
+}
+
+export type TransactionsUpsertWithoutPaymentInput = {
+  update: Prisma.XOR<Prisma.TransactionsUpdateWithoutPaymentInput, Prisma.TransactionsUncheckedUpdateWithoutPaymentInput>
+  create: Prisma.XOR<Prisma.TransactionsCreateWithoutPaymentInput, Prisma.TransactionsUncheckedCreateWithoutPaymentInput>
+  where?: Prisma.TransactionsWhereInput
+}
+
+export type TransactionsUpdateToOneWithWhereWithoutPaymentInput = {
+  where?: Prisma.TransactionsWhereInput
+  data: Prisma.XOR<Prisma.TransactionsUpdateWithoutPaymentInput, Prisma.TransactionsUncheckedUpdateWithoutPaymentInput>
+}
+
+export type TransactionsUpdateWithoutPaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+}
+
+export type TransactionsUncheckedUpdateWithoutPaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  reason?: Prisma.StringFieldUpdateOperationsInput | string
+  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TransactionsCreateManyUserInput = {
   id?: string
   stockEntriesId: string
@@ -703,6 +801,7 @@ export type TransactionsUpdateWithoutUserInput = {
   patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionsUncheckedUpdateWithoutUserInput = {
@@ -715,6 +814,7 @@ export type TransactionsUncheckedUpdateWithoutUserInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionsUncheckedUpdateManyWithoutUserInput = {
@@ -751,6 +851,7 @@ export type TransactionsUpdateWithoutStockEntryInput = {
   patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionsUncheckedUpdateWithoutStockEntryInput = {
@@ -763,6 +864,7 @@ export type TransactionsUncheckedUpdateWithoutStockEntryInput = {
   patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutTransactionNestedInput
 }
 
 export type TransactionsUncheckedUpdateManyWithoutStockEntryInput = {
@@ -792,6 +894,7 @@ export type TransactionsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  payment?: boolean | Prisma.Transactions$paymentArgs<ExtArgs>
 }, ExtArgs["result"]["transactions"]>
 
 export type TransactionsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -841,6 +944,7 @@ export type TransactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type TransactionsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  payment?: boolean | Prisma.Transactions$paymentArgs<ExtArgs>
 }
 export type TransactionsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
@@ -856,6 +960,7 @@ export type $TransactionsPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     stockEntry: Prisma.$StockEntriesPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
+    payment: Prisma.$PaymentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1264,6 +1369,7 @@ export interface Prisma__TransactionsClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   stockEntry<T extends Prisma.StockEntriesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockEntriesDefaultArgs<ExtArgs>>): Prisma.Prisma__StockEntriesClient<runtime.Types.Result.GetResult<Prisma.$StockEntriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  payment<T extends Prisma.Transactions$paymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Transactions$paymentArgs<ExtArgs>>): Prisma.Prisma__PaymentClient<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1696,6 +1802,25 @@ export type TransactionsDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many Transactions to delete.
    */
   limit?: number
+}
+
+/**
+ * Transactions.payment
+ */
+export type Transactions$paymentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
 }
 
 /**
