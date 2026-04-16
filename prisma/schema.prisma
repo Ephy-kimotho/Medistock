@@ -266,6 +266,7 @@ model Transactions {
   patient         String?
   phone           String?
   patientAgeGroup MEDICINE_AGE_GROUP?
+  notes           String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
