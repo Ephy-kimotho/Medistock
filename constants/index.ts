@@ -1,11 +1,11 @@
 /* ------------------------- MEDICINE CATEGORIES ------------------------- */
 export const MEDICINE_CATEGORIES = [
-    { name: "Analgesics", description: "Pain relief and management medications" },
+    { name: "Pain Killers", description: "Pain relief and management medications" },
     { name: "Antibiotics", description: "Medications to treat bacterial infections" },
     { name: "Antivirals", description: "Medications to treat viral infections" },
     { name: "Antifungals", description: "Medications to treat fungal infections" },
     { name: "Antihistamines", description: "Allergy and hypersensitivity medications" },
-    { name: "Antacids & GI", description: "Stomach, digestive, and gastrointestinal medications" },
+    { name: "Antacids", description: "Stomach, digestive, and gastrointestinal medications" },
     { name: "Cardiovascular", description: "Heart, blood pressure, and circulation medications" },
     { name: "Respiratory", description: "Asthma, COPD, cough, and bronchial medications" },
     { name: "Dermatological", description: "Skin treatments, creams, and ointments" },
@@ -166,3 +166,13 @@ export function getAgeGroupDescription(value: string): string {
     const group = AGE_GROUPS.find((g) => g.value === value);
     return group?.description || "";
 }
+
+/* ------------------------- PAYMENT METHODS ------------------------- */
+export const PAYMENT_METHODS = [
+    { value: "cash", label: "Cash" },
+    { value: "mpesa", label: "M-Pesa" },
+    { value: "card", label: "Card" },
+    { value: "insurance", label: "Insurance" },
+] as const;
+
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number]["value"];

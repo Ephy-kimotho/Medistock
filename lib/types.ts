@@ -170,6 +170,11 @@ export interface DispenseInput {
     phone: string;
     patientAgeGroup: AgeGroup;
     notes?: string | null;
+
+    collectPayment?: boolean;
+    paymentMethod?: "cash" | "mpesa" | "card" | "insurance";
+    paymentAmount?: number;
+    paymentCode?: string;
 }
 
 export interface WastageInput {
@@ -277,22 +282,88 @@ export interface CategoryMedicinesListingProps {
 }
 
 interface Stats {
-  totalMedicines: number;
-  expiringSoonCount: number;
-  expiredCount: number;
-  expiryWarnDays: number;
+    totalMedicines: number;
+    expiringSoonCount: number;
+    expiredCount: number;
+    expiryWarnDays: number;
 }
 
 export interface CategoryPageContentProps {
-  categoryId: string;
-  categoryName: string;
-  categoryDescription?: string | null;
-  medicines: CategoryMedicine[];
-  totalPages: number;
-  currentPage: number;
-  totalCount: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-  searchTerm: string;
-  stats: Stats;
+    categoryId: string;
+    categoryName: string;
+    categoryDescription?: string | null;
+    medicines: CategoryMedicine[];
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+    searchTerm: string;
+    stats: Stats;
+}
+
+export interface PendingPayment {
+    id: string;
+    quantity: number;
+    patient: string;
+    phone: string;
+    createdAt: Date;
+    medicine: {
+        name: string;
+        unit: string;
+    };
+    batch: {
+        batchNumber: string;
+    };
+}
+
+export interface PendingPaymentsResponse {
+    payments: PendingPayment[];
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+}
+
+export interface AddPaymentInput {
+    transactionId: string;
+    method: "cash" | "mpesa" | "card" | "insurance";
+    amount: number;
+    paymentCode?: string;
+}
+
+export interface TransactionDetails {
+    id: string;
+    type: string;
+    quantity: number;
+    reason: string;
+    notes: string | null;
+    createdAt: Date;
+    patient: string | null;
+    phone: string | null;
+    patientAgeGroup: AgeGroup | null;
+    medicine: {
+        id: string;
+        name: string;
+        unit: string;
+        ageGroup: string;
+    };
+    batch: {
+        id: string;
+        batchNumber: string;
+        expiryDate: Date;
+    };
+    user: {
+        id: string;
+        name: string;
+        role: string;
+    };
+    payment: {
+        id: string;
+        amount: number;
+        method: string;
+        paymentCode: string;
+        createdAt: Date;
+    } | null;
 }

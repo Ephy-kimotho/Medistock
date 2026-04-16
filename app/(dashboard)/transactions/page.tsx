@@ -135,8 +135,8 @@ async function TransactionsHistoryPage({
             <h2 className="text-2xl text-slate-900 font-bold">
               Transactions History
             </h2>
-            <p className="text-muted-foreground text-pretty">
-              View and track medicine movements.
+            <p className="text-sm text-muted-foreground">
+              Click on a row to view more details
             </p>
           </div>
 

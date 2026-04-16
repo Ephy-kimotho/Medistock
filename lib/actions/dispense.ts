@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/check-permissions";
 import { revalidatePath } from "next/cache";
 import { isBefore } from "date-fns";
+import { generateCashPaymentCode } from "@/lib/actions/common";
+import { Prisma } from "@/generated/prisma/client"
 import type { DispenseInput } from "@/lib/types"
 
 export async function getBatchesByMedicine(medicineId: string) {
@@ -79,10 +81,16 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
             );
         }
 
-        // Use transaction to ensure atomicity
-        await prisma.$transaction([
+        // Generate cash payment code if needed
+        let paymentCode = data.paymentCode;
+        if (data.collectPayment && data.paymentMethod === "cash") {
+            paymentCode = await generateCashPaymentCode();
+        }
+
+        // Use interactive transaction to get the created transaction ID
+        const result = await prisma.$transaction(async (tx) => {
             // Create transaction record
-            prisma.transactions.create({
+            const transaction = await tx.transactions.create({
                 data: {
                     stockEntriesId: data.stockEntriesId,
                     type: "dispensed",
@@ -91,31 +99,68 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
                     reason: "Dispensed to patient",
                     patient: data.patient,
                     phone: data.phone,
+                    notes: data.notes,
                     userId,
                 },
-            }),
+            });
+
             // Decrement batch quantity
-            prisma.stockEntries.update({
+            await tx.stockEntries.update({
                 where: { id: data.stockEntriesId },
                 data: {
                     quantity: { decrement: data.quantity },
                 },
-            }),
-        ]);
+            });
+
+            // Create payment if collecting payment
+            if (data.collectPayment && data.paymentMethod && data.paymentAmount) {
+                await tx.payment.create({
+                    data: {
+                        transactionId: transaction.id,
+                        method: data.paymentMethod,
+                        amount: data.paymentAmount,
+                        paymentCode: paymentCode!,
+                    },
+                });
+            }
+
+            return transaction;
+        });
 
         revalidatePath("/transactions");
         revalidatePath("/inventory/stock");
         revalidatePath("/transactions/dispense");
+        revalidatePath("/transactions/pending-payments");
+
+        const paymentMessage = data.collectPayment
+            ? ` Payment of KSH ${data.paymentAmount} recorded.`
+            : "";
 
         return {
             success: true,
-            message: `Successfully dispensed ${data.quantity} units of ${batch.medicine.name} to ${data.patient}.`,
+            message: `Successfully dispensed ${data.quantity} units of ${batch.medicine.name} to ${data.patient}.${paymentMessage}`,
+            transactionId: result.id,
         };
-    } catch (error) {
-        console.error("Failed to dispense medicine: ", error);
+    } catch (error: unknown) {
+        console.error("Failed to dispense medicine:", error);
+
+        /* 
+            error.message.includes(`Unique constraint failed on the fields: ("paymentCode")"`)
+         */
+
+        if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+        ) {
+            throw new Error(
+                "This payment code already exists. Please use a different code."
+            );
+        }
+
         if (error instanceof Error) {
             throw error;
         }
+
         throw new Error("Failed to dispense medicine.");
     }
 }

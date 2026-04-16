@@ -39,6 +39,7 @@ import {
   SquarePen,
   Mail,
   UserPlus,
+  CreditCard,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -70,6 +71,11 @@ const mainNavItems = [
     subItems: [
       { title: "Dispense", url: "/transactions/dispense", icon: SquarePen },
       { title: "Wastage", url: "/transactions/wastage", icon: Trash2 },
+      {
+        title: "Pending Payments",
+        url: "/transactions/pending-payments",
+        icon: CreditCard,
+      },
     ],
   },
   {
@@ -137,13 +143,18 @@ function AppSidebar() {
     // Exact match
     if (pathname === url) return true;
 
-    // Child route match (e.g., /inventory/categories/[id] should highlight /inventory/categories)
-    // Exclude /inventory and /transactions as they're leaf routes, not parent routes
-    if (
-      pathname.startsWith(url + "/") &&
-      url !== "/inventory" &&
-      url !== "/transactions"
-    ) {
+    // Special handling for /transactions - match detail pages but not known sub-routes
+    if (url === "/transactions" && pathname.startsWith("/transactions/")) {
+      const subPath = pathname.slice("/transactions/".length);
+      const knownSubRoutes = ["dispense", "wastage", "pending-payments"];
+      if (!knownSubRoutes.some((route) => subPath.startsWith(route))) {
+        return true;
+      }
+      return false;
+    }
+
+    // Exclude /inventory as it's a leaf route
+    if (pathname.startsWith(url + "/") && url !== "/inventory") {
       return true;
     }
 
@@ -255,6 +266,7 @@ function AppSidebar() {
                                   subItem.title === "Wastage") &&
                                   isHR &&
                                   "hidden",
+                                  (subItem.title === "Pending Payments") && (isHR || isAuditor) &&  "hidden"
                               )}
                             >
                               <SidebarMenuSubButton
