@@ -59,10 +59,19 @@ enum REPORT_PERIOD {
   custom
 }
 
-enum CATEGORY_AGE_GROUP {
-  adult
+enum MEDICINE_AGE_GROUP {
+  infant
   pediatric
+  adult
+  geriatric
   all_ages
+}
+
+enum PAYMENT_METHOD {
+  cash
+  mpesa
+  card
+  insurance
 }
 
 /**
@@ -206,7 +215,8 @@ model Medicines {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   manufacturer String?
-  isActive     Boolean @default(true)
+  ageGroup     MEDICINE_AGE_GROUP @default(all_ages)
+  isActive     Boolean            @default(true)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -252,13 +262,18 @@ model Transactions {
   type     TRANSACTION_TYPE @default(dispensed)
   quantity Int
   reason   String
-  patient  String?
-  phone    String?
+
+  patient         String?
+  phone           String?
+  patientAgeGroup MEDICINE_AGE_GROUP?
+  notes           String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+
+  payment Payment?
 
   @@index([stockEntriesId, type])
   @@map("transactions")
@@ -311,4 +326,21 @@ model Settings {
   updatedAt              DateTime @updatedAt
 
   @@map("settings")
+}
+
+model Payment {
+  id String @id @default(cuid())
+
+  transactionId String       @unique
+  transaction   Transactions @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  amount      Int
+  paymentCode String         @unique
+  method      PAYMENT_METHOD
+
+  createdAt DateTime @default(now())
+
+  @@index([transactionId])
+  @@index([paymentCode])
+  @@map("payments")
 }

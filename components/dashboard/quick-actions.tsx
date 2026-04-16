@@ -17,24 +17,24 @@ export function QuickActions({ role }: QuickActionsProps) {
         role === "hr" && "hidden",
       )}
     >
-      {canAddStock && (
-        <Button size="lg" className="px-8 bg-azure hover:bg-blue-600" asChild>
-          <Link href="/inventory">Add Stock</Link>
-        </Button>
-      )}
-
       <Button
         size="lg"
-        variant={canAddStock ? "outline" : "default"}
-        className={cn(
-          canAddStock
-            ? "px-8 hover:border-azure hover:bg-azure hover:text-white"
-            : "px-8 bg-azure hover:bg-blue-600",
-        )}
+        className={cn("px-8 bg-azure hover:bg-blue-600 text-white")}
         asChild
       >
         <Link href="/transactions/dispense">Dispense Medicine</Link>
       </Button>
+
+      {canAddStock && (
+        <Button
+          size="lg"
+          variant="outline"
+          className="px-8 hover:border-azure hover:bg-azure hover:text-white"
+          asChild
+        >
+          <Link href="/inventory">Add Stock</Link>
+        </Button>
+      )}
 
       <Button
         size="lg"

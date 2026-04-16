@@ -104,3 +104,8 @@ export type Reports = Prisma.ReportsModel
  * 
  */
 export type Settings = Prisma.SettingsModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel

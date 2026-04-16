@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,8 @@ interface TransactionTableProps {
 }
 
 export function TransactionTable({ transactions }: TransactionTableProps) {
+  const router = useRouter();
+
   const formatQuantity = (type: string, quantity: number) => {
     if (type === "stock_in") {
       return `+${quantity}`;
@@ -48,8 +51,12 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
     }
   };
 
+  const handleRowClick = (id: string) => {
+    router.push(`/transactions/${id}`);
+  };
+
   return (
-    <div className="rounded-lg border border-border overflow-hidden">
+    <div className="rounded-lg border border-border overflow-hidden mt-2">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted">
@@ -60,21 +67,22 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
             <TableHead className="font-semibold text-center">
               Quantity
             </TableHead>
-            <TableHead className="font-semibold">Batch</TableHead>
-            <TableHead className="font-semibold">Patient</TableHead>
-            <TableHead className="font-semibold">Phone</TableHead>
-            <TableHead className="font-semibold">User</TableHead>
+            <TableHead className="font-semibold">Processed By</TableHead>
             <TableHead className="font-semibold">Role</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell className="text-muted-foreground">
-                {format(new Date(transaction.date), "d/M/yyyy")}
+            <TableRow
+              key={transaction.id}
+              onClick={() => handleRowClick(transaction.id)}
+              className="cursor-pointer hover:bg-muted/50 py-2"
+            >
+              <TableCell>
+                <span>{format(new Date(transaction.date), "dd/MM/yyyy")}</span>
               </TableCell>
-              <TableCell className="text-muted-foreground">
-                {format(new Date(transaction.date), "hh:mm a")}
+              <TableCell>
+                <span>{format(new Date(transaction.date), "hh:mm a")}</span>
               </TableCell>
               <TableCell>
                 <Badge
@@ -98,18 +106,23 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
               >
                 {formatQuantity(transaction.type, transaction.quantity)}
               </TableCell>
-              <TableCell className="font-mono text-muted-foreground">
-                {transaction.batchNumber}
+              <TableCell>
+                <span className="font-medium">{transaction.userName}</span>
               </TableCell>
-              <TableCell className="font-mono text-muted-foreground">
-                {transaction.patient ? transaction.patient : "-"}
-              </TableCell>
-              <TableCell className="font-mono text-muted-foreground">
-                {transaction.phone ? transaction.phone : "-"}
-              </TableCell>
-              <TableCell>{transaction.userName}</TableCell>
-              <TableCell className="text-muted-foreground">
-                {formatRole(transaction.userRole)}
+              <TableCell>
+                <Badge
+                  className={cn(
+                    "py-1.5 px-3",
+                    transaction.userRole === "admin" &&
+                      "bg-crimson-red/10 text-crimson-red border-crimson-red",
+                    transaction.userRole === "inventory_manager" &&
+                      "bg-princeton-orange/10 text-princeton-orange border-princeton-orange",
+                    transaction.userRole === "user" &&
+                      "bg-azure/10 text-azure border-azure",
+                  )}
+                >
+                  {formatRole(transaction.userRole)}
+                </Badge>
               </TableCell>
             </TableRow>
           ))}

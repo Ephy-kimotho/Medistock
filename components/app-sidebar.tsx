@@ -39,6 +39,7 @@ import {
   SquarePen,
   Mail,
   UserPlus,
+  CreditCard,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -53,21 +54,28 @@ const mainNavItems = [
     icon: House,
   },
   {
-    title: "Inventory",
-    url: "/inventory",
-    icon: Box,
+    title: "Drug Category",
+    url: "/inventory/categories",
+    subMenuLabel: "All Categories",
+    icon: Layers,
     subItems: [
-      { title: "Categories", url: "/inventory/categories", icon: Layers },
       { title: "Medicines", url: "/inventory/medicines", icon: Pill },
+      { title: "Stock Inventory", url: "/inventory", icon: Box },
     ],
   },
   {
     title: "Transactions",
     url: "/transactions",
+    subMenuLabel: "Transaction History",
     icon: ArrowLeftRight,
     subItems: [
       { title: "Dispense", url: "/transactions/dispense", icon: SquarePen },
       { title: "Wastage", url: "/transactions/wastage", icon: Trash2 },
+      {
+        title: "Pending Payments",
+        url: "/transactions/pending-payments",
+        icon: CreditCard,
+      },
     ],
   },
   {
@@ -131,7 +139,27 @@ function AppSidebar() {
   };
 
   // Check if a path is active
-  const isActive = (url: string) => pathname === url;
+  const isActive = (url: string) => {
+    // Exact match
+    if (pathname === url) return true;
+
+    // Special handling for /transactions - match detail pages but not known sub-routes
+    if (url === "/transactions" && pathname.startsWith("/transactions/")) {
+      const subPath = pathname.slice("/transactions/".length);
+      const knownSubRoutes = ["dispense", "wastage", "pending-payments"];
+      if (!knownSubRoutes.some((route) => subPath.startsWith(route))) {
+        return true;
+      }
+      return false;
+    }
+
+    // Exclude /inventory as it's a leaf route
+    if (pathname.startsWith(url + "/") && url !== "/inventory") {
+      return true;
+    }
+
+    return false;
+  };
 
   // Check if the parent or any subitem is active (for collapsible default open state)
   const isSubItemActive = (item: {
@@ -202,7 +230,7 @@ function AppSidebar() {
                         <SidebarMenuButton
                           tooltip={item.title}
                           className={cn(
-                            "text-sidebar-primary-foreground hover:bg-sidebar-accent",
+                            "text-sidebar-primary-foreground hover:bg-sidebar-accent cursor-pointer",
                           )}
                         >
                           <item.icon className="size-4" />
@@ -224,11 +252,7 @@ function AppSidebar() {
                                   className="text-sidebar-primary-foreground"
                                 >
                                   <item.icon className="text-sidebar-primary-foreground size-4" />
-                                  <span>
-                                    {item.title === "Inventory"
-                                      ? "Stock Inventory"
-                                      : "Transaction History"}
-                                  </span>
+                                  <span>{item.subMenuLabel || item.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -242,6 +266,7 @@ function AppSidebar() {
                                   subItem.title === "Wastage") &&
                                   isHR &&
                                   "hidden",
+                                  (subItem.title === "Pending Payments") && (isHR || isAuditor) &&  "hidden"
                               )}
                             >
                               <SidebarMenuSubButton

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,6 +33,7 @@ export function CategoriesTable({
   categories,
   canViewArchived,
 }: CategoriesTableProps) {
+  const router = useRouter();
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [categoryToArchive, setCategoryToArchive] = useState<Category | null>(
     null,
@@ -42,7 +44,14 @@ export function CategoriesTable({
   const { mutate: restoreCategory, isPending: isRestoring } =
     useRestoreCategory();
 
-  const handleArchiveClick = (category: Category) => {
+  const handleRowClick = (category: Category) => {
+    // Don't navigate if category is archived
+    if (category.isArchived) return;
+    router.push(`/inventory/categories/${category.id}`);
+  };
+
+  const handleArchiveClick = (e: React.MouseEvent, category: Category) => {
+    e.stopPropagation(); // Prevent row click
     setCategoryToArchive(category);
     setArchiveDialogOpen(true);
   };
@@ -75,12 +84,8 @@ export function CategoriesTable({
             <TableRow className="bg-muted">
               <TableHead className="font-semibold">Name</TableHead>
               <TableHead className="font-semibold">Description</TableHead>
-
               <TableHead className="font-semibold text-center">
-                Medicine count
-              </TableHead>
-              <TableHead className="font-semibold text-center">
-                Current stock
+                Medicine Count
               </TableHead>
               {canViewArchived && (
                 <TableHead className="font-semibold text-center">
@@ -96,7 +101,13 @@ export function CategoriesTable({
             {categories.map((category) => (
               <TableRow
                 key={category.id}
-                className={cn(category.isArchived && "bg-muted/50 opacity-75")}
+                onClick={() => handleRowClick(category)}
+                className={cn(
+                  "transition-colors",
+                  category.isArchived
+                    ? "bg-muted/50 opacity-75"
+                    : "cursor-pointer hover:bg-muted/50",
+                )}
               >
                 <TableCell className="font-medium capitalize">
                   {category.name}
@@ -104,12 +115,8 @@ export function CategoriesTable({
                 <TableCell className="text-muted-foreground max-w-xs truncate">
                   {category.description || "—"}
                 </TableCell>
-
                 <TableCell className="text-center font-bold">
                   {category.medicineCount ?? 0}
-                </TableCell>
-                <TableCell className="text-center font-bold">
-                  {category.totalStock ?? 0}
                 </TableCell>
                 {canViewArchived && (
                   <TableCell className="text-center">
@@ -133,6 +140,7 @@ export function CategoriesTable({
                         size="sm"
                         variant="ghost"
                         className="size-8 p-0 hover:bg-muted"
+                        onClick={(e) => e.stopPropagation()} // Prevent row click
                       >
                         <MoreVertical className="size-4 text-muted-foreground" />
                         <span className="sr-only">Open menu</span>
@@ -151,7 +159,7 @@ export function CategoriesTable({
                                 ? "text-medium-jungle focus:text-medium-jungle focus:bg-medium-jungle/10"
                                 : "text-princeton-orange focus:text-princeton-orange focus:bg-princeton-orange/10",
                             )}
-                            onClick={() => handleArchiveClick(category)}
+                            onClick={(e) => handleArchiveClick(e, category)}
                           >
                             {category.isArchived ? (
                               <>

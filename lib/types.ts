@@ -2,8 +2,8 @@ import { ComponentType } from "react"
 import { getApplicationUsers } from "@/lib/actions/users"
 import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
-import { getCategories } from "@/lib/actions/categories"
-import { getCategoryNames } from "@/lib/actions/medicines"
+import { getCategories, getCategoryById } from "@/lib/actions/categories"
+import { getCategoryNames, } from "@/lib/actions/medicines"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -13,8 +13,7 @@ export type InvitationRequest = NonNullable<Awaited<ReturnType<typeof getInvitat
 export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
 export type CategoryInfo = NonNullable<Awaited<ReturnType<typeof getCategoryNames>>>
-
-
+export type CategoryById = NonNullable<Awaited<ReturnType<typeof getCategoryById>>>
 
 export type StockStatus = "all" | "in_stock" | "low_stock" | "out_of_stock";
 export type StockExpiryStatus = "all" | "good" | "expiring_soon" | "expired";
@@ -31,6 +30,8 @@ export type CreateCategory = {
     description?: string
 }
 
+export type AgeGroup = "infant" | "pediatric" | "adult" | "geriatric" | "all_ages"
+
 export type TransactionType = "all" | "stock_in" | "dispensed" | "wastage" | "adjustment";
 export type UpdateCategory = Partial<CreateCategory>
 
@@ -45,6 +46,13 @@ export interface GetInvitationProps {
     page: number,
     search: string,
     role: string
+}
+
+export interface GetStockInventoryProps {
+    page?: number;
+    search?: string;
+    medicineId?: string;
+    status?: string;
 }
 
 export interface NotifyAdminsParams {
@@ -89,6 +97,7 @@ export interface MedicineInput {
     reorderlevel: number;
     categoryId: string;
     manufacturer?: string;
+    ageGroup: AgeGroup;
 }
 
 export interface MedicineWithStock {
@@ -100,10 +109,17 @@ export interface MedicineWithStock {
     categoryName: string;
     manufacturer: string | null;
     isActive: boolean;
+    ageGroup: AgeGroup;
     createdAt: Date;
     updatedAt: Date;
     totalStock: number;
     stockStatus: "in_stock" | "low_stock" | "out_of_stock";
+}
+
+export interface MedicineName {
+    id: string;
+    name: string;
+    ageGroup: AgeGroup;
 }
 
 export interface GetMedicinesParams {
@@ -140,11 +156,6 @@ export interface StockWithMedicine {
     stockStatus: StockExpiryStatus;
 }
 
-export interface MedicineName {
-    id: string;
-    name: string;
-}
-
 export interface BatchInfo {
     id: string;
     batchNumber: string;
@@ -157,7 +168,13 @@ export interface DispenseInput {
     quantity: number;
     patient: string;
     phone: string;
+    patientAgeGroup: AgeGroup;
     notes?: string | null;
+
+    collectPayment?: boolean;
+    paymentMethod?: "cash" | "mpesa" | "card" | "insurance";
+    paymentAmount?: number;
+    paymentCode?: string;
 }
 
 export interface WastageInput {
@@ -234,11 +251,119 @@ export interface ImageServiceConfig {
     folder?: string;
 }
 
-
 export interface EmployeeCardData {
     name: string,
     role: Role,
     employeeId: string,
     facilityName: string,
     imageBuffer: Buffer | null,
+}
+
+export interface CategoryMedicine {
+    id: string;
+    name: string;
+    unit: string;
+    reorderlevel: number;
+    ageGroup: string;
+    manufacturer: string | null;
+    totalStock: number;
+}
+
+export interface CategoryMedicinesListingProps {
+    categoryId: string;
+    categoryName: string;
+    medicines: CategoryMedicine[];
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+    searchTerm: string;
+}
+
+interface Stats {
+    totalMedicines: number;
+    expiringSoonCount: number;
+    expiredCount: number;
+    expiryWarnDays: number;
+}
+
+export interface CategoryPageContentProps {
+    categoryId: string;
+    categoryName: string;
+    categoryDescription?: string | null;
+    medicines: CategoryMedicine[];
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+    searchTerm: string;
+    stats: Stats;
+}
+
+export interface PendingPayment {
+    id: string;
+    quantity: number;
+    patient: string;
+    phone: string;
+    createdAt: Date;
+    medicine: {
+        name: string;
+        unit: string;
+    };
+    batch: {
+        batchNumber: string;
+    };
+}
+
+export interface PendingPaymentsResponse {
+    payments: PendingPayment[];
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+}
+
+export interface AddPaymentInput {
+    transactionId: string;
+    method: "cash" | "mpesa" | "card" | "insurance";
+    amount: number;
+    paymentCode?: string;
+}
+
+export interface TransactionDetails {
+    id: string;
+    type: string;
+    quantity: number;
+    reason: string;
+    notes: string | null;
+    createdAt: Date;
+    patient: string | null;
+    phone: string | null;
+    patientAgeGroup: AgeGroup | null;
+    medicine: {
+        id: string;
+        name: string;
+        unit: string;
+        ageGroup: string;
+    };
+    batch: {
+        id: string;
+        batchNumber: string;
+        expiryDate: Date;
+    };
+    user: {
+        id: string;
+        name: string;
+        role: string;
+    };
+    payment: {
+        id: string;
+        amount: number;
+        method: string;
+        paymentCode: string;
+        createdAt: Date;
+    } | null;
 }

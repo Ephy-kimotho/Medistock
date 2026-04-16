@@ -5,8 +5,8 @@ import {
     getTransactions,
     getTransactionStats,
     getTransactionUsers,
-    getTransactionMedicines,
 } from "@/lib/actions/transactions";
+import { getMedicineNames } from "@/lib/actions/stock-inventory";
 import type { TransactionFilters } from "@/lib/types";
 
 export const TransactionKeys = {
@@ -47,7 +47,7 @@ export const useTransactionUsers = () => {
 // Get the medicines for the  edicine filter
 export const useTransactionMedicines = () => {
     return useQuery({
-        queryKey: TransactionKeys.medicines(),
-        queryFn: () => getTransactionMedicines(),
+        queryKey: ["medicine-info"],
+        queryFn: () => getMedicineNames(),
     });
 };

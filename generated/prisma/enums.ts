@@ -78,10 +78,22 @@ export const REPORT_PERIOD = {
 export type REPORT_PERIOD = (typeof REPORT_PERIOD)[keyof typeof REPORT_PERIOD]
 
 
-export const CATEGORY_AGE_GROUP = {
-  adult: 'adult',
+export const MEDICINE_AGE_GROUP = {
+  infant: 'infant',
   pediatric: 'pediatric',
+  adult: 'adult',
+  geriatric: 'geriatric',
   all_ages: 'all_ages'
 } as const
 
-export type CATEGORY_AGE_GROUP = (typeof CATEGORY_AGE_GROUP)[keyof typeof CATEGORY_AGE_GROUP]
+export type MEDICINE_AGE_GROUP = (typeof MEDICINE_AGE_GROUP)[keyof typeof MEDICINE_AGE_GROUP]
+
+
+export const PAYMENT_METHOD = {
+  cash: 'cash',
+  mpesa: 'mpesa',
+  card: 'card',
+  insurance: 'insurance'
+} as const
+
+export type PAYMENT_METHOD = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD]

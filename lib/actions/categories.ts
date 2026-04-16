@@ -6,6 +6,7 @@ import { Prisma } from "@/generated/prisma/client"
 import { requireRole, getServerSession } from "@/lib/check-permissions"
 import { LIMIT } from "@/lib/utils"
 import { redirect } from "next/navigation"
+import { isBefore, addDays } from "date-fns";
 
 type CreateCategoryData = Prisma.CategoryCreateInput
 type UpdateCategoryData = CreateCategoryData
@@ -105,14 +106,6 @@ export async function getCategories({
         const formattedCategories = categories.map((category) => {
             const medicineCount = category.medicines.length;
 
-            const totalStock = category.medicines.reduce((sum, medicine) => {
-                const medicineStock = medicine.stockEntries.reduce(
-                    (entrySum, entry) => entrySum + entry.quantity,
-                    0
-                );
-                return sum + medicineStock;
-            }, 0);
-
             return {
                 id: category.id,
                 name: category.name,
@@ -122,7 +115,6 @@ export async function getCategories({
                 deletedAt: category.deletedAt,
                 isArchived: category.deletedAt !== null,
                 medicineCount,
-                totalStock,
             };
         });
 
@@ -259,5 +251,182 @@ export async function restoreCategory(categoryId: string) {
         } else {
             throw new Error("Failed to restore category");
         }
+    }
+}
+
+export async function getCategoryById(categoryId: string) {
+    try {
+        const session = await getServerSession();
+
+        if (!session) {
+            redirect("/login");
+        }
+
+        const category = await prisma.category.findUnique({
+            where: { id: categoryId },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                deletedAt: true
+            },
+        });
+
+        return category
+    } catch (error) {
+        console.error("Error getting category:", error);
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error("Failed to get category");
+    }
+}
+
+export async function getCategoryMedicineStats(categoryId: string) {
+    try {
+        const session = await getServerSession();
+
+        if (!session) {
+            redirect("/login");
+        }
+
+        const settings = await prisma.settings.findFirst();
+        const expiryWarnDays = settings?.expiryWarnDays ?? 7;
+
+        const now = new Date();
+        const warnDate = addDays(now, expiryWarnDays);
+
+        // Get all medicines in this category with their stock entries
+        const medicines = await prisma.medicines.findMany({
+            where: {
+                categoryId,
+                isActive: true,
+                deletedAt: null,
+            },
+            select: {
+                id: true,
+                stockEntries: {
+                    select: {
+                        quantity: true,
+                        expiryDate: true,
+                    },
+                },
+            },
+        });
+
+        const totalMedicines = medicines.length;
+        let expiringSoonCount = 0;
+        let expiredCount = 0;
+
+        for (const medicine of medicines) {
+            for (const entry of medicine.stockEntries) {
+                if (entry.quantity > 0) {
+                    const expiryDate = new Date(entry.expiryDate);
+
+                    if (isBefore(expiryDate, now)) {
+                        expiredCount++;
+                    } else if (isBefore(expiryDate, warnDate)) {
+                        expiringSoonCount++;
+                    }
+                }
+            }
+        }
+
+        return {
+            totalMedicines,
+            expiringSoonCount,
+            expiredCount,
+            expiryWarnDays,
+        };
+    } catch (error) {
+        console.error("Error getting category medicine stats:", error);
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error("Failed to get category medicine stats");
+    }
+}
+
+export async function getCategoryMedicines(
+    categoryId: string,
+    {
+        page = 1,
+        search = "",
+    }: {
+        page?: number;
+        search?: string;
+    }
+) {
+    try {
+        const session = await getServerSession();
+
+        if (!session) {
+            redirect("/login");
+        }
+
+        const skip = (page - 1) * LIMIT;
+
+        const where: Prisma.MedicinesWhereInput = {
+            categoryId,
+            isActive: true,
+            deletedAt: null,
+            ...(search && {
+                name: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            }),
+        };
+
+        const [medicines, totalCount] = await Promise.all([
+            prisma.medicines.findMany({
+                where,
+                select: {
+                    id: true,
+                    name: true,
+                    unit: true,
+                    reorderlevel: true,
+                    ageGroup: true,
+                    manufacturer: true,
+                    stockEntries: {
+                        select: {
+                            quantity: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    name: "asc",
+                },
+                skip,
+                take: LIMIT,
+            }),
+            prisma.medicines.count({ where }),
+        ]);
+
+        // Calculate total stock for each medicine
+        const medicinesWithStock = medicines.map((medicine) => ({
+            ...medicine,
+            totalStock: medicine.stockEntries.reduce(
+                (sum, entry) => sum + entry.quantity,
+                0
+            ),
+        }));
+
+        const totalPages = Math.ceil(totalCount / LIMIT)
+
+        return {
+            medicines: medicinesWithStock,
+            totalCount,
+            totalPages,
+            currentPage: page,
+            hasNext: page < totalPages,
+            hasPrev: page > 1
+        };
+    } catch (error) {
+        console.error("Error getting category medicines:", error);
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error("Failed to get category medicines");
     }
 }

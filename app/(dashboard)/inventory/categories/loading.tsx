@@ -31,13 +31,10 @@ export default function CategoriesLoading() {
               <TableRow className="bg-muted">
                 <TableHead className="font-semibold">Name</TableHead>
                 <TableHead className="font-semibold">Description</TableHead>
-                <TableHead className="font-semibold text-center">
+                <TableHead className="font-semibold">
                   Medicine count
                 </TableHead>
-                <TableHead className="font-semibold text-center">
-                  Current stock
-                </TableHead>
-                <TableHead className="font-semibold text-center">
+                <TableHead className="font-semibold">
                   Actions
                 </TableHead>
               </TableRow>
@@ -53,9 +50,6 @@ export default function CategoriesLoading() {
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-5 w-52" />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Skeleton className="h-7 w-14 rounded-full mx-auto" />
                   </TableCell>
                   <TableCell className="text-center">
                     <Skeleton className="h-8 w-8 rounded-md mx-auto" />

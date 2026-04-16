@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "@/lib/check-permissions";
+import { getServerSession, requirePermission } from "@/lib/check-permissions";
 import { redirect } from "next/navigation";
 import { Prisma } from "@/generated/prisma/client";
 import { endOfDay, startOfDay } from "date-fns";
@@ -245,32 +245,83 @@ export async function getTransactionUsers() {
     }
 }
 
-export async function getTransactionMedicines() {
+export async function getTransactionById(
+    id: string
+) {
     try {
-        const session = await getServerSession();
+        await requirePermission("transaction", "read");
 
-        if (!session?.user) {
-            redirect("/login");
-        }
-
-        const medicines = await prisma.medicines.findMany({
-            where: {
-                isActive: true,
-                deletedAt: null,
+        const transaction = await prisma.transactions.findUnique({
+            where: { id },
+            include: {
+                stockEntry: {
+                    include: {
+                        medicine: {
+                            select: {
+                                id: true,
+                                name: true,
+                                unit: true,
+                                ageGroup: true,
+                            },
+                        },
+                    },
+                },
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        role: true,
+                    },
+                },
+                payment: true,
             },
-            select: {
-                id: true,
-                name: true,
-            },
-            orderBy: { name: "asc" },
         });
 
-        return medicines;
+        if (!transaction) {
+            return null;
+        }
+
+        return {
+            id: transaction.id,
+            type: transaction.type,
+            quantity: transaction.quantity,
+            reason: transaction.reason,
+            notes: transaction.notes,
+            createdAt: transaction.createdAt,
+            patient: transaction.patient,
+            phone: transaction.phone,
+            patientAgeGroup: transaction.patientAgeGroup,
+            medicine: {
+                id: transaction.stockEntry.medicine.id,
+                name: transaction.stockEntry.medicine.name,
+                unit: transaction.stockEntry.medicine.unit,
+                ageGroup: transaction.stockEntry.medicine.ageGroup,
+            },
+            batch: {
+                id: transaction.stockEntry.id,
+                batchNumber: transaction.stockEntry.batchNumber,
+                expiryDate: transaction.stockEntry.expiryDate,
+            },
+            user: {
+                id: transaction.user.id,
+                name: transaction.user.name,
+                role: transaction.user.role,
+            },
+            payment: transaction.payment
+                ? {
+                    id: transaction.payment.id,
+                    amount: transaction.payment.amount,
+                    method: transaction.payment.method,
+                    paymentCode: transaction.payment.paymentCode,
+                    createdAt: transaction.payment.createdAt,
+                }
+                : null,
+        };
     } catch (error) {
-        console.error("Error fetching transaction medicines: ", error);
+        console.error("Failed to get transaction:", error);
         if (error instanceof Error) {
             throw error;
         }
-        throw new Error("Failed to fetch medicines list!");
+        throw new Error("Failed to get transaction.");
     }
 }

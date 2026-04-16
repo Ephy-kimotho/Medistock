@@ -9,7 +9,6 @@ import { getMedicineNames } from "@/lib/actions/stock-inventory";
 import {
   getTransactions,
   getTransactionStats,
-  getTransactionMedicines,
   getTransactionUsers,
 } from "@/lib/actions/transactions";
 import { AddStockForm } from "@/components/inventory/add-stock";
@@ -88,11 +87,6 @@ async function TransactionsHistoryPage({
           toDate,
         }),
     }),
-    // Prefetch medicines for filter dropdown
-    queryClient.prefetchQuery({
-      queryKey: ["transactions", "medicines"],
-      queryFn: () => getTransactionMedicines(),
-    }),
     // Prefetch users for filter dropdown (admin only)
     isAdminOrManager
       ? queryClient.prefetchQuery({
@@ -141,8 +135,8 @@ async function TransactionsHistoryPage({
             <h2 className="text-2xl text-slate-900 font-bold">
               Transactions History
             </h2>
-            <p className="text-muted-foreground text-pretty">
-              View and track medicine movements.
+            <p className="text-sm text-muted-foreground">
+              Click on a row to view more details
             </p>
           </div>
 

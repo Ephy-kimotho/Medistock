@@ -4,7 +4,7 @@ import { MEDICINE_UNIT_VALUES } from "@/constants";
 export const medicineSchema = z.object({
     name: z
         .string()
-        .min(5, "Medicine name must be at least 5 characters")
+        .min(3, "Medicine name must be at least 3 characters")
         .max(100, "Medicine name must be less than 100 characters"),
 
     unit: z.enum(MEDICINE_UNIT_VALUES, {
@@ -17,6 +17,7 @@ export const medicineSchema = z.object({
         .min(0, "Reorder level cannot be negative"),
 
     categoryId: z.string().min(1, "Please select a category"),
+    ageGroup: z.enum(["infant", "pediatric", "adult", "geriatric", "all_ages"]),
 
     manufacturer: z
         .string()
