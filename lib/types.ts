@@ -2,7 +2,7 @@ import { ComponentType } from "react"
 import { getApplicationUsers } from "@/lib/actions/users"
 import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
-import { getCategories } from "@/lib/actions/categories"
+import { getCategories, getCategoryById } from "@/lib/actions/categories"
 import { getCategoryNames, } from "@/lib/actions/medicines"
 
 // ==================== TYPE DEFINITIONS ====================
@@ -13,6 +13,7 @@ export type InvitationRequest = NonNullable<Awaited<ReturnType<typeof getInvitat
 export type User = NonNullable<Awaited<ReturnType<typeof getApplicationUsers>>>["users"][number]
 export type Category = NonNullable<Awaited<ReturnType<typeof getCategories>>>["categories"][number]
 export type CategoryInfo = NonNullable<Awaited<ReturnType<typeof getCategoryNames>>>
+export type CategoryById = NonNullable<Awaited<ReturnType<typeof getCategoryById>>>
 
 export type StockStatus = "all" | "in_stock" | "low_stock" | "out_of_stock";
 export type StockExpiryStatus = "all" | "good" | "expiring_soon" | "expired";
@@ -251,4 +252,47 @@ export interface EmployeeCardData {
     employeeId: string,
     facilityName: string,
     imageBuffer: Buffer | null,
+}
+
+export interface CategoryMedicine {
+    id: string;
+    name: string;
+    unit: string;
+    reorderlevel: number;
+    ageGroup: string;
+    manufacturer: string | null;
+    totalStock: number;
+}
+
+export interface CategoryMedicinesListingProps {
+    categoryId: string;
+    categoryName: string;
+    medicines: CategoryMedicine[];
+    totalPages: number;
+    currentPage: number;
+    totalCount: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+    searchTerm: string;
+}
+
+interface Stats {
+  totalMedicines: number;
+  expiringSoonCount: number;
+  expiredCount: number;
+  expiryWarnDays: number;
+}
+
+export interface CategoryPageContentProps {
+  categoryId: string;
+  categoryName: string;
+  categoryDescription?: string | null;
+  medicines: CategoryMedicine[];
+  totalPages: number;
+  currentPage: number;
+  totalCount: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  searchTerm: string;
+  stats: Stats;
 }

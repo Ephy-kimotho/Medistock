@@ -45,9 +45,11 @@ async function CategoriesPage({ searchParams }: CategoriesPageProps) {
       <div className="flex flex-col flex-1">
         <header className="flex flex-col md:flex-row  md:items-center gap-4 md:gap-0 md:justify-between mb-5">
           <div>
-            <h2 className="text-2xl text-slate-900 font-bold">Categories</h2>
-            <p className="text-muted-foreground text-pretty">
-              Manage medicine categories
+            <h2 className="text-2xl text-slate-900 font-bold">
+              Medicine Classification
+            </h2>
+            <p className="text-muted-foreground  max-w-lg text-pretty">
+             Click on a category to add add medicines of the same category.
             </p>
           </div>
 

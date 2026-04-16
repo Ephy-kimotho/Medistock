@@ -53,17 +53,19 @@ const mainNavItems = [
     icon: House,
   },
   {
-    title: "Inventory",
-    url: "/inventory",
-    icon: Box,
+    title: "Drug Category",
+    url: "/inventory/categories",
+    subMenuLabel: "All Categories",
+    icon: Layers,
     subItems: [
-      { title: "Categories", url: "/inventory/categories", icon: Layers },
       { title: "Medicines", url: "/inventory/medicines", icon: Pill },
+      { title: "Stock Inventory", url: "/inventory", icon: Box },
     ],
   },
   {
     title: "Transactions",
     url: "/transactions",
+    subMenuLabel: "Transaction History",
     icon: ArrowLeftRight,
     subItems: [
       { title: "Dispense", url: "/transactions/dispense", icon: SquarePen },
@@ -131,7 +133,22 @@ function AppSidebar() {
   };
 
   // Check if a path is active
-  const isActive = (url: string) => pathname === url;
+  const isActive = (url: string) => {
+    // Exact match
+    if (pathname === url) return true;
+
+    // Child route match (e.g., /inventory/categories/[id] should highlight /inventory/categories)
+    // Exclude /inventory and /transactions as they're leaf routes, not parent routes
+    if (
+      pathname.startsWith(url + "/") &&
+      url !== "/inventory" &&
+      url !== "/transactions"
+    ) {
+      return true;
+    }
+
+    return false;
+  };
 
   // Check if the parent or any subitem is active (for collapsible default open state)
   const isSubItemActive = (item: {
@@ -224,11 +241,7 @@ function AppSidebar() {
                                   className="text-sidebar-primary-foreground"
                                 >
                                   <item.icon className="text-sidebar-primary-foreground size-4" />
-                                  <span>
-                                    {item.title === "Inventory"
-                                      ? "Stock Inventory"
-                                      : "Transaction History"}
-                                  </span>
+                                  <span>{item.subMenuLabel || item.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>

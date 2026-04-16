@@ -31,7 +31,7 @@ import {
 } from "@/constants";
 import { useCreateMedicine, useUpdateMedicine } from "@/hooks/useMedicines";
 import { cn } from "@/lib/utils";
-import { Loader } from "lucide-react";
+import { Loader, Lock } from "lucide-react";
 import type { MedicineInput, CategoryInfo } from "@/lib/types";
 
 interface MedicineFormProps {
@@ -41,6 +41,8 @@ interface MedicineFormProps {
   open: boolean;
   children?: React.ReactNode;
   setOpen: (open: boolean) => void;
+  lockedCategoryId?: string;
+  lockedCategoryName?: string;
 }
 
 function MedicineForm({
@@ -50,13 +52,15 @@ function MedicineForm({
   open,
   setOpen,
   children,
+  lockedCategoryId,
+  lockedCategoryName,
 }: MedicineFormProps) {
   const { mutate: createMedicine, isPending: isCreating } = useCreateMedicine();
   const { mutate: updateMedicine, isPending: isUpdating } = useUpdateMedicine();
 
   const isPending = isCreating || isUpdating;
+  const isCategoryLocked = !!lockedCategoryId;
 
-  // Medicine form management with RHF and Zod
   const {
     register,
     handleSubmit,
@@ -70,7 +74,7 @@ function MedicineForm({
       name: initialValues?.name ?? "",
       unit: (initialValues?.unit as MedicineUnit) ?? undefined,
       reorderlevel: initialValues?.reorderlevel ?? 10,
-      categoryId: initialValues?.categoryId ?? "",
+      categoryId: lockedCategoryId ?? initialValues?.categoryId ?? "",
       manufacturer: initialValues?.manufacturer ?? "",
       ageGroup: initialValues?.ageGroup ?? "all_ages",
     },
@@ -90,13 +94,26 @@ function MedicineForm({
     }
   }, [isEditing, initialValues, reset]);
 
-  // The medicine form submit handler
+  // Reset with locked category when dialog opens (for add mode)
+  useEffect(() => {
+    if (open && !isEditing && lockedCategoryId) {
+      reset({
+        name: "",
+        unit: undefined,
+        reorderlevel: 10,
+        categoryId: lockedCategoryId,
+        manufacturer: "",
+        ageGroup: "all_ages",
+      });
+    }
+  }, [open, isEditing, lockedCategoryId, reset]);
+
   const onSubmit: SubmitHandler<MedicineFormData> = (values) => {
     const data: MedicineInput = {
       name: values.name.trim(),
       unit: values.unit,
       reorderlevel: values.reorderlevel,
-      categoryId: values.categoryId,
+      categoryId: lockedCategoryId ?? values.categoryId,
       ageGroup: values.ageGroup || "all_ages",
       manufacturer: values.manufacturer?.trim() || undefined,
     };
@@ -126,8 +143,9 @@ function MedicineForm({
         name: "",
         unit: undefined,
         reorderlevel: 10,
-        categoryId: "",
+        categoryId: lockedCategoryId ?? "",
         manufacturer: "",
+        ageGroup: "all_ages",
       });
     }
   };
@@ -150,7 +168,11 @@ function MedicineForm({
       <DialogContent className="sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-slate-900 capitalize">
-            {isEditing ? `Edit ${initialValues?.name}` : "Add New Medicine"}
+            {isEditing
+              ? `Edit ${initialValues?.name}`
+              : lockedCategoryName
+                ? `Add Medicine to ${lockedCategoryName}`
+                : "Add New Medicine"}
           </DialogTitle>
         </DialogHeader>
 
@@ -196,37 +218,51 @@ function MedicineForm({
                 <Label htmlFor="category" className="text-sm font-medium">
                   Category <span className="text-red-500">*</span>
                 </Label>
-                <Controller
-                  control={control}
-                  name="categoryId"
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={isPending}
-                    >
-                      <SelectTrigger
-                        id="category"
-                        className={cn(
-                          "h-11 w-full",
-                          errors.categoryId
-                            ? "border-red-400 focus:ring-red-400"
-                            : "focus:ring-azure",
-                        )}
+                {isCategoryLocked ? (
+                  // Locked category display
+                  <div className="relative">
+                    <Input
+                      id="category"
+                      value={lockedCategoryName}
+                      disabled
+                      className="h-11 bg-muted/50 pr-10"
+                    />
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  </div>
+                ) : (
+                  // Normal category select
+                  <Controller
+                    control={control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isPending}
                       >
-                        <SelectValue placeholder="Select category..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categoryInfo.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.categoryId && (
+                        <SelectTrigger
+                          id="category"
+                          className={cn(
+                            "h-11 w-full",
+                            errors.categoryId
+                              ? "border-red-400 focus:ring-red-400"
+                              : "focus:ring-azure",
+                          )}
+                        >
+                          <SelectValue placeholder="Select category..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categoryInfo.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                )}
+                {errors.categoryId && !isCategoryLocked && (
                   <p className="text-red-500 text-sm">
                     {errors.categoryId.message}
                   </p>
@@ -270,7 +306,6 @@ function MedicineForm({
                     </Select>
                   )}
                 />
-
                 {errors.ageGroup && (
                   <p className="text-red-500 text-sm">
                     {errors.ageGroup.message}

@@ -16,7 +16,7 @@ export function Greeting({ name }: GreetingProps) {
     return "Good evening";
   };
 
-  const formattedDate = format(now, "EEEE MMMM d, yyyy");
+  const formattedDate = format(now, "EEEE MMMM do, yyyy");
 
   return (
     <header className="mb-4">

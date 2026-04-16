@@ -4,7 +4,13 @@ import type { StatCardProps } from "@/lib/types";
 
 function Statcards({ stats }: { stats: StatCardProps[] }) {
   return (
-    <div className="my-3 grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div
+      className={cn(
+        "my-3 grid gap-3 md:gap-4 md:grid-cols-2",
+        stats.length === 4 && "lg:grid-cols-4",
+        stats.length === 3 && "lg:grid-cols-3",
+      )}
+    >
       {stats.map(({ title, metric, details, theme, Icon }, idx) => (
         <Card key={idx} className="border border-mist/60 shadow-sm rounded-lg">
           <CardHeader>

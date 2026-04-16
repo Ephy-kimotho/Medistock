@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Loader, Plus, CalendarIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader, Plus, CalendarIcon, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,18 +22,40 @@ import { useMedicineNames, useAddStock } from "@/hooks/useStockInventory";
 import { MedicineCombobox } from "../medicine-combobox";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import {} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
 import type { StockInput } from "@/lib/types";
 
-export function AddStockForm({ userId }: { userId: string }) {
-  const [open, setOpen] = useState(false);
+interface AddStockFormProps {
+  userId: string;
+  lockedMedicineId?: string;
+  lockedMedicineName?: string;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  children?: React.ReactNode;
+}
+
+export function AddStockForm({
+  userId,
+  lockedMedicineId,
+  lockedMedicineName,
+  open: controlledOpen,
+  setOpen: controlledSetOpen,
+  children,
+}: AddStockFormProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Use controlled or internal state
+  const isControlled =
+    controlledOpen !== undefined && controlledSetOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? controlledSetOpen : setInternalOpen;
+
+  const isMedicineLocked = !!lockedMedicineId;
 
   const { data: medicines, isLoading } = useMedicineNames();
   const { mutate: addStock, isPending } = useAddStock();
@@ -43,12 +65,13 @@ export function AddStockForm({ userId }: { userId: string }) {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<StockFormData>({
     mode: "all",
     resolver: zodResolver(stockSchema),
     defaultValues: {
-      medicineId: "",
+      medicineId: lockedMedicineId ?? "",
       batchNumber: "",
       quantity: undefined,
       expiryDate: undefined,
@@ -59,9 +82,16 @@ export function AddStockForm({ userId }: { userId: string }) {
     },
   });
 
+  // Reset form with locked medicine when dialog opens
+  useEffect(() => {
+    if (open && lockedMedicineId) {
+      setValue("medicineId", lockedMedicineId);
+    }
+  }, [open, lockedMedicineId, setValue]);
+
   const onSubmit: SubmitHandler<StockFormData> = (values) => {
     const data: StockInput = {
-      medicineId: values.medicineId,
+      medicineId: lockedMedicineId ?? values.medicineId,
       batchNumber: values.batchNumber.trim(),
       quantity: values.quantity,
       initialtQuantity: values.quantity,
@@ -84,7 +114,16 @@ export function AddStockForm({ userId }: { userId: string }) {
 
   const handleClose = () => {
     setOpen(false);
-    reset();
+    reset({
+      medicineId: lockedMedicineId ?? "",
+      batchNumber: "",
+      quantity: undefined,
+      expiryDate: undefined,
+      purchaseDate: undefined,
+      purchasePrice: undefined,
+      supplier: "",
+      notes: "",
+    });
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -97,7 +136,8 @@ export function AddStockForm({ userId }: { userId: string }) {
     }
   };
 
-  if (isLoading) {
+  // Show loading button only for uncontrolled mode with trigger
+  if (isLoading && !isControlled) {
     return (
       <Button size="lg" disabled className="px-4 gap-3">
         <Loader className="size-4 animate-spin" />
@@ -108,16 +148,23 @@ export function AddStockForm({ userId }: { userId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button size="lg" className="px-4 bg-azure hover:bg-blue-600 gap-3">
-          <Plus className="size-4 text-white" />
-          <span>Add New Stock</span>
-        </Button>
-      </DialogTrigger>
+      {!isControlled && children && (
+        <DialogTrigger asChild>{children}</DialogTrigger>
+      )}
+      {!isControlled && !children && (
+        <DialogTrigger asChild>
+          <Button size="lg" className="px-4 bg-azure hover:bg-blue-600 gap-3">
+            <Plus className="size-4 text-white" />
+            <span>Add New Stock</span>
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-slate-900">
-            Add New Batch
+            {lockedMedicineName
+              ? `Add Stock for ${lockedMedicineName}`
+              : "Add New Batch"}
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             Add a new stock batch to the inventory.
@@ -137,20 +184,31 @@ export function AddStockForm({ userId }: { userId: string }) {
                 <Label className="text-sm font-medium">
                   Medicine <span className="text-red-500">*</span>
                 </Label>
-                <Controller
-                  control={control}
-                  name="medicineId"
-                  render={({ field }) => (
-                    <MedicineCombobox
-                      medicines={medicines ?? []}
-                      value={field.value}
-                      onChange={field.onChange}
-                      disabled={isPending}
-                      error={!!errors.medicineId}
+                {isMedicineLocked ? (
+                  <div className="relative">
+                    <Input
+                      value={lockedMedicineName}
+                      disabled
+                      className="h-11 bg-muted/50 pr-10"
                     />
-                  )}
-                />
-                {errors.medicineId && (
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  </div>
+                ) : (
+                  <Controller
+                    control={control}
+                    name="medicineId"
+                    render={({ field }) => (
+                      <MedicineCombobox
+                        medicines={medicines ?? []}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={isPending}
+                        error={!!errors.medicineId}
+                      />
+                    )}
+                  />
+                )}
+                {errors.medicineId && !isMedicineLocked && (
                   <p className="text-red-500 text-sm">
                     {errors.medicineId.message}
                   </p>
