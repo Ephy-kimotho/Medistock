@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "@/lib/check-permissions"
 import { prisma } from "@/lib/prisma"
-import { generateEmployeeCard } from "@/lib/services/pdf-service"
+import { generateEmployeeCard } from "@/lib/services/pdf/employee-card"
 import type { Role } from "@/lib/types"
 
 

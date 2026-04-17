@@ -407,7 +407,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
               <Textarea
                 id="notes"
                 rows={3}
-                placeholder="e.g. Take 1 tablet a day for 2 weeks"
+                placeholder="e.g. 2 times daily."
                 disabled={!isFormEnabled || isPending}
                 className={cn(
                   "resize-none",

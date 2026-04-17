@@ -57,7 +57,7 @@ export const admin = ac.newRole({
 })
 
 export const hr = ac.newRole({
-    user: ["set-password", "get"],
+    user: ["set-password", "get", "list"],
     medicine: ["read"],
     category: ["read"],
     stockEntry: ["read"],
