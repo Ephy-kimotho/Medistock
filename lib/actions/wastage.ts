@@ -130,3 +130,39 @@ export async function recordWastage(data: WastageInput, userId: string) {
         throw new Error("Failed to record wastage.");
     }
 }
+
+//  Get all expired batches
+export async function getExpiredBatches() {
+    try {
+        await requirePermission("transaction", "read");
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const expiredBatches = await prisma.stockEntries.findMany({
+            where: {
+                expiryDate: { lt: today },
+                quantity: { gt: 0 },
+            },
+            select: {
+                id: true,
+                batchNumber: true,
+                quantity: true,
+                expiryDate: true,
+                medicine: {
+                    select: {
+                        id: true,
+                        name: true,
+                        unit: true,
+                    },
+                },
+            },
+            orderBy: { expiryDate: "asc" },
+        });
+
+        return expiredBatches;
+    } catch (error) {
+        console.error("Failed to get expired batches:", error);
+        return [];
+    }
+}
