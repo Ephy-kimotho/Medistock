@@ -367,3 +367,15 @@ export interface TransactionDetails {
         createdAt: Date;
     } | null;
 }
+
+export interface ExpiredBatch {
+    id: string;
+    batchNumber: string;
+    quantity: number;
+    expiryDate: Date;
+    medicine: {
+        id: string;
+        name: string;
+        unit: string;
+    };
+}
