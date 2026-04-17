@@ -21,7 +21,7 @@ export function usePermissions() {
   const canViewUsers = isAdmin || isHR;
   const canManageSettings = isAdmin;
   const canViewAlerts = isAdmin || isInventoryManager;
-  const canViewReports = isAdmin || isInventoryManager || isAuditor;
+  const canViewReports = isAdmin || isInventoryManager || isAuditor || isHR;
 
   return {
     isSessionPending: isPending,
