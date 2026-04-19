@@ -307,40 +307,6 @@ export type EnumALERT_STATUSWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumALERT_STATUSFilter<$PrismaModel>
 }
 
-export type EnumREPORT_TYPEFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_TYPE | Prisma.EnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_TYPEFilter<$PrismaModel> | $Enums.REPORT_TYPE
-}
-
-export type EnumREPORT_PERIODFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_PERIOD | Prisma.EnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_PERIODFilter<$PrismaModel> | $Enums.REPORT_PERIOD
-}
-
-export type EnumREPORT_TYPEWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_TYPE | Prisma.EnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_TYPEWithAggregatesFilter<$PrismaModel> | $Enums.REPORT_TYPE
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumREPORT_TYPEFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumREPORT_TYPEFilter<$PrismaModel>
-}
-
-export type EnumREPORT_PERIODWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_PERIOD | Prisma.EnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_PERIODWithAggregatesFilter<$PrismaModel> | $Enums.REPORT_PERIOD
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumREPORT_PERIODFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumREPORT_PERIODFilter<$PrismaModel>
-}
-
 export type EnumPAYMENT_METHODFilter<$PrismaModel = never> = {
   equals?: $Enums.PAYMENT_METHOD | Prisma.EnumPAYMENT_METHODFieldRefInput<$PrismaModel>
   in?: $Enums.PAYMENT_METHOD[] | Prisma.ListEnumPAYMENT_METHODFieldRefInput<$PrismaModel>
@@ -662,40 +628,6 @@ export type NestedEnumALERT_STATUSWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumALERT_STATUSFilter<$PrismaModel>
   _max?: Prisma.NestedEnumALERT_STATUSFilter<$PrismaModel>
-}
-
-export type NestedEnumREPORT_TYPEFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_TYPE | Prisma.EnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_TYPEFilter<$PrismaModel> | $Enums.REPORT_TYPE
-}
-
-export type NestedEnumREPORT_PERIODFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_PERIOD | Prisma.EnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_PERIODFilter<$PrismaModel> | $Enums.REPORT_PERIOD
-}
-
-export type NestedEnumREPORT_TYPEWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_TYPE | Prisma.EnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_TYPE[] | Prisma.ListEnumREPORT_TYPEFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_TYPEWithAggregatesFilter<$PrismaModel> | $Enums.REPORT_TYPE
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumREPORT_TYPEFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumREPORT_TYPEFilter<$PrismaModel>
-}
-
-export type NestedEnumREPORT_PERIODWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.REPORT_PERIOD | Prisma.EnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  in?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  notIn?: $Enums.REPORT_PERIOD[] | Prisma.ListEnumREPORT_PERIODFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumREPORT_PERIODWithAggregatesFilter<$PrismaModel> | $Enums.REPORT_PERIOD
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumREPORT_PERIODFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumREPORT_PERIODFilter<$PrismaModel>
 }
 
 export type NestedEnumPAYMENT_METHODFilter<$PrismaModel = never> = {

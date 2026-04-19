@@ -58,26 +58,6 @@ export const ALERT_STATUS = {
 export type ALERT_STATUS = (typeof ALERT_STATUS)[keyof typeof ALERT_STATUS]
 
 
-export const REPORT_TYPE = {
-  usage: 'usage',
-  wastage: 'wastage',
-  stock_level: 'stock_level',
-  expiry: 'expiry'
-} as const
-
-export type REPORT_TYPE = (typeof REPORT_TYPE)[keyof typeof REPORT_TYPE]
-
-
-export const REPORT_PERIOD = {
-  daily: 'daily',
-  weekly: 'weekly',
-  monthly: 'monthly',
-  custom: 'custom'
-} as const
-
-export type REPORT_PERIOD = (typeof REPORT_PERIOD)[keyof typeof REPORT_PERIOD]
-
-
 export const MEDICINE_AGE_GROUP = {
   infant: 'infant',
   pediatric: 'pediatric',
