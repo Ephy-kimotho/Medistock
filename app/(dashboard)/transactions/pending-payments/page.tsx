@@ -50,7 +50,11 @@ export default async function PendingPaymentsPage({
         </div>
       </header>
 
-      <PendingPaymentsListing data={data} searchTerm={searchTerm} />
+      <PendingPaymentsListing
+        data={data}
+        searchTerm={searchTerm}
+        userId={user.id}
+      />
     </section>
   );
 }

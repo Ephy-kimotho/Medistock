@@ -395,7 +395,6 @@ export const ModelName = {
   StockEntries: 'StockEntries',
   Transactions: 'Transactions',
   Alerts: 'Alerts',
-  Reports: 'Reports',
   Settings: 'Settings',
   Payment: 'Payment'
 } as const
@@ -413,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "invitationRequest" | "invitation" | "category" | "medicines" | "stockEntries" | "transactions" | "alerts" | "reports" | "settings" | "payment"
+    modelProps: "user" | "session" | "account" | "verification" | "invitationRequest" | "invitation" | "category" | "medicines" | "stockEntries" | "transactions" | "alerts" | "settings" | "payment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1231,80 +1230,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Reports: {
-      payload: Prisma.$ReportsPayload<ExtArgs>
-      fields: Prisma.ReportsFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.ReportsFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.ReportsFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
-        }
-        findFirst: {
-          args: Prisma.ReportsFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.ReportsFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
-        }
-        findMany: {
-          args: Prisma.ReportsFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>[]
-        }
-        create: {
-          args: Prisma.ReportsCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
-        }
-        createMany: {
-          args: Prisma.ReportsCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.ReportsCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>[]
-        }
-        delete: {
-          args: Prisma.ReportsDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
-        }
-        update: {
-          args: Prisma.ReportsUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
-        }
-        deleteMany: {
-          args: Prisma.ReportsDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.ReportsUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.ReportsUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>[]
-        }
-        upsert: {
-          args: Prisma.ReportsUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReportsPayload>
-        }
-        aggregate: {
-          args: Prisma.ReportsAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateReports>
-        }
-        groupBy: {
-          args: Prisma.ReportsGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ReportsGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.ReportsCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ReportsCountAggregateOutputType> | number
-        }
-      }
-    }
     Settings: {
       payload: Prisma.$SettingsPayload<ExtArgs>
       fields: Prisma.SettingsFieldRefs
@@ -1663,21 +1588,6 @@ export const AlertsScalarFieldEnum = {
 export type AlertsScalarFieldEnum = (typeof AlertsScalarFieldEnum)[keyof typeof AlertsScalarFieldEnum]
 
 
-export const ReportsScalarFieldEnum = {
-  id: 'id',
-  type: 'type',
-  period: 'period',
-  startDate: 'startDate',
-  endDate: 'endDate',
-  generatedById: 'generatedById',
-  filePath: 'filePath',
-  name: 'name',
-  createdAt: 'createdAt'
-} as const
-
-export type ReportsScalarFieldEnum = (typeof ReportsScalarFieldEnum)[keyof typeof ReportsScalarFieldEnum]
-
-
 export const SettingsScalarFieldEnum = {
   id: 'id',
   facilityName: 'facilityName',
@@ -1697,6 +1607,7 @@ export const PaymentScalarFieldEnum = {
   amount: 'amount',
   paymentCode: 'paymentCode',
   method: 'method',
+  processedById: 'processedById',
   createdAt: 'createdAt'
 } as const
 
@@ -1867,34 +1778,6 @@ export type ListEnumALERT_STATUSFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
- * Reference to a field of type 'REPORT_TYPE'
- */
-export type EnumREPORT_TYPEFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REPORT_TYPE'>
-    
-
-
-/**
- * Reference to a field of type 'REPORT_TYPE[]'
- */
-export type ListEnumREPORT_TYPEFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REPORT_TYPE[]'>
-    
-
-
-/**
- * Reference to a field of type 'REPORT_PERIOD'
- */
-export type EnumREPORT_PERIODFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REPORT_PERIOD'>
-    
-
-
-/**
- * Reference to a field of type 'REPORT_PERIOD[]'
- */
-export type ListEnumREPORT_PERIODFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'REPORT_PERIOD[]'>
-    
-
-
-/**
  * Reference to a field of type 'PAYMENT_METHOD'
  */
 export type EnumPAYMENT_METHODFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PAYMENT_METHOD'>
@@ -2027,7 +1910,6 @@ export type GlobalOmitConfig = {
   stockEntries?: Prisma.StockEntriesOmit
   transactions?: Prisma.TransactionsOmit
   alerts?: Prisma.AlertsOmit
-  reports?: Prisma.ReportsOmit
   settings?: Prisma.SettingsOmit
   payment?: Prisma.PaymentOmit
 }

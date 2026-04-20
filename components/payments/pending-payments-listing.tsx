@@ -1,4 +1,3 @@
-// components/payments/pending-payments-listing.tsx
 "use client";
 
 import { useState } from "react";
@@ -15,11 +14,13 @@ import type { PendingPayment, PendingPaymentsResponse } from "@/lib/types";
 interface PendingPaymentsListingProps {
   data: PendingPaymentsResponse;
   searchTerm: string;
+  userId: string;
 }
 
 export function PendingPaymentsListing({
   data,
   searchTerm,
+  userId
 }: PendingPaymentsListingProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -153,6 +154,7 @@ export function PendingPaymentsListing({
         open={dialogOpen}
         setOpen={setDialogOpen}
         transaction={selectedPayment}
+        userId={userId}
       />
     </div>
   );

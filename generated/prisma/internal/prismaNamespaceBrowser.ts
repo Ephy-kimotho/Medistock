@@ -62,7 +62,6 @@ export const ModelName = {
   StockEntries: 'StockEntries',
   Transactions: 'Transactions',
   Alerts: 'Alerts',
-  Reports: 'Reports',
   Settings: 'Settings',
   Payment: 'Payment'
 } as const
@@ -254,21 +253,6 @@ export const AlertsScalarFieldEnum = {
 export type AlertsScalarFieldEnum = (typeof AlertsScalarFieldEnum)[keyof typeof AlertsScalarFieldEnum]
 
 
-export const ReportsScalarFieldEnum = {
-  id: 'id',
-  type: 'type',
-  period: 'period',
-  startDate: 'startDate',
-  endDate: 'endDate',
-  generatedById: 'generatedById',
-  filePath: 'filePath',
-  name: 'name',
-  createdAt: 'createdAt'
-} as const
-
-export type ReportsScalarFieldEnum = (typeof ReportsScalarFieldEnum)[keyof typeof ReportsScalarFieldEnum]
-
-
 export const SettingsScalarFieldEnum = {
   id: 'id',
   facilityName: 'facilityName',
@@ -288,6 +272,7 @@ export const PaymentScalarFieldEnum = {
   amount: 'amount',
   paymentCode: 'paymentCode',
   method: 'method',
+  processedById: 'processedById',
   createdAt: 'createdAt'
 } as const
 

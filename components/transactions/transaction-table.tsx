@@ -45,7 +45,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
       case "hr":
         return "HR";
       case "user":
-        return "Staff";
+        return "Pharmacist";
       default:
         return role;
     }

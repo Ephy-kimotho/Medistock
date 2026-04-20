@@ -36,12 +36,14 @@ interface AddPaymentDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   transaction: PendingPayment | null;
+  userId: string;
 }
 
 export function AddPaymentDialog({
   open,
   setOpen,
   transaction,
+  userId,
 }: AddPaymentDialogProps) {
   const { mutate: addPayment, isPending } = useAddPayment();
 
@@ -82,13 +84,15 @@ export function AddPaymentDialog({
   const onSubmit: SubmitHandler<AddPaymentFormData> = (values) => {
     if (!transaction) return;
 
+    const payment = {
+      transactionId: transaction.id,
+      method: values.method,
+      amount: values.amount,
+      paymentCode: values.paymentCode?.trim(),
+    };
+
     addPayment(
-      {
-        transactionId: transaction.id,
-        method: values.method,
-        amount: values.amount,
-        paymentCode: values.paymentCode?.trim(),
-      },
+      { data: payment, userId },
       {
         onSuccess: (result) => {
           if (result.success) {
