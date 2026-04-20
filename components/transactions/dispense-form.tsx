@@ -446,6 +446,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                     checked={field.value}
                     onCheckedChange={handlePaymentToggle}
                     disabled={!isFormEnabled || isPending}
+                    className="disabled:opacity-50 disabled:cursor-not-allowed data-[state=unchecked]:disabled:bg-gray-500 cursor-pointer"
                   />
                 )}
               />

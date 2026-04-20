@@ -45,20 +45,6 @@ enum ALERT_STATUS {
   resolved
 }
 
-enum REPORT_TYPE {
-  usage
-  wastage
-  stock_level
-  expiry
-}
-
-enum REPORT_PERIOD {
-  daily
-  weekly
-  monthly
-  custom
-}
-
 enum MEDICINE_AGE_GROUP {
   infant
   pediatric
@@ -96,7 +82,7 @@ model User {
   sessions             Session[]
   accounts             Account[]
   transactions         Transactions[]
-  reports              Reports[]
+  payments             Payment[]
   sentInvitations      Invitation[]        @relation("SentInvitations")
   requestedInvitations InvitationRequest[] @relation("RequestedInvitations")
 
@@ -299,23 +285,6 @@ model Alerts {
   @@map("alerts")
 }
 
-model Reports {
-  id        String        @id @default(cuid())
-  type      REPORT_TYPE   @default(usage)
-  period    REPORT_PERIOD @default(daily)
-  startDate DateTime
-  endDate   DateTime
-
-  generatedById String
-  generatedBy   User   @relation(fields: [generatedById], references: [id], onDelete: Cascade)
-
-  filePath  String
-  name      String
-  createdAt DateTime
-
-  @@map("reports")
-}
-
 model Settings {
   id                     String   @id @default(cuid())
   facilityName           String
@@ -337,6 +306,9 @@ model Payment {
   amount      Int
   paymentCode String         @unique
   method      PAYMENT_METHOD
+
+  processedById String
+  processedBy   User   @relation(fields: [processedById], references: [id])
 
   createdAt DateTime @default(now())
 

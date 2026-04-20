@@ -120,6 +120,7 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
                         method: data.paymentMethod,
                         amount: data.paymentAmount,
                         paymentCode: paymentCode!,
+                        processedById: userId
                     },
                 });
             }

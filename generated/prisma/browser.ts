@@ -73,11 +73,6 @@ export type Transactions = Prisma.TransactionsModel
  */
 export type Alerts = Prisma.AlertsModel
 /**
- * Model Reports
- * 
- */
-export type Reports = Prisma.ReportsModel
-/**
  * Model Settings
  * 
  */
