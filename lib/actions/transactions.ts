@@ -273,7 +273,20 @@ export async function getTransactionById(
                         role: true,
                     },
                 },
-                payment: true,
+                payment: {
+                    select: {
+                        id: true,
+                        amount: true,
+                        method: true,
+                        paymentCode: true,
+                        createdAt: true,
+                        processedBy: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                },
             },
         });
 
@@ -314,6 +327,7 @@ export async function getTransactionById(
                     method: transaction.payment.method,
                     paymentCode: transaction.payment.paymentCode,
                     createdAt: transaction.payment.createdAt,
+                    processedBy: transaction.payment.processedBy.name
                 }
                 : null,
         };

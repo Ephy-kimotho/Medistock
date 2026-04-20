@@ -32,7 +32,7 @@ export function useAddPayment() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: AddPaymentInput) => addPaymentToTransaction(data),
+        mutationFn: ({ data, userId }: { data: AddPaymentInput, userId: string }) => addPaymentToTransaction(data, userId),
         onSuccess: async (result) => {
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: PendingPaymentsKeys.all }),

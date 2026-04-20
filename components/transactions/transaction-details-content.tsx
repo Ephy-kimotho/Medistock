@@ -22,7 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { getAgeGroupLabel } from "@/constants";
 import { AddPaymentDialog } from "@/components/payments/add-payment-dialog";
 import type {
@@ -33,6 +33,7 @@ import type {
 
 interface TransactionDetailsContentProps {
   transaction: TransactionDetails;
+  userId: string;
 }
 
 function getTransactionTypeLabel(type: Omit<"all", TransactionType>) {
@@ -50,6 +51,7 @@ function getTransactionTypeLabel(type: Omit<"all", TransactionType>) {
 
 export function TransactionDetailsContent({
   transaction,
+  userId,
 }: TransactionDetailsContentProps) {
   const router = useRouter();
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
@@ -297,7 +299,7 @@ export function TransactionDetailsContent({
                   <div className="flex justify-between">
                     <span className="font-bold text-base">Amount</span>
                     <span className="font-bold text-base">
-                      KSH {transaction.payment.amount.toLocaleString()}
+                      {formatPrice(transaction.payment.amount)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -305,6 +307,12 @@ export function TransactionDetailsContent({
                     <span className="font-bold text-base">
                       {transaction.payment.paymentCode}
                     </span>
+                  </div>
+                  <div className="flex justify-between font-medium">
+                    <span className="capitalize">
+                      Processed By
+                    </span>
+                    <span>{transaction.payment.processedBy}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Paid On</span>
@@ -346,23 +354,23 @@ export function TransactionDetailsContent({
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Processed By</span>
-              <div className="text-right">
-                <p className="font-medium">{transaction.user.name}</p>
-
-                <Badge
-                  className={cn(
-                    "py-1.5 px-3",
-                    transaction.user.role === "admin" &&
-                      "bg-crimson-red/10 text-crimson-red border-crimson-red",
-                    transaction.user.role === "inventory_manager" &&
-                      "bg-princeton-orange/10 text-princeton-orange border-princeton-orange",
-                    transaction.user.role === "user" &&
-                      "bg-azure/10 text-azure border-azure",
-                  )}
-                >
-                  {formatRole(transaction.user.role)}
-                </Badge>
-              </div>
+              <span className="font-medium">{transaction.user.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Role</span>
+              <Badge
+                className={cn(
+                  "py-1.5 px-3",
+                  transaction.user.role === "admin" &&
+                    "bg-crimson-red/10 text-crimson-red border-crimson-red",
+                  transaction.user.role === "inventory_manager" &&
+                    "bg-princeton-orange/10 text-princeton-orange border-princeton-orange",
+                  transaction.user.role === "user" &&
+                    "bg-azure/10 text-azure border-azure",
+                )}
+              >
+                {formatRole(transaction.user.role)}
+              </Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Date</span>
@@ -384,6 +392,7 @@ export function TransactionDetailsContent({
           open={paymentDialogOpen}
           setOpen={setPaymentDialogOpen}
           transaction={pendingPaymentData}
+          userId={userId}
         />
       )}
     </section>

@@ -101,7 +101,7 @@ export async function getPendingPayments({
     }
 }
 
-export async function addPaymentToTransaction(data: AddPaymentInput) {
+export async function addPaymentToTransaction(data: AddPaymentInput, userId: string) {
     try {
         await requirePermission("transaction", "create");
 
@@ -147,6 +147,7 @@ export async function addPaymentToTransaction(data: AddPaymentInput) {
                 method: data.method,
                 amount: data.amount,
                 paymentCode,
+                processedById: userId
             },
         });
 

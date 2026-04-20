@@ -48,3 +48,12 @@ export function downloadPdf(base64Data: string, filename: string) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+export function formatPrice(price: number): string {
+  return new Intl.NumberFormat("en-KE", {
+    style: "currency",
+    currency: "KES",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
+}

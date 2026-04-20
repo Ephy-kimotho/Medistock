@@ -365,5 +365,6 @@ export interface TransactionDetails {
         method: string;
         paymentCode: string;
         createdAt: Date;
+        processedBy: string
     } | null;
 }

@@ -23,5 +23,5 @@ export default async function TransactionDetailsPage({
     notFound();
   }
 
-  return <TransactionDetailsContent transaction={transaction} />;
+  return <TransactionDetailsContent transaction={transaction} userId={session.user.id} />;
 }
