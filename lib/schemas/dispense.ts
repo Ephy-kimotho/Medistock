@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { NAME_PATTERN } from "@/lib/utils"
 
 export const dispenseSchema = z
   .object({
@@ -15,7 +16,8 @@ export const dispenseSchema = z
     phone: z
       .string()
       .min(10, "Phone number must be at least 10 digits")
-      .max(15, "Phone number must be at most 15 digits"),
+      .max(15, "Phone number must be at most 15 digits")
+      .regex(NAME_PATTERN, "Name can only contain letters, spaces, and apostrophes"),
     patientAgeGroup: z.enum(["infant", "pediatric", "adult", "geriatric"]),
     notes: z.string().min(1, "Dosage is required"),
 

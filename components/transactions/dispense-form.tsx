@@ -25,10 +25,10 @@ import {
 } from "@/hooks/useDispense";
 import { MedicineCombobox } from "@/components/medicine-combobox";
 import { BatchCombobox } from "./batch-combobox";
-import { cn } from "@/lib/utils";
+import { cn, preventNumbers } from "@/lib/utils";
 import { AGE_GROUPS, getAgeGroupLabel, PAYMENT_METHODS } from "@/constants";
-import type { DispenseInput } from "@/lib/types";
 import { toast } from "sonner";
+import type { DispenseInput } from "@/lib/types";
 
 const PATIENT_AGE_GROUPS = AGE_GROUPS.filter(
   (group) => group.value !== "all_ages",
@@ -249,6 +249,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                 id="patient"
                 placeholder="e.g. John Doe..."
                 disabled={!isFormEnabled || isPending}
+                onKeyDown={preventNumbers}
                 className={cn(
                   "h-11",
                   errors.patient

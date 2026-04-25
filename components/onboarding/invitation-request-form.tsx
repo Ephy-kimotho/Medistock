@@ -28,7 +28,7 @@ import {
 } from "@/lib/schemas/invitation-request";
 import { useCreateInvitationRequest } from "@/hooks/useInvitationRequests";
 import { useNextEmployeeId } from "@/hooks/useEmployeeId";
-import { cn } from "@/lib/utils";
+import { cn, preventNumbers } from "@/lib/utils";
 import { Loader } from "lucide-react";
 
 interface InvitationRequestFormProps {
@@ -121,6 +121,7 @@ export function InvitationRequestForm({
               id="name"
               placeholder="e.g., John Doe"
               disabled={isPending}
+              onKeyDown={preventNumbers}
               className={cn(
                 "h-11 text-base",
                 errors.name
