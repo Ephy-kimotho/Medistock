@@ -78,7 +78,7 @@ model User {
   emailAlertEnabled Boolean?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  phone             String    @default("0700000000")
+  phone             String    @unique
 
   sessions             Session[]
   accounts             Account[]
@@ -87,7 +87,7 @@ model User {
   sentInvitations      Invitation[]        @relation("SentInvitations")
   requestedInvitations InvitationRequest[] @relation("RequestedInvitations")
 
-  @@unique([email])
+  @@unique([email, phone])
   @@map("user")
 }
 
@@ -149,15 +149,14 @@ model InvitationRequest {
   requestedBy   User   @relation("RequestedInvitations", fields: [requestedById], references: [id], onDelete: Cascade)
 
   status REQUEST_STATUS @default(pending)
-  phone  String         @default("0700000000")
+  phone  String         @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   invitation Invitation?
 
-  @@index([status])
-  @@index([requestedById])
+  @@index([requestedById, status])
   @@map("invitation_request")
 }
 

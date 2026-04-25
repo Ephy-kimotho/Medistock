@@ -287,11 +287,13 @@ export type UserOrderByWithRelationInput = {
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  email?: string
+  phone?: string
+  email_phone?: Prisma.UserEmailPhoneCompoundUniqueInput
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   name?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.StringFilter<"User"> | string
@@ -302,14 +304,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailAlertEnabled?: Prisma.BoolNullableFilter<"User"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  phone?: Prisma.StringFilter<"User"> | string
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionsListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   sentInvitations?: Prisma.InvitationListRelationFilter
   requestedInvitations?: Prisma.InvitationRequestListRelationFilter
-}, "id" | "email">
+}, "id" | "phone" | "email_phone">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -365,7 +366,7 @@ export type UserCreateInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -388,7 +389,7 @@ export type UserUncheckedCreateInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -457,7 +458,7 @@ export type UserCreateManyInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
 }
 
 export type UserUpdateManyMutationInput = {
@@ -492,6 +493,11 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type UserEmailPhoneCompoundUniqueInput = {
+  email: string
+  phone: string
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -672,7 +678,7 @@ export type UserCreateWithoutSessionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutProcessedByInput
@@ -694,7 +700,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutProcessedByInput
@@ -776,7 +782,7 @@ export type UserCreateWithoutAccountsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutProcessedByInput
@@ -798,7 +804,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutProcessedByInput
@@ -880,7 +886,7 @@ export type UserCreateWithoutRequestedInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -902,7 +908,7 @@ export type UserUncheckedCreateWithoutRequestedInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -984,7 +990,7 @@ export type UserCreateWithoutSentInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -1006,7 +1012,7 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -1088,7 +1094,7 @@ export type UserCreateWithoutTransactionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutProcessedByInput
@@ -1110,7 +1116,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutProcessedByInput
@@ -1192,7 +1198,7 @@ export type UserCreateWithoutPaymentsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -1214,7 +1220,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  phone?: string
+  phone: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput

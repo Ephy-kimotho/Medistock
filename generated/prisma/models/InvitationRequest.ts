@@ -244,6 +244,7 @@ export type InvitationRequestOrderByWithRelationInput = {
 export type InvitationRequestWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  phone?: string
   AND?: Prisma.InvitationRequestWhereInput | Prisma.InvitationRequestWhereInput[]
   OR?: Prisma.InvitationRequestWhereInput[]
   NOT?: Prisma.InvitationRequestWhereInput | Prisma.InvitationRequestWhereInput[]
@@ -252,12 +253,11 @@ export type InvitationRequestWhereUniqueInput = Prisma.AtLeast<{
   employeeId?: Prisma.StringFilter<"InvitationRequest"> | string
   requestedById?: Prisma.StringFilter<"InvitationRequest"> | string
   status?: Prisma.EnumREQUEST_STATUSFilter<"InvitationRequest"> | $Enums.REQUEST_STATUS
-  phone?: Prisma.StringFilter<"InvitationRequest"> | string
   createdAt?: Prisma.DateTimeFilter<"InvitationRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InvitationRequest"> | Date | string
   requestedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   invitation?: Prisma.XOR<Prisma.InvitationNullableScalarRelationFilter, Prisma.InvitationWhereInput> | null
-}, "id" | "email">
+}, "id" | "email" | "phone">
 
 export type InvitationRequestOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -298,7 +298,7 @@ export type InvitationRequestCreateInput = {
   role?: $Enums.USER_ROLE
   employeeId: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
   requestedBy: Prisma.UserCreateNestedOneWithoutRequestedInvitationsInput
@@ -313,7 +313,7 @@ export type InvitationRequestUncheckedCreateInput = {
   employeeId: string
   requestedById: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutRequestInput
@@ -355,7 +355,7 @@ export type InvitationRequestCreateManyInput = {
   employeeId: string
   requestedById: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -510,7 +510,7 @@ export type InvitationRequestCreateWithoutRequestedByInput = {
   role?: $Enums.USER_ROLE
   employeeId: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationCreateNestedOneWithoutRequestInput
@@ -523,7 +523,7 @@ export type InvitationRequestUncheckedCreateWithoutRequestedByInput = {
   role?: $Enums.USER_ROLE
   employeeId: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutRequestInput
@@ -578,7 +578,7 @@ export type InvitationRequestCreateWithoutInvitationInput = {
   role?: $Enums.USER_ROLE
   employeeId: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
   requestedBy: Prisma.UserCreateNestedOneWithoutRequestedInvitationsInput
@@ -592,7 +592,7 @@ export type InvitationRequestUncheckedCreateWithoutInvitationInput = {
   employeeId: string
   requestedById: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -646,7 +646,7 @@ export type InvitationRequestCreateManyRequestedByInput = {
   role?: $Enums.USER_ROLE
   employeeId: string
   status?: $Enums.REQUEST_STATUS
-  phone?: string
+  phone: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
