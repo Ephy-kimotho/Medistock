@@ -78,6 +78,7 @@ model User {
   emailAlertEnabled Boolean?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  phone             String    @default("0700000000")
 
   sessions             Session[]
   accounts             Account[]
@@ -148,6 +149,7 @@ model InvitationRequest {
   requestedBy   User   @relation("RequestedInvitations", fields: [requestedById], references: [id], onDelete: Cascade)
 
   status REQUEST_STATUS @default(pending)
+  phone  String         @default("0700000000")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

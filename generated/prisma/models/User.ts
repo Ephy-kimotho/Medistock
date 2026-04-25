@@ -38,6 +38,7 @@ export type UserMinAggregateOutputType = {
   emailAlertEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  phone: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type UserMaxAggregateOutputType = {
   emailAlertEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  phone: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -70,6 +72,7 @@ export type UserCountAggregateOutputType = {
   emailAlertEnabled: number
   createdAt: number
   updatedAt: number
+  phone: number
   _all: number
 }
 
@@ -88,6 +91,7 @@ export type UserMinAggregateInputType = {
   emailAlertEnabled?: true
   createdAt?: true
   updatedAt?: true
+  phone?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -104,6 +108,7 @@ export type UserMaxAggregateInputType = {
   emailAlertEnabled?: true
   createdAt?: true
   updatedAt?: true
+  phone?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -120,6 +125,7 @@ export type UserCountAggregateInputType = {
   emailAlertEnabled?: true
   createdAt?: true
   updatedAt?: true
+  phone?: true
   _all?: true
 }
 
@@ -209,6 +215,7 @@ export type UserGroupByOutputType = {
   emailAlertEnabled: boolean | null
   createdAt: Date
   updatedAt: Date
+  phone: string
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -246,6 +253,7 @@ export type UserWhereInput = {
   emailAlertEnabled?: Prisma.BoolNullableFilter<"User"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  phone?: Prisma.StringFilter<"User"> | string
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionsListRelationFilter
@@ -268,6 +276,7 @@ export type UserOrderByWithRelationInput = {
   emailAlertEnabled?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   transactions?: Prisma.TransactionsOrderByRelationAggregateInput
@@ -293,6 +302,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailAlertEnabled?: Prisma.BoolNullableFilter<"User"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  phone?: Prisma.StringFilter<"User"> | string
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   transactions?: Prisma.TransactionsListRelationFilter
@@ -315,6 +325,7 @@ export type UserOrderByWithAggregationInput = {
   emailAlertEnabled?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -337,6 +348,7 @@ export type UserScalarWhereWithAggregatesInput = {
   emailAlertEnabled?: Prisma.BoolNullableWithAggregatesFilter<"User"> | boolean | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  phone?: Prisma.StringWithAggregatesFilter<"User"> | string
 }
 
 export type UserCreateInput = {
@@ -353,6 +365,7 @@ export type UserCreateInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -375,6 +388,7 @@ export type UserUncheckedCreateInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -397,6 +411,7 @@ export type UserUpdateInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUpdateManyWithoutUserNestedInput
@@ -419,6 +434,7 @@ export type UserUncheckedUpdateInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUncheckedUpdateManyWithoutUserNestedInput
@@ -441,6 +457,7 @@ export type UserCreateManyInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
 }
 
 export type UserUpdateManyMutationInput = {
@@ -457,6 +474,7 @@ export type UserUpdateManyMutationInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -473,6 +491,7 @@ export type UserUncheckedUpdateManyInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -489,6 +508,7 @@ export type UserCountOrderByAggregateInput = {
   emailAlertEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -505,6 +525,7 @@ export type UserMaxOrderByAggregateInput = {
   emailAlertEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -521,6 +542,7 @@ export type UserMinOrderByAggregateInput = {
   emailAlertEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -650,6 +672,7 @@ export type UserCreateWithoutSessionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutProcessedByInput
@@ -671,6 +694,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutProcessedByInput
@@ -708,6 +732,7 @@ export type UserUpdateWithoutSessionsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutProcessedByNestedInput
@@ -729,6 +754,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutProcessedByNestedInput
@@ -750,6 +776,7 @@ export type UserCreateWithoutAccountsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutProcessedByInput
@@ -771,6 +798,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutProcessedByInput
@@ -808,6 +836,7 @@ export type UserUpdateWithoutAccountsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutProcessedByNestedInput
@@ -829,6 +858,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutProcessedByNestedInput
@@ -850,6 +880,7 @@ export type UserCreateWithoutRequestedInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -871,6 +902,7 @@ export type UserUncheckedCreateWithoutRequestedInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -908,6 +940,7 @@ export type UserUpdateWithoutRequestedInvitationsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUpdateManyWithoutUserNestedInput
@@ -929,6 +962,7 @@ export type UserUncheckedUpdateWithoutRequestedInvitationsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUncheckedUpdateManyWithoutUserNestedInput
@@ -950,6 +984,7 @@ export type UserCreateWithoutSentInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -971,6 +1006,7 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -1008,6 +1044,7 @@ export type UserUpdateWithoutSentInvitationsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUpdateManyWithoutUserNestedInput
@@ -1029,6 +1066,7 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUncheckedUpdateManyWithoutUserNestedInput
@@ -1050,6 +1088,7 @@ export type UserCreateWithoutTransactionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutProcessedByInput
@@ -1071,6 +1110,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutProcessedByInput
@@ -1108,6 +1148,7 @@ export type UserUpdateWithoutTransactionsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutProcessedByNestedInput
@@ -1129,6 +1170,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutProcessedByNestedInput
@@ -1150,6 +1192,7 @@ export type UserCreateWithoutPaymentsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsCreateNestedManyWithoutUserInput
@@ -1171,6 +1214,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   emailAlertEnabled?: boolean | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  phone?: string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionsUncheckedCreateNestedManyWithoutUserInput
@@ -1208,6 +1252,7 @@ export type UserUpdateWithoutPaymentsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUpdateManyWithoutUserNestedInput
@@ -1229,6 +1274,7 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   emailAlertEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionsUncheckedUpdateManyWithoutUserNestedInput
@@ -1326,6 +1372,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailAlertEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  phone?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
@@ -1349,6 +1396,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailAlertEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  phone?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1365,6 +1413,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailAlertEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  phone?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -1381,9 +1430,10 @@ export type UserSelectScalar = {
   emailAlertEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  phone?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "role" | "employeeId" | "banned" | "banReason" | "banExpires" | "emailAlertEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "role" | "employeeId" | "banned" | "banReason" | "banExpires" | "emailAlertEnabled" | "createdAt" | "updatedAt" | "phone", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
@@ -1420,6 +1470,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailAlertEnabled: boolean | null
     createdAt: Date
     updatedAt: Date
+    phone: string
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1862,6 +1913,7 @@ export interface UserFieldRefs {
   readonly emailAlertEnabled: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly phone: Prisma.FieldRef<"User", 'String'>
 }
     
 

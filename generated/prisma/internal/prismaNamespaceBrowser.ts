@@ -95,7 +95,8 @@ export const UserScalarFieldEnum = {
   banExpires: 'banExpires',
   emailAlertEnabled: 'emailAlertEnabled',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  phone: 'phone'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -155,6 +156,7 @@ export const InvitationRequestScalarFieldEnum = {
   employeeId: 'employeeId',
   requestedById: 'requestedById',
   status: 'status',
+  phone: 'phone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
