@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableHeader,
@@ -26,11 +25,13 @@ import type { Category } from "@/lib/types";
 
 interface CategoriesTableProps {
   categories: Category[];
+  isAdminOrManager: boolean;
   canViewArchived: boolean;
 }
 
 export function CategoriesTable({
   categories,
+  isAdminOrManager,
   canViewArchived,
 }: CategoriesTableProps) {
   const router = useRouter();
@@ -87,14 +88,11 @@ export function CategoriesTable({
               <TableHead className="font-semibold text-center">
                 Medicine Count
               </TableHead>
-              {canViewArchived && (
+              {isAdminOrManager && (
                 <TableHead className="font-semibold text-center">
-                  Status
+                  Actions
                 </TableHead>
               )}
-              <TableHead className="font-semibold text-center">
-                Actions
-              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,7 +101,7 @@ export function CategoriesTable({
                 key={category.id}
                 onClick={() => handleRowClick(category)}
                 className={cn(
-                  "transition-colors",
+                  "transition-colors py-2",
                   category.isArchived
                     ? "bg-muted/50 opacity-75"
                     : "cursor-pointer hover:bg-muted/50",
@@ -118,66 +116,54 @@ export function CategoriesTable({
                 <TableCell className="text-center font-bold">
                   {category.medicineCount ?? 0}
                 </TableCell>
-                {canViewArchived && (
+
+                {isAdminOrManager && (
                   <TableCell className="text-center">
-                    <Badge
-                      variant={category.isArchived ? "secondary" : "default"}
-                      className={cn(
-                        "px-3 py-1",
-                        category.isArchived
-                          ? "bg-princeton-orange/10 text-princeton-orange border-princeton-orange"
-                          : "bg-medium-jungle/10 text-medium-jungle border-medium-jungle",
-                      )}
-                    >
-                      {category.isArchived ? "Archived" : "Active"}
-                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="size-8 p-0 hover:bg-muted"
+                          onClick={(e) => e.stopPropagation()} // Prevent row click
+                        >
+                          <MoreVertical className="size-4 text-muted-foreground" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+                        {canViewArchived && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className={cn(
+                                "flex items-center gap-2 cursor-pointer",
+                                category.isArchived
+                                  ? "text-medium-jungle focus:text-medium-jungle focus:bg-medium-jungle/10"
+                                  : "text-princeton-orange focus:text-princeton-orange focus:bg-princeton-orange/10",
+                              )}
+                              onClick={(e) => handleArchiveClick(e, category)}
+                            >
+                              {category.isArchived ? (
+                                <>
+                                  <ArchiveRestore className="size-4" />
+                                  <span>Restore</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Archive className="size-4" />
+                                  <span>Archive</span>
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 )}
-                <TableCell className="text-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="size-8 p-0 hover:bg-muted"
-                        onClick={(e) => e.stopPropagation()} // Prevent row click
-                      >
-                        <MoreVertical className="size-4 text-muted-foreground" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-                      {canViewArchived && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className={cn(
-                              "flex items-center gap-2 cursor-pointer",
-                              category.isArchived
-                                ? "text-medium-jungle focus:text-medium-jungle focus:bg-medium-jungle/10"
-                                : "text-princeton-orange focus:text-princeton-orange focus:bg-princeton-orange/10",
-                            )}
-                            onClick={(e) => handleArchiveClick(e, category)}
-                          >
-                            {category.isArchived ? (
-                              <>
-                                <ArchiveRestore className="size-4" />
-                                <span>Restore</span>
-                              </>
-                            ) : (
-                              <>
-                                <Archive className="size-4" />
-                                <span>Archive</span>
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                        </>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>

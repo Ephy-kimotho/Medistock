@@ -89,7 +89,9 @@ export async function getMedicineNames() {
             select: {
                 id: true,
                 name: true,
-                ageGroup: true
+                ageGroup: true,
+                dosage: true,
+                unitPrice: true,
             },
             orderBy: { name: "asc" },
         })

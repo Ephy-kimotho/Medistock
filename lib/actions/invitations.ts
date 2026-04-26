@@ -152,7 +152,7 @@ export async function createInvitation(requestId: string, invitorId: string) {
 
         // create a unique token
         const inviteToken = randomBytes(32).toString("hex")
-        const expiresAt = addDays(new Date(), 7)
+        const expiresAt = addDays(new Date(), 1)
 
         // Build the invite URL
         const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;
@@ -212,7 +212,7 @@ export async function createInvitation(requestId: string, invitorId: string) {
     }
 }
 
-export async function acceptInvitation({ fields: { token, name, password, image }, employeeId }: AcceptInvitationProps) {
+export async function acceptInvitation({ fields: { token, name, password, image, phone }, employeeId }: AcceptInvitationProps) {
 
     // Validate input
     const validation = acceptInvitationSchema.safeParse({
@@ -292,7 +292,8 @@ export async function acceptInvitation({ fields: { token, name, password, image 
                     emailVerified: true,
                     emailAlertEnabled: allowEmailNotifications,
                     employeeId,
-                    image
+                    image,
+                    phone
                 }
 
             }
@@ -401,7 +402,7 @@ export async function resendInvite(token: string) {
 
         // Add expiration time
         const inviteToken = invitation.token;
-        const expiresAt = addDays(new Date(), 7)
+        const expiresAt = addDays(new Date(), 1)
 
         // Build the invite URL
         const inviteURL = `${process.env.NEXT_PUBLIC_APP_URL}/accept?token=${inviteToken}`;

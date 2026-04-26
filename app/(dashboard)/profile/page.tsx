@@ -6,6 +6,7 @@ import {
   Shield,
   Calendar,
   IdCard,
+  Phone,
   SquarePen,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -167,6 +168,21 @@ async function ProfilePage() {
                 </p>
                 <p className="text-base font-semibold text-foreground">
                   {formatRole(user.role || "user")}
+                </p>
+              </div>
+            </div>
+
+            {/* Phone Number */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                <Phone className="w-5 h-5 text-primary" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Phone number
+                </p>
+                <p className="text-base font-semibold text-foreground">
+                  {user.phone}
                 </p>
               </div>
             </div>

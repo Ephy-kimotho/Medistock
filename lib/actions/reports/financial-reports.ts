@@ -62,7 +62,6 @@ export async function generateSalesReport(
             where: transactionWhere,
             select: {
                 id: true,
-                patient: true,
                 createdAt: true,
                 stockEntry: {
                     select: {
@@ -80,6 +79,11 @@ export async function generateSalesReport(
                         paymentCode: true,
                     },
                 },
+                patientRecord: {
+                    select: {
+                        name: true
+                    }
+                }
             },
             orderBy: { createdAt: "desc" },
         });
@@ -294,7 +298,7 @@ export async function generateSalesReport(
         // Prepare table data
         const tableData = paidTransactions.map((t) => ({
             date: format(new Date(t.createdAt), "dd/MM/yyyy"),
-            patient: t.patient ?? "-",
+            patient: t.patientRecord?.name ?? "-",
             medicine: t.stockEntry.medicine.name,
             method: methodLabels[t.payment!.method] ?? t.payment!.method,
             code: truncateCode(t.payment!.paymentCode),

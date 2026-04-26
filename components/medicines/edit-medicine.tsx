@@ -36,6 +36,8 @@ export function EditMedicineForm({
         categoryId: medicine.categoryId,
         manufacturer: medicine.manufacturer ?? "",
         ageGroup: medicine.ageGroup ?? "",
+        dosage: medicine.dosage,
+        unitPrice: medicine.unitPrice,
       }}
     />
   );

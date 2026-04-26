@@ -63,7 +63,8 @@ export const ModelName = {
   Transactions: 'Transactions',
   Alerts: 'Alerts',
   Settings: 'Settings',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  Patient: 'Patient'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -95,7 +96,8 @@ export const UserScalarFieldEnum = {
   banExpires: 'banExpires',
   emailAlertEnabled: 'emailAlertEnabled',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  phone: 'phone'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -155,6 +157,7 @@ export const InvitationRequestScalarFieldEnum = {
   employeeId: 'employeeId',
   requestedById: 'requestedById',
   status: 'status',
+  phone: 'phone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -193,12 +196,14 @@ export const MedicinesScalarFieldEnum = {
   unit: 'unit',
   reorderlevel: 'reorderlevel',
   categoryId: 'categoryId',
-  manufacturer: 'manufacturer',
   ageGroup: 'ageGroup',
   isActive: 'isActive',
+  dosage: 'dosage',
+  unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  manufacturer: 'manufacturer'
 } as const
 
 export type MedicinesScalarFieldEnum = (typeof MedicinesScalarFieldEnum)[keyof typeof MedicinesScalarFieldEnum]
@@ -228,11 +233,9 @@ export const TransactionsScalarFieldEnum = {
   type: 'type',
   quantity: 'quantity',
   reason: 'reason',
-  patient: 'patient',
-  phone: 'phone',
-  patientAgeGroup: 'patientAgeGroup',
-  notes: 'notes',
+  patientId: 'patientId',
   userId: 'userId',
+  notes: 'notes',
   createdAt: 'createdAt'
 } as const
 
@@ -277,6 +280,17 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const PatientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone',
+  ageGroup: 'ageGroup',
+  createdAt: 'createdAt'
+} as const
+
+export type PatientScalarFieldEnum = (typeof PatientScalarFieldEnum)[keyof typeof PatientScalarFieldEnum]
 
 
 export const SortOrder = {

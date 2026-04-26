@@ -12,6 +12,7 @@ import {
   Loader,
   Mail,
   IdCard,
+  Phone,
   Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ interface AcceptInviteFormProps {
   name: string;
   role: string;
   employeeId: string;
+  phone: string;
 }
 
 export function AcceptInviteForm({
@@ -40,6 +42,7 @@ export function AcceptInviteForm({
   email,
   name,
   role,
+  phone,
   employeeId,
 }: AcceptInviteFormProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -131,6 +134,7 @@ export function AcceptInviteForm({
         token,
         name: values.name,
         password: values.password,
+        phone,
         image: imageUrl,
       };
 
@@ -178,6 +182,15 @@ export function AcceptInviteForm({
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-slate-500 flex items-center gap-2">
+              <Phone className="size-4" />
+              Phone number
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium">
+              {phone}
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-slate-500 flex items-center gap-2">
               <IdCard className="size-4" />
               Employee ID
             </span>
@@ -215,7 +228,7 @@ export function AcceptInviteForm({
           </div>
 
           {/* Profile Photo (Optional) */}
-          <div className="space-y-2">
+          <div className="space-y-2 border rounded-lg p-2">
             <Label className="font-medium">
               Profile Photo{" "}
               <span className="text-muted-foreground font-normal">

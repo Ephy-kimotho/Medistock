@@ -78,6 +78,7 @@ model User {
   emailAlertEnabled Boolean?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  phone             String
 
   sessions             Session[]
   accounts             Account[]
@@ -87,6 +88,7 @@ model User {
   requestedInvitations InvitationRequest[] @relation("RequestedInvitations")
 
   @@unique([email])
+  @@unique([phone])
   @@map("user")
 }
 
@@ -148,6 +150,7 @@ model InvitationRequest {
   requestedBy   User   @relation("RequestedInvitations", fields: [requestedById], references: [id], onDelete: Cascade)
 
   status REQUEST_STATUS @default(pending)
+  phone  String         @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -200,13 +203,17 @@ model Medicines {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  manufacturer String?
-  ageGroup     MEDICINE_AGE_GROUP @default(all_ages)
-  isActive     Boolean            @default(true)
+  ageGroup MEDICINE_AGE_GROUP @default(all_ages)
+  isActive Boolean            @default(true)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  dosage    String @default("2 times daily")
+  unitPrice Int    @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deletedAt    DateTime?
+  manufacturer String?
 
   stockEntries StockEntries[]
   alerts       Alerts[]
@@ -249,13 +256,13 @@ model Transactions {
   quantity Int
   reason   String
 
-  patient         String?
-  phone           String?
-  patientAgeGroup MEDICINE_AGE_GROUP?
-  notes           String?
+  patientId     String?
+  patientRecord Patient? @relation(fields: [patientId], references: [id])
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  notes String?
 
   createdAt DateTime @default(now())
 
@@ -315,4 +322,18 @@ model Payment {
   @@index([transactionId])
   @@index([paymentCode])
   @@map("payments")
+}
+
+model Patient {
+  id       String             @id @default(cuid())
+  name     String
+  phone    String             @unique
+  ageGroup MEDICINE_AGE_GROUP
+
+  createdAt DateTime @default(now())
+
+  transactions Transactions[]
+
+  @@index([name, phone])
+  @@map("patients")
 }

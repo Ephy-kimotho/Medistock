@@ -53,6 +53,7 @@ export function OnboardingTable({ requests, invitorId }: OnboardingTableProps) {
           <TableRow className="bg-muted">
             <TableHead className="font-semibold">Name</TableHead>
             <TableHead className="font-semibold">Email</TableHead>
+            <TableHead className="font-semibold">Phone Number</TableHead>
             <TableHead className="font-semibold">Employee ID</TableHead>
             <TableHead className="font-semibold">Role</TableHead>
             <TableHead className="font-semibold text-center">Status</TableHead>
@@ -70,6 +71,9 @@ export function OnboardingTable({ requests, invitorId }: OnboardingTableProps) {
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {request.email}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {request.phone}
                 </TableCell>
                 <TableCell className="font-mono text-sm">
                   {request.employeeId}

@@ -7,6 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const LIMIT = 9;
+export const NAME_PATTERN = /^[a-zA-Z\s']+$/;
+export const PHONE_PATTERN = /^\+?(?=(?:\D*\d){7,15}\D*$)[\d\s\-]+$/;
+
 
 export function formatRole(role: string) {
   const roleMap: Record<string, string> = {
@@ -56,4 +59,67 @@ export function formatPrice(price: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+export function preventNumbers(e: React.KeyboardEvent<HTMLInputElement>) {
+  // Allow: backspace, delete, tab, escape, enter, arrows
+  const allowedKeys = [
+    "Backspace",
+    "Delete",
+    "Tab",
+    "Escape",
+    "Enter",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Home",
+    "End",
+  ];
+
+  if (allowedKeys.includes(e.key)) {
+    return;
+  }
+
+  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+  if (e.ctrlKey || e.metaKey) {
+    return;
+  }
+
+  // Block numbers (0-9)
+  if (/^[0-9]$/.test(e.key)) {
+    e.preventDefault();
+  }
+}
+
+export function preventLetters(e: React.KeyboardEvent<HTMLInputElement>) {
+
+  const allowedKeys = [
+    "Backspace",
+    "Delete",
+    "Tab",
+    "Escape",
+    "Enter",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Home",
+    "End",
+  ];
+
+  if (allowedKeys.includes(e.key)) {
+    return;
+  }
+
+
+  if (e.ctrlKey || e.metaKey) {
+    return;
+  }
+
+  const allowedChars = /^[0-9+\s\-]$/;
+
+  if (!allowedChars.test(e.key)) {
+    e.preventDefault();
+  }
 }

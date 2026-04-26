@@ -133,7 +133,9 @@ export async function getTransactions({
                     },
                 },
                 {
-                    patient: { contains: search.trim(), mode: "insensitive" },
+                    patientRecord: {
+                        name: { contains: search.trim(), mode: "insensitive" },
+                    }
                 },
                 {
                     user: {
@@ -165,6 +167,13 @@ export async function getTransactions({
                         role: true,
                     },
                 },
+                patientRecord: {
+                    select: {
+                        name: true,
+                        ageGroup: true,
+                        phone: true
+                    }
+                }
             },
             orderBy: { createdAt: "desc" },
             skip: (page - 1) * LIMIT,
@@ -182,9 +191,9 @@ export async function getTransactions({
                 batchNumber: tx.stockEntry.batchNumber,
                 userName: tx.user.name,
                 userRole: tx.user.role,
-                patient: tx.patient,
+                patient: tx.patientRecord?.name,
                 reason: tx.reason,
-                phone: tx.phone
+                phone: tx.patientRecord?.phone
             })
         );
 
@@ -262,6 +271,7 @@ export async function getTransactionById(
                                 name: true,
                                 unit: true,
                                 ageGroup: true,
+                                unitPrice:true,
                             },
                         },
                     },
@@ -287,6 +297,13 @@ export async function getTransactionById(
                         }
                     }
                 },
+                patientRecord: {
+                    select: {
+                        name: true,
+                        ageGroup: true,
+                        phone: true,
+                    }
+                }
             },
         });
 
@@ -301,14 +318,15 @@ export async function getTransactionById(
             reason: transaction.reason,
             notes: transaction.notes,
             createdAt: transaction.createdAt,
-            patient: transaction.patient,
-            phone: transaction.phone,
-            patientAgeGroup: transaction.patientAgeGroup,
+            patient: transaction.patientRecord?.name,
+            phone: transaction.patientRecord?.phone,
+            patientAgeGroup: transaction.patientRecord?.ageGroup,
             medicine: {
                 id: transaction.stockEntry.medicine.id,
                 name: transaction.stockEntry.medicine.name,
                 unit: transaction.stockEntry.medicine.unit,
                 ageGroup: transaction.stockEntry.medicine.ageGroup,
+                unitPrice: transaction.stockEntry.medicine.unitPrice
             },
             batch: {
                 id: transaction.stockEntry.id,

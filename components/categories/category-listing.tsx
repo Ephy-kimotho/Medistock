@@ -13,11 +13,13 @@ import { Loader } from "lucide-react";
 interface CategoryListingProps {
   initialSearch: string;
   currentPage: number;
+  isAdminOrManager:boolean
 }
 
 export function CategoriesListing({
   initialSearch,
   currentPage,
+  isAdminOrManager
 }: CategoryListingProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -83,6 +85,7 @@ export function CategoriesListing({
             <CategoriesTable
               categories={data?.categories || []}
               canViewArchived={data?.canViewArchived || false}
+              isAdminOrManager={isAdminOrManager}
             />
           )}
         </div>

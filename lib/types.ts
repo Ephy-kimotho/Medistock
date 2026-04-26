@@ -4,6 +4,7 @@ import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories, getCategoryById } from "@/lib/actions/categories"
 import { getCategoryNames, } from "@/lib/actions/medicines"
+import { MEDICINE_AGE_GROUP } from "@/generated/prisma/client"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -80,6 +81,7 @@ export interface AcceptInvitationInput {
     token: string,
     name: string,
     password: string,
+    phone: string,
     image?: string
 }
 
@@ -98,6 +100,8 @@ export interface MedicineInput {
     categoryId: string;
     manufacturer?: string;
     ageGroup: AgeGroup;
+    dosage: string;
+    unitPrice: number;
 }
 
 export interface MedicineWithStock {
@@ -113,6 +117,8 @@ export interface MedicineWithStock {
     createdAt: Date;
     updatedAt: Date;
     totalStock: number;
+    dosage: string;
+    unitPrice: number;
     stockStatus: "in_stock" | "low_stock" | "out_of_stock";
 }
 
@@ -166,11 +172,16 @@ export interface BatchInfo {
 export interface DispenseInput {
     stockEntriesId: string;
     quantity: number;
-    patient: string;
-    phone: string;
-    patientAgeGroup: AgeGroup;
-    notes?: string | null;
+    notes: string | null;
 
+    // Patient (either new or existing)
+    isNewPatient: boolean;
+    patientId?: string;
+    patient?: string;
+    phone?: string;
+    patientAgeGroup?: AgeGroup;
+
+    // Payment
     collectPayment?: boolean;
     paymentMethod?: "cash" | "mpesa" | "card" | "insurance";
     paymentAmount?: number;
@@ -193,8 +204,8 @@ export interface TransactionWithDetails {
     batchNumber: string;
     userName: string;
     userRole: string;
-    patient: string | null;
-    phone: string | null;
+    patient: string | undefined;
+    phone: string | undefined;
     reason: string;
 }
 
@@ -302,6 +313,21 @@ export interface CategoryPageContentProps {
     stats: Stats;
 }
 
+/* export interface PendingPayment {
+    id: string;
+    quantity: number;
+    patient: string;
+    phone: string;
+    createdAt: Date;
+    medicine: {
+        name: string;
+        unit: string;
+    };
+    batch: {
+        batchNumber: string;
+    };
+} */
+
 export interface PendingPayment {
     id: string;
     quantity: number;
@@ -311,6 +337,7 @@ export interface PendingPayment {
     medicine: {
         name: string;
         unit: string;
+        unitPrice: number;
     };
     batch: {
         batchNumber: string;
@@ -340,14 +367,15 @@ export interface TransactionDetails {
     reason: string;
     notes: string | null;
     createdAt: Date;
-    patient: string | null;
-    phone: string | null;
-    patientAgeGroup: AgeGroup | null;
+    patient: string | undefined;
+    phone: string | undefined;
+    patientAgeGroup: AgeGroup | undefined;
     medicine: {
         id: string;
         name: string;
         unit: string;
         ageGroup: string;
+        unitPrice:number;
     };
     batch: {
         id: string;
@@ -379,4 +407,17 @@ export interface ExpiredBatch {
         name: string;
         unit: string;
     };
+}
+
+export interface PatientOption {
+    id: string;
+    name: string;
+    phone: string;
+    ageGroup: MEDICINE_AGE_GROUP;
+}
+
+export interface CreatePatientInput {
+    name: string;
+    phone: string;
+    ageGroup: MEDICINE_AGE_GROUP;
 }

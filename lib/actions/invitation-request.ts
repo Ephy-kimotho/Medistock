@@ -180,6 +180,7 @@ export async function createInvitationRequest(data: InvitationRequestInput, requ
                 name: data.name,
                 email: data.email,
                 role: data.role,
+                phone:data.phone,
                 employeeId: data.employeeId,
                 requestedById: requestorId,
                 status: "pending",

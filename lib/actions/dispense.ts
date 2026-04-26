@@ -5,7 +5,7 @@ import { requirePermission } from "@/lib/check-permissions";
 import { revalidatePath } from "next/cache";
 import { isBefore } from "date-fns";
 import { generateCashPaymentCode } from "@/lib/actions/common";
-import { Prisma } from "@/generated/prisma/client"
+import { Prisma, MEDICINE_AGE_GROUP } from "@/generated/prisma/client"
 import type { DispenseInput } from "@/lib/types"
 
 export async function getBatchesByMedicine(medicineId: string) {
@@ -58,17 +58,6 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
             throw new Error("Batch not found.");
         }
 
-        // Validate age group match
-        if (
-            batch.medicine.ageGroup !== "all_ages" &&
-            batch.medicine.ageGroup !== data.patientAgeGroup
-        ) {
-            return {
-                success: false,
-                message: `Cannot dispense: ${batch.medicine.name} is for ${batch.medicine.ageGroup} patients, but patient is ${data.patientAgeGroup}.`,
-            };
-        }
-
         // Check if batch has expired
         if (isBefore(new Date(batch.expiryDate), new Date())) {
             throw new Error("Cannot dispense from an expired batch.");
@@ -81,24 +70,85 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
             );
         }
 
+        // Handle patient - either create new or use existing
+        let patientId: string;
+        let patientName: string;
+
+        if (data.isNewPatient) {
+            // Check if patient with this phone already exists
+            const existingPatient = await prisma.patient.findUnique({
+                where: { phone: data.phone },
+            });
+
+            if (existingPatient) {
+                // Use existing patient
+                patientId = existingPatient.id;
+                patientName = existingPatient.name;
+            } else {
+                // Validate age group match for new patients
+                if (
+                    batch.medicine.ageGroup !== "all_ages" &&
+                    batch.medicine.ageGroup !== data.patientAgeGroup
+                ) {
+                    return {
+                        success: false,
+                        message: `Cannot dispense: ${batch.medicine.name} is for ${batch.medicine.ageGroup} patients, but patient is ${data.patientAgeGroup}.`,
+                    };
+                }
+
+                // Create new patient
+                const newPatient = await prisma.patient.create({
+                    data: {
+                        name: data.patient!,
+                        phone: data.phone!,
+                        ageGroup: data.patientAgeGroup as MEDICINE_AGE_GROUP,
+                    },
+                });
+                patientId = newPatient.id;
+                patientName = newPatient.name;
+            }
+        } else {
+            // Returning patient - use provided patientId
+            const patient = await prisma.patient.findUnique({
+                where: { id: data.patientId },
+                select: { id: true, name: true, ageGroup: true },
+            });
+
+            if (!patient) {
+                throw new Error("Patient not found.");
+            }
+
+            // Validate age group match for returning patients
+            if (
+                batch.medicine.ageGroup !== "all_ages" &&
+                batch.medicine.ageGroup !== patient.ageGroup
+            ) {
+                return {
+                    success: false,
+                    message: `Cannot dispense: ${batch.medicine.name} is for ${batch.medicine.ageGroup} patients, but ${patient.name} is ${patient.ageGroup}.`,
+                };
+            }
+
+            patientId = patient.id;
+            patientName = patient.name;
+        }
+
         // Generate cash payment code if needed
         let paymentCode = data.paymentCode;
         if (data.collectPayment && data.paymentMethod === "cash") {
             paymentCode = await generateCashPaymentCode();
         }
 
-        // Use interactive transaction to get the created transaction ID
+        // Use interactive transaction
         const result = await prisma.$transaction(async (tx) => {
-            // Create transaction record
+            // Create transaction record with patientId reference
             const transaction = await tx.transactions.create({
                 data: {
                     stockEntriesId: data.stockEntriesId,
                     type: "dispensed",
                     quantity: data.quantity,
-                    patientAgeGroup: data.patientAgeGroup,
                     reason: "Dispensed to patient",
-                    patient: data.patient,
-                    phone: data.phone,
+                    patientId,
                     notes: data.notes,
                     userId,
                 },
@@ -120,7 +170,7 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
                         method: data.paymentMethod,
                         amount: data.paymentAmount,
                         paymentCode: paymentCode!,
-                        processedById: userId
+                        processedById: userId,
                     },
                 });
             }
@@ -139,15 +189,11 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
 
         return {
             success: true,
-            message: `Successfully dispensed ${data.quantity} units of ${batch.medicine.name} to ${data.patient}.${paymentMessage}`,
+            message: `Successfully dispensed ${data.quantity} units of ${batch.medicine.name} to ${patientName}.${paymentMessage}`,
             transactionId: result.id,
         };
     } catch (error: unknown) {
         console.error("Failed to dispense medicine:", error);
-
-        /* 
-            error.message.includes(`Unique constraint failed on the fields: ("paymentCode")"`)
-         */
 
         if (
             error instanceof Prisma.PrismaClientKnownRequestError &&

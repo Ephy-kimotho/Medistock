@@ -21,6 +21,7 @@ export async function TokenValidator({ token }: TokenValidatorProps) {
         select: {
           name: true,
           email: true,
+          phone:true,
           role: true,
           employeeId: true,
         },
@@ -55,6 +56,7 @@ export async function TokenValidator({ token }: TokenValidatorProps) {
       name={invitation.request.name}
       role={invitation.request.role}
       employeeId={invitation.request.employeeId}
+      phone={invitation.request.phone}
     />
   );
 }

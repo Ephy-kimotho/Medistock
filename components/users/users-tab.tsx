@@ -138,7 +138,7 @@ function UsersTab({
                 <SelectItem value="inventory_manager">
                   Inventory Managers
                 </SelectItem>
-                <SelectItem value="user">Regular Staff</SelectItem>
+                <SelectItem value="user">Pharmacists</SelectItem>
               </SelectContent>
             </Select>
           </div>

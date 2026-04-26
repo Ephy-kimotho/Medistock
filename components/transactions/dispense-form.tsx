@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Loader, AlertTriangle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -23,12 +24,14 @@ import {
   useBatchesByMedicine,
   useDispenseMedicine,
 } from "@/hooks/useDispense";
+import { usePatientByPhone } from "@/hooks/usePatients";
 import { MedicineCombobox } from "@/components/medicine-combobox";
 import { BatchCombobox } from "./batch-combobox";
-import { cn } from "@/lib/utils";
-import { AGE_GROUPS, getAgeGroupLabel, PAYMENT_METHODS } from "@/constants";
-import type { DispenseInput } from "@/lib/types";
+import { PatientCombobox } from "./patient-combobox";
+import { cn, preventNumbers, preventLetters, formatPrice } from "@/lib/utils";
+import { AGE_GROUPS, PAYMENT_METHODS, getAgeGroupLabel } from "@/constants";
 import { toast } from "sonner";
+import type { DispenseInput, PatientOption } from "@/lib/types";
 
 const PATIENT_AGE_GROUPS = AGE_GROUPS.filter(
   (group) => group.value !== "all_ages",
@@ -38,9 +41,14 @@ interface DispenseFormProps {
   userId: string;
 }
 
+type AgeGroup = "infant" | "pediatric" | "adult" | "geriatric";
+
 export function DispenseForm({ userId }: DispenseFormProps) {
   const [selectedMedicineId, setSelectedMedicineId] = useState("");
   const [selectedBatchId, setSelectedBatchId] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState<PatientOption | null>(
+    null,
+  );
 
   const { data: medicines, isLoading: isLoadingMedicines } =
     useDispenseMedicines();
@@ -65,6 +73,8 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       medicineId: "",
       stockEntriesId: "",
       quantity: undefined,
+      isNewPatient: true,
+      patientId: "",
       patient: "",
       phone: "",
       patientAgeGroup: undefined,
@@ -76,30 +86,88 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     },
   });
 
-  const patientAgeGroup = useWatch({ control, name: "patientAgeGroup" });
+  const isNewPatient = useWatch({ control, name: "isNewPatient" });
+  const phoneValue = useWatch({ control, name: "phone" });
   const collectPayment = useWatch({ control, name: "collectPayment" });
   const paymentMethod = useWatch({ control, name: "paymentMethod" });
+  const quantity = useWatch({ control, name: "quantity" });
 
-  // Check if there's an age group mismatch
-  const hasAgeGroupMismatch = (() => {
-    if (!selectedMedicine || !patientAgeGroup) return false;
-    if (selectedMedicine.ageGroup === "all_ages") return false;
-    return selectedMedicine.ageGroup !== patientAgeGroup;
-  })();
+  // Check for existing patient by phone (for auto-switch)
+  const { data: existingPatient } = usePatientByPhone(phoneValue || "");
+
+  // Calculate payment amount based on quantity and unit price
+  const calculatedAmount =
+    selectedMedicine && quantity && quantity > 0
+      ? quantity * selectedMedicine.unitPrice
+      : 0;
+
+  const handlePhoneBlur = () => {
+    if (isNewPatient && existingPatient && phoneValue) {
+      setValue("isNewPatient", false);
+      setValue("patientId", existingPatient.id);
+      setSelectedPatient(existingPatient);
+      toast.info(
+        `Patient "${existingPatient.name}" found. Switched to returning patient.`,
+      );
+    }
+  };
 
   // Sync medicine selection with form
   const handleMedicineChange = (value: string) => {
+    const medicine = medicines?.find((m) => m.id === value);
+
     setSelectedMedicineId(value);
     setSelectedBatchId("");
     setValue("medicineId", value);
     setValue("stockEntriesId", "");
     setValue("quantity", undefined as unknown as number);
+
+    // Pre-fill dosage from medicine
+    if (medicine) {
+      setValue("notes", medicine.dosage);
+    }
+
+    // Auto-select age group for new patients if medicine has a specific age group
+    if (isNewPatient && medicine && medicine.ageGroup !== "all_ages") {
+      setValue("patientAgeGroup", medicine.ageGroup as AgeGroup);
+    } else if (isNewPatient) {
+      setValue("patientAgeGroup", undefined as unknown as AgeGroup);
+    }
   };
 
   // Sync batch selection with form
   const handleBatchChange = (value: string) => {
     setSelectedBatchId(value);
     setValue("stockEntriesId", value);
+  };
+
+  // Handle patient type change
+  const handlePatientTypeChange = (value: string) => {
+    const isNew = value === "new";
+    setValue("isNewPatient", isNew);
+
+    if (isNew) {
+      setValue("patientId", "");
+      setSelectedPatient(null);
+
+      // Auto-select age group if medicine has a specific age group
+      if (selectedMedicine && selectedMedicine.ageGroup !== "all_ages") {
+        setValue("patientAgeGroup", selectedMedicine.ageGroup as AgeGroup);
+      }
+    } else {
+      setValue("patient", "");
+      setValue("phone", "");
+      setValue("patientAgeGroup", undefined as unknown as AgeGroup);
+    }
+  };
+
+  // Handle returning patient selection
+  const handlePatientSelect = (
+    patientId: string,
+    patient: PatientOption | null,
+  ) => {
+    setValue("patientId", patientId);
+    setSelectedPatient(patient);
   };
 
   // Handle payment toggle
@@ -113,13 +181,6 @@ export function DispenseForm({ userId }: DispenseFormProps) {
   };
 
   const onSubmit: SubmitHandler<DispenseFormData> = (values) => {
-    // Double-check age group validation
-    if (hasAgeGroupMismatch) {
-      return toast.error(
-        `Cannot dispense: Medicine is for ${getAgeGroupLabel(selectedMedicine!.ageGroup)} patients, but patient is ${getAgeGroupLabel(values.patientAgeGroup!)}.`,
-      );
-    }
-
     // Validate quantity against available stock
     if (selectedBatch && values.quantity > selectedBatch.quantity) {
       return toast.warning(
@@ -130,13 +191,16 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     const data: DispenseInput = {
       stockEntriesId: values.stockEntriesId,
       quantity: values.quantity,
-      patient: values.patient.trim(),
-      phone: values.phone.trim(),
-      patientAgeGroup: values.patientAgeGroup!,
+      isNewPatient: values.isNewPatient,
+      patientId: values.patientId,
+      patient: values.patient?.trim(),
+      phone: values.phone?.trim(),
+      patientAgeGroup: values.patientAgeGroup,
       notes: values.notes?.trim() || null,
       collectPayment: values.collectPayment,
       paymentMethod: values.paymentMethod,
-      paymentAmount: values.paymentAmount,
+      // Use calculated amount instead of user input
+      paymentAmount: values.collectPayment ? calculatedAmount : undefined,
       paymentCode: values.paymentCode?.trim(),
     };
 
@@ -147,6 +211,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
           reset();
           setSelectedMedicineId("");
           setSelectedBatchId("");
+          setSelectedPatient(null);
         },
       },
     );
@@ -156,11 +221,12 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     reset();
     setSelectedMedicineId("");
     setSelectedBatchId("");
+    setSelectedPatient(null);
   };
 
   const isBatchSelectEnabled = !!selectedMedicineId && !isLoadingBatches;
   const isFormEnabled = !!selectedBatchId;
-  const isSubmitDisabled = !isFormEnabled || isPending || hasAgeGroupMismatch;
+  const isSubmitDisabled = !isFormEnabled || isPending;
 
   if (isLoadingMedicines) {
     return (
@@ -237,128 +303,212 @@ export function DispenseForm({ userId }: DispenseFormProps) {
           </CardContent>
         </Card>
 
-        {/* Patient info */}
+        {/* Patient Selection */}
         <Card>
           <CardContent className="space-y-4">
-            {/* Patient Name */}
-            <div className="space-y-2">
-              <Label htmlFor="patient" className="text-sm font-medium">
-                Patient Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="patient"
-                placeholder="e.g. John Doe..."
-                disabled={!isFormEnabled || isPending}
-                className={cn(
-                  "h-11",
-                  errors.patient
-                    ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                    : "focus-visible:ring-azure focus-visible:border-azure",
-                  !isFormEnabled && "opacity-50 cursor-not-allowed",
-                )}
-                {...register("patient")}
-              />
-              {errors.patient && (
-                <p className="text-red-500 text-sm">{errors.patient.message}</p>
-              )}
-            </div>
-
-            {/* Patient Phone and Age Group Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Patient Phone */}
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium">
-                  Phone Number <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="phone"
-                  placeholder="e.g. 07xxxxxxxx"
-                  disabled={!isFormEnabled || isPending}
-                  className={cn(
-                    "py-4",
-                    errors.phone
-                      ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                      : "focus-visible:ring-azure focus-visible:border-azure",
-                    !isFormEnabled && "opacity-50 cursor-not-allowed",
-                  )}
-                  {...register("phone")}
-                />
-                {errors.phone && (
-                  <p className="text-red-500 text-sm">{errors.phone.message}</p>
-                )}
-              </div>
-
-              {/* Patient Age Group */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="patientAgeGroup"
-                  className="text-sm font-medium"
-                >
-                  Patient Age Group <span className="text-red-500">*</span>
-                </Label>
-                <Controller
-                  control={control}
-                  name="patientAgeGroup"
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={!isFormEnabled || isPending}
-                    >
-                      <SelectTrigger
+            {/* Patient Type Toggle */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Patient Type</Label>
+              <Controller
+                control={control}
+                name="isNewPatient"
+                render={({ field }) => (
+                  <RadioGroup
+                    value={field.value ? "new" : "returning"}
+                    onValueChange={handlePatientTypeChange}
+                    disabled={!isFormEnabled || isPending}
+                    className="flex gap-6"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="new" id="new-patient" />
+                      <Label
+                        htmlFor="new-patient"
                         className={cn(
-                          "py-4 w-full",
-                          errors.patientAgeGroup
-                            ? "border-red-400 focus:ring-red-400"
-                            : "focus:ring-azure",
+                          "font-normal cursor-pointer",
                           !isFormEnabled && "opacity-50 cursor-not-allowed",
                         )}
                       >
-                        <SelectValue placeholder="Select age group..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PATIENT_AGE_GROUPS.map((group) => (
-                          <SelectItem key={group.value} value={group.value}>
-                            {group.label}{" "}
-                            <span className="text-muted-foreground">
-                              ({group.description})
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.patientAgeGroup && (
-                  <p className="text-red-500 text-sm">
-                    {errors.patientAgeGroup.message}
-                  </p>
+                        New Patient
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="returning"
+                        id="returning-patient"
+                      />
+                      <Label
+                        htmlFor="returning-patient"
+                        className={cn(
+                          "font-normal cursor-pointer",
+                          !isFormEnabled && "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        Returning Patient
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 )}
-              </div>
+              />
             </div>
 
-            {/* Age Group Mismatch Warning */}
-            {hasAgeGroupMismatch && (
-              <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <AlertTriangle className="size-5 text-red-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-red-800">
-                    Age Group Mismatch — Cannot Dispense
+            {/* Returning Patient: Search/Select */}
+            {!isNewPatient && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Select Patient <span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name="patientId"
+                  render={({ field }) => (
+                    <PatientCombobox
+                      value={field.value || ""}
+                      onChange={handlePatientSelect}
+                      disabled={!isFormEnabled || isPending}
+                      error={!!errors.patientId}
+                      ageGroup={selectedMedicine?.ageGroup}
+                    />
+                  )}
+                />
+                {errors.patientId && (
+                  <p className="text-red-500 text-sm">
+                    {errors.patientId.message}
                   </p>
-                  <p className="text-sm text-red-700 mt-1">
-                    This medicine ({selectedMedicine?.name}) is designated for{" "}
-                    <strong>
-                      {getAgeGroupLabel(selectedMedicine!.ageGroup)}
-                    </strong>{" "}
-                    patients, but the selected patient age group is{" "}
-                    <strong>{getAgeGroupLabel(patientAgeGroup!)}</strong>.
-                  </p>
-                  <p className="text-sm text-red-700 mt-2">
-                    Please select a different medicine or correct the
-                    patient&apos;s age group.
-                  </p>
-                </div>
+                )}
+                {selectedPatient && (
+                  <div className="p-3 bg-muted/50 rounded-lg text-sm">
+                    <p>
+                      <span className="text-muted-foreground">Name:</span>{" "}
+                      {selectedPatient.name}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">Phone:</span>{" "}
+                      {selectedPatient.phone}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">Age Group:</span>{" "}
+                      {getAgeGroupLabel(selectedPatient.ageGroup)}
+                    </p>
+                  </div>
+                )}
               </div>
+            )}
+
+            {/* New Patient: Manual Entry */}
+            {isNewPatient && (
+              <>
+                {/* Patient Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="patient" className="text-sm font-medium">
+                    Patient Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="patient"
+                    placeholder="e.g. John Doe..."
+                    disabled={!isFormEnabled || isPending}
+                    onKeyDown={preventNumbers}
+                    className={cn(
+                      "h-11",
+                      errors.patient
+                        ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                        : "focus-visible:ring-azure focus-visible:border-azure",
+                      !isFormEnabled && "opacity-50 cursor-not-allowed",
+                    )}
+                    {...register("patient")}
+                  />
+                  {errors.patient && (
+                    <p className="text-red-500 text-sm">
+                      {errors.patient.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Patient Phone and Age Group Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Patient Phone */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-medium">
+                      Phone Number <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="phone"
+                      placeholder="e.g. 07xxxxxxxx"
+                      disabled={!isFormEnabled || isPending}
+                      onKeyDown={preventLetters}
+                      className={cn(
+                        "h-11",
+                        errors.phone
+                          ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                          : "focus-visible:ring-azure focus-visible:border-azure",
+                        !isFormEnabled && "opacity-50 cursor-not-allowed",
+                      )}
+                      {...register("phone", {
+                        onBlur: handlePhoneBlur,
+                      })}
+                    />
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm">
+                        {errors.phone.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Patient Age Group */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="patientAgeGroup"
+                      className="text-sm font-medium"
+                    >
+                      Patient Age Group <span className="text-red-500">*</span>
+                    </Label>
+                    <Controller
+                      control={control}
+                      name="patientAgeGroup"
+                      render={({ field }) => (
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          disabled={!isFormEnabled || isPending}
+                        >
+                          <SelectTrigger
+                            className={cn(
+                              "h-11 w-full",
+                              errors.patientAgeGroup
+                                ? "border-red-400 focus:ring-red-400"
+                                : "focus:ring-azure",
+                              !isFormEnabled && "opacity-50 cursor-not-allowed",
+                            )}
+                          >
+                            <SelectValue placeholder="Select age group..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {PATIENT_AGE_GROUPS.map((group) => (
+                              <SelectItem key={group.value} value={group.value}>
+                                {group.label}{" "}
+                                <span className="text-muted-foreground">
+                                  ({group.description})
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.patientAgeGroup && (
+                      <p className="text-red-500 text-sm">
+                        {errors.patientAgeGroup.message}
+                      </p>
+                    )}
+                    {selectedMedicine &&
+                      selectedMedicine.ageGroup !== "all_ages" && (
+                        <p className="text-sm text-muted-foreground">
+                          Auto-selected based on medicine (
+                          {selectedMedicine.ageGroup})
+                        </p>
+                      )}
+                  </div>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
@@ -387,11 +537,18 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                 )}
                 {...register("quantity", { valueAsNumber: true })}
               />
-              {selectedBatch && (
-                <p className="text-sm text-muted-foreground">
-                  Available: {selectedBatch.quantity} units
-                </p>
-              )}
+              <div className="flex flex-col gap-1">
+                {selectedBatch && (
+                  <p className="text-sm text-muted-foreground">
+                    Available: {selectedBatch.quantity} units
+                  </p>
+                )}
+                {selectedMedicine && (
+                  <p className="text-sm text-muted-foreground">
+                    Unit Price: {formatPrice(selectedMedicine.unitPrice)}
+                  </p>
+                )}
+              </div>
               {errors.quantity && (
                 <p className="text-red-500 text-sm">
                   {errors.quantity.message}
@@ -399,7 +556,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
               )}
             </div>
 
-            {/* Notes */}
+            {/* Dosage */}
             <div className="space-y-2">
               <Label htmlFor="notes" className="text-sm font-medium">
                 Dosage <span className="text-red-500">*</span>
@@ -418,6 +575,11 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                 )}
                 {...register("notes")}
               />
+              {selectedMedicine && (
+                <p className="text-sm text-muted-foreground">
+                  Pre-filled from medicine. You can adjust if needed.
+                </p>
+              )}
               {errors.notes && (
                 <p className="text-red-500 text-sm">{errors.notes.message}</p>
               )}
@@ -454,78 +616,68 @@ export function DispenseForm({ userId }: DispenseFormProps) {
 
             {collectPayment && (
               <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Payment Method */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      Payment Method <span className="text-red-500">*</span>
-                    </Label>
-                    <Controller
-                      control={control}
-                      name="paymentMethod"
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          disabled={isPending}
-                        >
-                          <SelectTrigger
-                            className={cn(
-                              "w-full",
-                              errors.paymentMethod
-                                ? "border-red-400 focus:ring-red-400"
-                                : "focus:ring-azure",
-                            )}
-                          >
-                            <SelectValue placeholder="Select method..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {PAYMENT_METHODS.map((method) => (
-                              <SelectItem
-                                key={method.value}
-                                value={method.value}
-                              >
-                                {method.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.paymentMethod && (
-                      <p className="text-red-500 text-sm">
-                        {errors.paymentMethod.message}
+                {/* Payment Amount Display */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Amount (KSH)</Label>
+                  <div className="p-3 bg-background border rounded-lg">
+                    <p className="text-2xl font-bold text-slate-900">
+                      {formatPrice(calculatedAmount)}
+                    </p>
+                    {selectedMedicine && quantity && quantity > 0 && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {quantity}
+                        &times;
+                        {selectedMedicine.unitPrice.toLocaleString()} ={" "}
+                        {formatPrice(calculatedAmount)}
+                      </p>
+                    )}
+                    {(!quantity || quantity <= 0) && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Enter quantity to calculate amount
                       </p>
                     )}
                   </div>
+                </div>
 
-                  {/* Payment Amount */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="paymentAmount"
-                      className="text-sm font-medium"
-                    >
-                      Amount (KSH) <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="paymentAmount"
-                      type="number"
-                      min={1}
-                      placeholder="e.g. 500"
-                      disabled={isPending}
-                      className={cn(
-                        errors.paymentAmount
-                          ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                          : "focus-visible:ring-azure focus-visible:border-azure",
-                      )}
-                      {...register("paymentAmount", { valueAsNumber: true })}
-                    />
-                    {errors.paymentAmount && (
-                      <p className="text-red-500 text-sm">
-                        {errors.paymentAmount.message}
-                      </p>
+                {/* Payment Method */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Payment Method <span className="text-red-500">*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name="paymentMethod"
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isPending}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full",
+                            errors.paymentMethod
+                              ? "border-red-400 focus:ring-red-400"
+                              : "focus:ring-azure",
+                          )}
+                        >
+                          <SelectValue placeholder="Select method..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PAYMENT_METHODS.map((method) => (
+                            <SelectItem key={method.value} value={method.value}>
+                              {method.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     )}
-                  </div>
+                  />
+                  {errors.paymentMethod && (
+                    <p className="text-red-500 text-sm">
+                      {errors.paymentMethod.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Payment Code (not shown for cash) */}

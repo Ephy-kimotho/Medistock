@@ -119,6 +119,7 @@ export function UserTable({ users, isReadOnly = false }: UserTableProps) {
             <TableRow className="font-bold bg-muted">
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date Joined</TableHead>
@@ -136,6 +137,9 @@ export function UserTable({ users, isReadOnly = false }: UserTableProps) {
                     <Mail className="size-4 shrink-0" />
                     <span>{user.email}</span>
                   </div>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {user.phone}
                 </TableCell>
                 <TableCell>
                   <Badge

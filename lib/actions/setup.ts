@@ -18,7 +18,7 @@ export async function createHRUser({ name, email, password }: SetupSchema) {
                 message: "HR account already exists. Setup is only allowed for the first user.",
             };
         }
-        // Create the first admin user
+        // Create the first HR user
         await auth.api.createUser({
             body: {
                 name,
@@ -27,6 +27,8 @@ export async function createHRUser({ name, email, password }: SetupSchema) {
                 role: "hr",
                 data: {
                     emailVerified: true,
+                    employeeId: "EMP-0000"
+
                 },
             },
         })

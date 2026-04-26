@@ -45,8 +45,6 @@ export async function getPendingPayments({
                 select: {
                     id: true,
                     quantity: true,
-                    patient: true,
-                    phone: true,
                     createdAt: true,
                     stockEntry: {
                         select: {
@@ -55,10 +53,17 @@ export async function getPendingPayments({
                                 select: {
                                     name: true,
                                     unit: true,
+                                    unitPrice: true
                                 },
                             },
                         },
                     },
+                    patientRecord: {
+                        select: {
+                            name: true,
+                            phone: true,
+                        }
+                    }
                 },
                 orderBy: { createdAt: "desc" },
                 skip,
@@ -70,12 +75,13 @@ export async function getPendingPayments({
         const payments: PendingPayment[] = transactions.map((t) => ({
             id: t.id,
             quantity: t.quantity,
-            patient: t.patient ?? "Unknown",
-            phone: t.phone ?? "N/A",
+            patient: t.patientRecord?.name ?? "Unknown",
+            phone: t.patientRecord?.phone ?? "N/A",
             createdAt: t.createdAt,
             medicine: {
                 name: t.stockEntry.medicine.name,
                 unit: t.stockEntry.medicine.unit,
+                unitPrice: t.stockEntry.medicine.unitPrice,
             },
             batch: {
                 batchNumber: t.stockEntry.batchNumber,

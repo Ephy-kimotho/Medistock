@@ -122,6 +122,8 @@ export async function getMedicines({
                 isActive: medicine.isActive,
                 createdAt: medicine.createdAt,
                 updatedAt: medicine.updatedAt,
+                dosage: medicine.dosage,
+                unitPrice: medicine.unitPrice,
                 ageGroup: medicine.ageGroup as "infant" | "pediatric" | "adult" | "geriatric" | "all_ages",
                 totalStock,
                 stockStatus,

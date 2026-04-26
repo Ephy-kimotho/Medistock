@@ -64,7 +64,7 @@ async function CategoriesPage({ searchParams }: CategoriesPageProps) {
         </header>
 
         {/* Catgory Listings goes here */}
-        <CategoriesListing currentPage={currentPage} initialSearch={search} />
+        <CategoriesListing currentPage={currentPage} initialSearch={search}  isAdminOrManager={isAdminOrManager}/>
       </div>
     </HydrationBoundary>
   );
