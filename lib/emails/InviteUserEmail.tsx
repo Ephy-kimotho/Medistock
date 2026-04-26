@@ -127,16 +127,6 @@ function InviteEmail({
               </Button>
             </Section>
 
-            {/* Fallback Link */}
-            <Section className="mb-4">
-              <Text className="text-gray-700 text-base leading-7 mb-2">
-                Or copy and paste this link into your browser:
-              </Text>
-              <Text className="text-blue-600 text-sm break-all">
-                {inviteURL}
-              </Text>
-            </Section>
-
             <Hr className="border-gray-200 my-5" />
 
             {/* Post-Acceptance Instructions */}

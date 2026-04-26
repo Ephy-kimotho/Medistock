@@ -4,6 +4,7 @@ import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories, getCategoryById } from "@/lib/actions/categories"
 import { getCategoryNames, } from "@/lib/actions/medicines"
+import { MEDICINE_AGE_GROUP } from "@/generated/prisma/client"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -80,6 +81,7 @@ export interface AcceptInvitationInput {
     token: string,
     name: string,
     password: string,
+    phone: string,
     image?: string
 }
 
@@ -163,7 +165,7 @@ export interface BatchInfo {
     expiryDate: Date;
 }
 
-export interface DispenseInput {
+/* export interface DispenseInput {
     stockEntriesId: string;
     quantity: number;
     patient: string;
@@ -175,7 +177,28 @@ export interface DispenseInput {
     paymentMethod?: "cash" | "mpesa" | "card" | "insurance";
     paymentAmount?: number;
     paymentCode?: string;
+} */
+
+export interface DispenseInput {
+    stockEntriesId: string;
+    quantity: number;
+    notes: string | null;
+
+    // Patient (either new or existing)
+    isNewPatient: boolean;
+    patientId?: string;
+    patient?: string;
+    phone?: string;
+    patientAgeGroup?: AgeGroup;
+
+    // Payment
+    collectPayment?: boolean;
+    paymentMethod?: "cash" | "mpesa" | "card" | "insurance";
+    paymentAmount?: number;
+    paymentCode?: string;
 }
+
+
 
 export interface WastageInput {
     stockEntriesId: string;
@@ -379,4 +402,17 @@ export interface ExpiredBatch {
         name: string;
         unit: string;
     };
+}
+
+export interface PatientOption {
+    id: string;
+    name: string;
+    phone: string;
+    ageGroup: MEDICINE_AGE_GROUP;
+}
+
+export interface CreatePatientInput {
+    name: string;
+    phone: string;
+    ageGroup: MEDICINE_AGE_GROUP;
 }

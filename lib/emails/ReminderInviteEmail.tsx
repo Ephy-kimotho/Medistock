@@ -76,7 +76,7 @@ function ReminderEmail({
             {/* Reminder Badge */}
             <Section className="text-center mb-4">
               <Text className="inline-block bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
-                 Reminder
+                Reminder
               </Text>
             </Section>
 
@@ -123,7 +123,7 @@ function ReminderEmail({
             {/* Urgency Message */}
             <Section className="bg-amber-50 rounded-lg p-4 mb-6 border border-amber-200">
               <Text className="text-amber-800 text-sm leading-6 mb-0">
-                 Please accept this invitation soon. It will expire on{" "}
+                Please accept this invitation soon. It will expire on{" "}
                 <strong>{formattedExpiry}</strong>.
               </Text>
             </Section>
@@ -138,22 +138,12 @@ function ReminderEmail({
               </Button>
             </Section>
 
-            {/* Fallback Link */}
-            <Section className="mb-4">
-              <Text className="text-gray-700 text-base leading-7 mb-2">
-                Or copy and paste this link into your browser:
-              </Text>
-              <Text className="text-blue-600 text-sm break-all">
-                {inviteURL}
-              </Text>
-            </Section>
-
             <Hr className="border-gray-200 my-5" />
 
             {/* Post-Acceptance Instructions */}
             <Section className="bg-blue-50 rounded-lg p-6 mb-6 border border-blue-200">
               <Text className="text-blue-800 text-sm font-semibold mb-2">
-                 After Accepting Your Invitation
+                After Accepting Your Invitation
               </Text>
               <Text className="text-blue-700 text-sm leading-6 mb-0">
                 Once you&apos;ve created your account, visit your{" "}

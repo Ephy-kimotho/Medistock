@@ -28,7 +28,7 @@ import {
 } from "@/lib/schemas/invitation-request";
 import { useCreateInvitationRequest } from "@/hooks/useInvitationRequests";
 import { useNextEmployeeId } from "@/hooks/useEmployeeId";
-import { cn, preventNumbers } from "@/lib/utils";
+import { cn, preventNumbers, preventLetters } from "@/lib/utils";
 import { Loader } from "lucide-react";
 
 interface InvitationRequestFormProps {
@@ -47,7 +47,7 @@ export function InvitationRequestForm({
     data: nextEmployeeId,
     isLoading: isLoadingEmployeeId,
     refetch: refetchEmployeeId,
-  } = useNextEmployeeId(open); // Only fetch when dialog is open
+  } = useNextEmployeeId(open);
 
   const {
     register,
@@ -62,12 +62,12 @@ export function InvitationRequestForm({
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       role: "user",
       employeeId: "",
     },
   });
 
-  // Set employee ID when it's fetched
   useEffect(() => {
     if (nextEmployeeId && open) {
       setValue("employeeId", nextEmployeeId);
@@ -135,6 +135,53 @@ export function InvitationRequestForm({
             )}
           </div>
 
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email Address
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="e.g., john@clinic.com"
+              disabled={isPending}
+              className={cn(
+                "h-11 text-base",
+                errors.email
+                  ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                  : "focus-visible:ring-azure focus-visible:border-azure",
+              )}
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
+          </div>
+
+          {/* Phone */}
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-sm font-medium">
+              Phone Number
+            </Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="e.g., +254 712 345 678"
+              disabled={isPending}
+              onKeyDown={preventLetters}
+              className={cn(
+                "h-11 text-base",
+                errors.phone
+                  ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                  : "focus-visible:ring-azure focus-visible:border-azure",
+              )}
+              {...register("phone")}
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm">{errors.phone.message}</p>
+            )}
+          </div>
+          
           {/* Employee ID - Auto Generated */}
           <div className="space-y-2">
             <Label htmlFor="employeeId" className="text-sm font-medium">
@@ -169,29 +216,6 @@ export function InvitationRequestForm({
               Auto-generated. This will be the employee&apos;s unique
               identifier.
             </p>
-          </div>
-
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium">
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="e.g., john@clinic.com"
-              disabled={isPending}
-              className={cn(
-                "h-11 text-base",
-                errors.email
-                  ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                  : "focus-visible:ring-azure focus-visible:border-azure",
-              )}
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
-            )}
           </div>
 
           {/* Role */}
