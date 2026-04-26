@@ -28,7 +28,7 @@ import {
 } from "@/lib/schemas/payments";
 import { useAddPayment } from "@/hooks/usePendingPayments";
 import { PAYMENT_METHODS } from "@/constants";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { format } from "date-fns";
 import type { PendingPayment } from "@/lib/types";
 
@@ -46,6 +46,11 @@ export function AddPaymentDialog({
   userId,
 }: AddPaymentDialogProps) {
   const { mutate: addPayment, isPending } = useAddPayment();
+
+  // Calculate payment amount
+  const calculatedAmount = transaction
+    ? transaction.quantity * transaction.medicine.unitPrice
+    : 0;
 
   const {
     register,
@@ -87,7 +92,7 @@ export function AddPaymentDialog({
     const payment = {
       transactionId: transaction.id,
       method: values.method,
-      amount: values.amount,
+      amount: calculatedAmount, // Use calculated amount
       paymentCode: values.paymentCode?.trim(),
     };
 
@@ -148,6 +153,10 @@ export function AddPaymentDialog({
               {transaction.quantity} {transaction.medicine.unit}
             </p>
             <p>
+              <span className="text-muted-foreground">Unit Price:</span> KSH{" "}
+              {transaction.medicine.unitPrice.toLocaleString()}
+            </p>
+            <p>
               <span className="text-muted-foreground">Patient:</span>{" "}
               {transaction.patient}
             </p>
@@ -163,6 +172,21 @@ export function AddPaymentDialog({
             {...register("transactionId")}
             value={transaction.id}
           />
+
+          {/* Payment Amount Display */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Amount (KSH)</Label>
+            <div className="p-3 bg-background border rounded-lg">
+              <p className="text-2xl font-bold text-slate-900">
+                {formatPrice(calculatedAmount)}
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {transaction.quantity}
+                &times; KSH {transaction.medicine.unitPrice.toLocaleString()} ={" "}
+                {formatPrice(calculatedAmount)}
+              </p>
+            </div>
+          </div>
 
           {/* Payment Method */}
           <div className="space-y-2">
@@ -200,30 +224,6 @@ export function AddPaymentDialog({
             />
             {errors.method && (
               <p className="text-red-500 text-sm">{errors.method.message}</p>
-            )}
-          </div>
-
-          {/* Payment Amount */}
-          <div className="space-y-2">
-            <Label htmlFor="amount" className="text-sm font-medium">
-              Amount (KSH) <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="amount"
-              type="number"
-              min={1}
-              placeholder="e.g. 500"
-              disabled={isPending}
-              className={cn(
-                "h-11",
-                errors.amount
-                  ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                  : "focus-visible:ring-azure focus-visible:border-azure",
-              )}
-              {...register("amount", { valueAsNumber: true })}
-            />
-            {errors.amount && (
-              <p className="text-red-500 text-sm">{errors.amount.message}</p>
             )}
           </div>
 

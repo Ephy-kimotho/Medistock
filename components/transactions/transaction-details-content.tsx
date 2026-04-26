@@ -69,7 +69,7 @@ export function TransactionDetailsContent({
       case "hr":
         return "HR";
       case "user":
-        return "Staff";
+        return "Pharmacist";
       default:
         return role;
     }
@@ -118,6 +118,7 @@ export function TransactionDetailsContent({
         medicine: {
           name: transaction.medicine.name,
           unit: transaction.medicine.unit,
+          unitPrice:transaction.medicine.unitPrice
         },
         batch: {
           batchNumber: transaction.batch.batchNumber,
@@ -309,9 +310,7 @@ export function TransactionDetailsContent({
                     </span>
                   </div>
                   <div className="flex justify-between font-medium">
-                    <span className="capitalize">
-                      Processed By
-                    </span>
+                    <span className="capitalize">Processed By</span>
                     <span>{transaction.payment.processedBy}</span>
                   </div>
                   <div className="flex justify-between">
@@ -319,7 +318,7 @@ export function TransactionDetailsContent({
                     <span>
                       {format(
                         new Date(transaction.payment.createdAt),
-                        "MMM d, yyyy",
+                        "MMMM d, yyyy, hh:mm a",
                       )}
                     </span>
                   </div>

@@ -40,9 +40,6 @@ export type TransactionsMinAggregateOutputType = {
   type: $Enums.TRANSACTION_TYPE | null
   quantity: number | null
   reason: string | null
-  patient: string | null
-  phone: string | null
-  patientAgeGroup: $Enums.MEDICINE_AGE_GROUP | null
   patientId: string | null
   userId: string | null
   notes: string | null
@@ -55,9 +52,6 @@ export type TransactionsMaxAggregateOutputType = {
   type: $Enums.TRANSACTION_TYPE | null
   quantity: number | null
   reason: string | null
-  patient: string | null
-  phone: string | null
-  patientAgeGroup: $Enums.MEDICINE_AGE_GROUP | null
   patientId: string | null
   userId: string | null
   notes: string | null
@@ -70,9 +64,6 @@ export type TransactionsCountAggregateOutputType = {
   type: number
   quantity: number
   reason: number
-  patient: number
-  phone: number
-  patientAgeGroup: number
   patientId: number
   userId: number
   notes: number
@@ -95,9 +86,6 @@ export type TransactionsMinAggregateInputType = {
   type?: true
   quantity?: true
   reason?: true
-  patient?: true
-  phone?: true
-  patientAgeGroup?: true
   patientId?: true
   userId?: true
   notes?: true
@@ -110,9 +98,6 @@ export type TransactionsMaxAggregateInputType = {
   type?: true
   quantity?: true
   reason?: true
-  patient?: true
-  phone?: true
-  patientAgeGroup?: true
   patientId?: true
   userId?: true
   notes?: true
@@ -125,9 +110,6 @@ export type TransactionsCountAggregateInputType = {
   type?: true
   quantity?: true
   reason?: true
-  patient?: true
-  phone?: true
-  patientAgeGroup?: true
   patientId?: true
   userId?: true
   notes?: true
@@ -227,9 +209,6 @@ export type TransactionsGroupByOutputType = {
   type: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient: string | null
-  phone: string | null
-  patientAgeGroup: $Enums.MEDICINE_AGE_GROUP | null
   patientId: string | null
   userId: string
   notes: string | null
@@ -265,9 +244,6 @@ export type TransactionsWhereInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFilter<"Transactions"> | number
   reason?: Prisma.StringFilter<"Transactions"> | string
-  patient?: Prisma.StringNullableFilter<"Transactions"> | string | null
-  phone?: Prisma.StringNullableFilter<"Transactions"> | string | null
-  patientAgeGroup?: Prisma.EnumMEDICINE_AGE_GROUPNullableFilter<"Transactions"> | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.StringNullableFilter<"Transactions"> | string | null
   userId?: Prisma.StringFilter<"Transactions"> | string
   notes?: Prisma.StringNullableFilter<"Transactions"> | string | null
@@ -284,9 +260,6 @@ export type TransactionsOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
-  patient?: Prisma.SortOrderInput | Prisma.SortOrder
-  phone?: Prisma.SortOrderInput | Prisma.SortOrder
-  patientAgeGroup?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -306,9 +279,6 @@ export type TransactionsWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.EnumTRANSACTION_TYPEFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFilter<"Transactions"> | number
   reason?: Prisma.StringFilter<"Transactions"> | string
-  patient?: Prisma.StringNullableFilter<"Transactions"> | string | null
-  phone?: Prisma.StringNullableFilter<"Transactions"> | string | null
-  patientAgeGroup?: Prisma.EnumMEDICINE_AGE_GROUPNullableFilter<"Transactions"> | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.StringNullableFilter<"Transactions"> | string | null
   userId?: Prisma.StringFilter<"Transactions"> | string
   notes?: Prisma.StringNullableFilter<"Transactions"> | string | null
@@ -325,9 +295,6 @@ export type TransactionsOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
-  patient?: Prisma.SortOrderInput | Prisma.SortOrder
-  phone?: Prisma.SortOrderInput | Prisma.SortOrder
-  patientAgeGroup?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -348,9 +315,6 @@ export type TransactionsScalarWhereWithAggregatesInput = {
   type?: Prisma.EnumTRANSACTION_TYPEWithAggregatesFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntWithAggregatesFilter<"Transactions"> | number
   reason?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
-  patient?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
-  phone?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
-  patientAgeGroup?: Prisma.EnumMEDICINE_AGE_GROUPNullableWithAggregatesFilter<"Transactions"> | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"Transactions"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Transactions"> | string | null
@@ -362,9 +326,6 @@ export type TransactionsCreateInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   notes?: string | null
   createdAt?: Date | string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
@@ -379,9 +340,6 @@ export type TransactionsUncheckedCreateInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   userId: string
   notes?: string | null
@@ -394,9 +352,6 @@ export type TransactionsUpdateInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
@@ -411,9 +366,6 @@ export type TransactionsUncheckedUpdateInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -427,9 +379,6 @@ export type TransactionsCreateManyInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   userId: string
   notes?: string | null
@@ -441,9 +390,6 @@ export type TransactionsUpdateManyMutationInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -454,9 +400,6 @@ export type TransactionsUncheckedUpdateManyInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -479,9 +422,6 @@ export type TransactionsCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
-  patient?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  patientAgeGroup?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -498,9 +438,6 @@ export type TransactionsMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
-  patient?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  patientAgeGroup?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -513,9 +450,6 @@ export type TransactionsMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   reason?: Prisma.SortOrder
-  patient?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  patientAgeGroup?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -619,10 +553,6 @@ export type EnumTRANSACTION_TYPEFieldUpdateOperationsInput = {
   set?: $Enums.TRANSACTION_TYPE
 }
 
-export type NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput = {
-  set?: $Enums.MEDICINE_AGE_GROUP | null
-}
-
 export type TransactionsCreateNestedOneWithoutPaymentInput = {
   create?: Prisma.XOR<Prisma.TransactionsCreateWithoutPaymentInput, Prisma.TransactionsUncheckedCreateWithoutPaymentInput>
   connectOrCreate?: Prisma.TransactionsCreateOrConnectWithoutPaymentInput
@@ -684,9 +614,6 @@ export type TransactionsCreateWithoutUserInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   notes?: string | null
   createdAt?: Date | string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
@@ -700,9 +627,6 @@ export type TransactionsUncheckedCreateWithoutUserInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -744,9 +668,6 @@ export type TransactionsScalarWhereInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFilter<"Transactions"> | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFilter<"Transactions"> | number
   reason?: Prisma.StringFilter<"Transactions"> | string
-  patient?: Prisma.StringNullableFilter<"Transactions"> | string | null
-  phone?: Prisma.StringNullableFilter<"Transactions"> | string | null
-  patientAgeGroup?: Prisma.EnumMEDICINE_AGE_GROUPNullableFilter<"Transactions"> | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.StringNullableFilter<"Transactions"> | string | null
   userId?: Prisma.StringFilter<"Transactions"> | string
   notes?: Prisma.StringNullableFilter<"Transactions"> | string | null
@@ -758,9 +679,6 @@ export type TransactionsCreateWithoutStockEntryInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   notes?: string | null
   createdAt?: Date | string
   patientRecord?: Prisma.PatientCreateNestedOneWithoutTransactionsInput
@@ -773,9 +691,6 @@ export type TransactionsUncheckedCreateWithoutStockEntryInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   userId: string
   notes?: string | null
@@ -814,9 +729,6 @@ export type TransactionsCreateWithoutPaymentInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   notes?: string | null
   createdAt?: Date | string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
@@ -830,9 +742,6 @@ export type TransactionsUncheckedCreateWithoutPaymentInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   userId: string
   notes?: string | null
@@ -860,9 +769,6 @@ export type TransactionsUpdateWithoutPaymentInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
@@ -876,9 +782,6 @@ export type TransactionsUncheckedUpdateWithoutPaymentInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -890,9 +793,6 @@ export type TransactionsCreateWithoutPatientRecordInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   notes?: string | null
   createdAt?: Date | string
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutTransactionsInput
@@ -906,9 +806,6 @@ export type TransactionsUncheckedCreateWithoutPatientRecordInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   userId: string
   notes?: string | null
   createdAt?: Date | string
@@ -947,9 +844,6 @@ export type TransactionsCreateManyUserInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -960,9 +854,6 @@ export type TransactionsUpdateWithoutUserInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
@@ -976,9 +867,6 @@ export type TransactionsUncheckedUpdateWithoutUserInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -991,9 +879,6 @@ export type TransactionsUncheckedUpdateManyWithoutUserInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1004,9 +889,6 @@ export type TransactionsCreateManyStockEntryInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   patientId?: string | null
   userId: string
   notes?: string | null
@@ -1018,9 +900,6 @@ export type TransactionsUpdateWithoutStockEntryInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patientRecord?: Prisma.PatientUpdateOneWithoutTransactionsNestedInput
@@ -1033,9 +912,6 @@ export type TransactionsUncheckedUpdateWithoutStockEntryInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1048,9 +924,6 @@ export type TransactionsUncheckedUpdateManyWithoutStockEntryInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1063,9 +936,6 @@ export type TransactionsCreateManyPatientRecordInput = {
   type?: $Enums.TRANSACTION_TYPE
   quantity: number
   reason: string
-  patient?: string | null
-  phone?: string | null
-  patientAgeGroup?: $Enums.MEDICINE_AGE_GROUP | null
   userId: string
   notes?: string | null
   createdAt?: Date | string
@@ -1076,9 +946,6 @@ export type TransactionsUpdateWithoutPatientRecordInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutTransactionsNestedInput
@@ -1092,9 +959,6 @@ export type TransactionsUncheckedUpdateWithoutPatientRecordInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1107,9 +971,6 @@ export type TransactionsUncheckedUpdateManyWithoutPatientRecordInput = {
   type?: Prisma.EnumTRANSACTION_TYPEFieldUpdateOperationsInput | $Enums.TRANSACTION_TYPE
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   reason?: Prisma.StringFieldUpdateOperationsInput | string
-  patient?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  patientAgeGroup?: Prisma.NullableEnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1123,9 +984,6 @@ export type TransactionsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   type?: boolean
   quantity?: boolean
   reason?: boolean
-  patient?: boolean
-  phone?: boolean
-  patientAgeGroup?: boolean
   patientId?: boolean
   userId?: boolean
   notes?: boolean
@@ -1142,9 +1000,6 @@ export type TransactionsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   type?: boolean
   quantity?: boolean
   reason?: boolean
-  patient?: boolean
-  phone?: boolean
-  patientAgeGroup?: boolean
   patientId?: boolean
   userId?: boolean
   notes?: boolean
@@ -1160,9 +1015,6 @@ export type TransactionsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   type?: boolean
   quantity?: boolean
   reason?: boolean
-  patient?: boolean
-  phone?: boolean
-  patientAgeGroup?: boolean
   patientId?: boolean
   userId?: boolean
   notes?: boolean
@@ -1178,16 +1030,13 @@ export type TransactionsSelectScalar = {
   type?: boolean
   quantity?: boolean
   reason?: boolean
-  patient?: boolean
-  phone?: boolean
-  patientAgeGroup?: boolean
   patientId?: boolean
   userId?: boolean
   notes?: boolean
   createdAt?: boolean
 }
 
-export type TransactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stockEntriesId" | "type" | "quantity" | "reason" | "patient" | "phone" | "patientAgeGroup" | "patientId" | "userId" | "notes" | "createdAt", ExtArgs["result"]["transactions"]>
+export type TransactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stockEntriesId" | "type" | "quantity" | "reason" | "patientId" | "userId" | "notes" | "createdAt", ExtArgs["result"]["transactions"]>
 export type TransactionsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   patientRecord?: boolean | Prisma.Transactions$patientRecordArgs<ExtArgs>
@@ -1219,9 +1068,6 @@ export type $TransactionsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     type: $Enums.TRANSACTION_TYPE
     quantity: number
     reason: string
-    patient: string | null
-    phone: string | null
-    patientAgeGroup: $Enums.MEDICINE_AGE_GROUP | null
     patientId: string | null
     userId: string
     notes: string | null
@@ -1658,9 +1504,6 @@ export interface TransactionsFieldRefs {
   readonly type: Prisma.FieldRef<"Transactions", 'TRANSACTION_TYPE'>
   readonly quantity: Prisma.FieldRef<"Transactions", 'Int'>
   readonly reason: Prisma.FieldRef<"Transactions", 'String'>
-  readonly patient: Prisma.FieldRef<"Transactions", 'String'>
-  readonly phone: Prisma.FieldRef<"Transactions", 'String'>
-  readonly patientAgeGroup: Prisma.FieldRef<"Transactions", 'MEDICINE_AGE_GROUP'>
   readonly patientId: Prisma.FieldRef<"Transactions", 'String'>
   readonly userId: Prisma.FieldRef<"Transactions", 'String'>
   readonly notes: Prisma.FieldRef<"Transactions", 'String'>

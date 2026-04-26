@@ -19,6 +19,7 @@ import {
 } from "@/lib/services/pdf/utils";
 
 
+// Interface definitions
 export interface EmployeeDirectoryFilters {
     role: string;
     status: string;
@@ -41,6 +42,7 @@ export interface RoleDistributionFilters {
     status: string;
 }
 
+// Common utility functions
 function formatRole(role: string): string {
     switch (role) {
         case "admin":
@@ -58,7 +60,6 @@ function formatRole(role: string): string {
     }
 }
 
-
 function formatTransactionType(type: string): string {
     switch (type) {
         case "dispensed":
@@ -72,7 +73,7 @@ function formatTransactionType(type: string): string {
     }
 }
 
-
+// Server Actions
 export async function generateEmployeeDirectoryReport(
     filters: EmployeeDirectoryFilters
 ) {
@@ -253,7 +254,6 @@ export async function generateEmployeeActivityReport(
                 type: true,
                 quantity: true,
                 reason: true,
-                patient: true,
                 createdAt: true,
                 user: {
                     select: {
@@ -271,6 +271,11 @@ export async function generateEmployeeActivityReport(
                         },
                     },
                 },
+                patientRecord: {
+                    select: {
+                        name: true
+                    }
+                }
             },
             orderBy: { createdAt: "desc" },
         });
@@ -353,7 +358,7 @@ export async function generateEmployeeActivityReport(
                 transaction.type === "stock_in"
                     ? `+${transaction.quantity}`
                     : `-${transaction.quantity}`,
-            details: transaction.patient ?? transaction.reason ?? "-",
+            details: transaction.patientRecord?.name ?? transaction.reason ?? "-",
         }));
 
         // Generate table

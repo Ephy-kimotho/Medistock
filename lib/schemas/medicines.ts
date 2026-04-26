@@ -19,6 +19,16 @@ export const medicineSchema = z.object({
     categoryId: z.string().min(1, "Please select a category"),
     ageGroup: z.enum(["infant", "pediatric", "adult", "geriatric", "all_ages"]),
 
+    dosage: z
+        .string()
+        .min(2, "Dosage instructions are required")
+        .max(200, "Dosage must be less than 200 characters"),
+        
+    unitPrice: z
+        .number({ error: "Unit price is required" })
+        .int("Unit price must be a whole number")
+        .min(1, "Unit price must be at least 1"),
+
     manufacturer: z
         .string()
         .max(100, "Manufacturer name must be less than 100 characters")

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableHeader,
@@ -143,11 +142,6 @@ export function MedicineTable({ medicines }: MedicineTableProps) {
               <TableHead className="font-semibold">Status</TableHead>
               {isAdminOrManager && (
                 <TableHead className="font-semibold text-center">
-                  Active Status
-                </TableHead>
-              )}
-              {isAdminOrManager && (
-                <TableHead className="font-semibold text-center">
                   Actions
                 </TableHead>
               )}
@@ -187,23 +181,6 @@ export function MedicineTable({ medicines }: MedicineTableProps) {
                     <span>{getStatusLabel(medicine.stockStatus)}</span>
                   </div>
                 </TableCell>
-
-                {/* Active Status Badge */}
-                {isAdminOrManager && (
-                  <TableCell className="text-center">
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "px-3 py-1",
-                        medicine.isActive
-                          ? "bg-medium-jungle/10 text-medium-jungle border-medium-jungle"
-                          : "bg-princeton-orange/10 text-princeton-orange border-princeton-orange",
-                      )}
-                    >
-                      {medicine.isActive ? "Active" : "Archived"}
-                    </Badge>
-                  </TableCell>
-                )}
 
                 {/* Actions */}
                 {isAdminOrManager && (

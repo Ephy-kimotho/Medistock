@@ -28,7 +28,7 @@ import { usePatientByPhone } from "@/hooks/usePatients";
 import { MedicineCombobox } from "@/components/medicine-combobox";
 import { BatchCombobox } from "./batch-combobox";
 import { PatientCombobox } from "./patient-combobox";
-import { cn, preventNumbers, preventLetters } from "@/lib/utils";
+import { cn, preventNumbers, preventLetters, formatPrice } from "@/lib/utils";
 import { AGE_GROUPS, PAYMENT_METHODS, getAgeGroupLabel } from "@/constants";
 import { toast } from "sonner";
 import type { DispenseInput, PatientOption } from "@/lib/types";
@@ -90,9 +90,16 @@ export function DispenseForm({ userId }: DispenseFormProps) {
   const phoneValue = useWatch({ control, name: "phone" });
   const collectPayment = useWatch({ control, name: "collectPayment" });
   const paymentMethod = useWatch({ control, name: "paymentMethod" });
+  const quantity = useWatch({ control, name: "quantity" });
 
   // Check for existing patient by phone (for auto-switch)
   const { data: existingPatient } = usePatientByPhone(phoneValue || "");
+
+  // Calculate payment amount based on quantity and unit price
+  const calculatedAmount =
+    selectedMedicine && quantity && quantity > 0
+      ? quantity * selectedMedicine.unitPrice
+      : 0;
 
   const handlePhoneBlur = () => {
     if (isNewPatient && existingPatient && phoneValue) {
@@ -114,6 +121,11 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     setValue("medicineId", value);
     setValue("stockEntriesId", "");
     setValue("quantity", undefined as unknown as number);
+
+    // Pre-fill dosage from medicine
+    if (medicine) {
+      setValue("notes", medicine.dosage);
+    }
 
     // Auto-select age group for new patients if medicine has a specific age group
     if (isNewPatient && medicine && medicine.ageGroup !== "all_ages") {
@@ -187,7 +199,8 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       notes: values.notes?.trim() || null,
       collectPayment: values.collectPayment,
       paymentMethod: values.paymentMethod,
-      paymentAmount: values.paymentAmount,
+      // Use calculated amount instead of user input
+      paymentAmount: values.collectPayment ? calculatedAmount : undefined,
       paymentCode: values.paymentCode?.trim(),
     };
 
@@ -524,11 +537,18 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                 )}
                 {...register("quantity", { valueAsNumber: true })}
               />
-              {selectedBatch && (
-                <p className="text-sm text-muted-foreground">
-                  Available: {selectedBatch.quantity} units
-                </p>
-              )}
+              <div className="flex flex-col gap-1">
+                {selectedBatch && (
+                  <p className="text-sm text-muted-foreground">
+                    Available: {selectedBatch.quantity} units
+                  </p>
+                )}
+                {selectedMedicine && (
+                  <p className="text-sm text-muted-foreground">
+                    Unit Price: {formatPrice(selectedMedicine.unitPrice)}
+                  </p>
+                )}
+              </div>
               {errors.quantity && (
                 <p className="text-red-500 text-sm">
                   {errors.quantity.message}
@@ -536,7 +556,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
               )}
             </div>
 
-            {/* Notes / Dosage */}
+            {/* Dosage */}
             <div className="space-y-2">
               <Label htmlFor="notes" className="text-sm font-medium">
                 Dosage <span className="text-red-500">*</span>
@@ -555,6 +575,11 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                 )}
                 {...register("notes")}
               />
+              {selectedMedicine && (
+                <p className="text-sm text-muted-foreground">
+                  Pre-filled from medicine. You can adjust if needed.
+                </p>
+              )}
               {errors.notes && (
                 <p className="text-red-500 text-sm">{errors.notes.message}</p>
               )}
@@ -591,78 +616,68 @@ export function DispenseForm({ userId }: DispenseFormProps) {
 
             {collectPayment && (
               <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Payment Method */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      Payment Method <span className="text-red-500">*</span>
-                    </Label>
-                    <Controller
-                      control={control}
-                      name="paymentMethod"
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          disabled={isPending}
-                        >
-                          <SelectTrigger
-                            className={cn(
-                              "w-full",
-                              errors.paymentMethod
-                                ? "border-red-400 focus:ring-red-400"
-                                : "focus:ring-azure",
-                            )}
-                          >
-                            <SelectValue placeholder="Select method..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {PAYMENT_METHODS.map((method) => (
-                              <SelectItem
-                                key={method.value}
-                                value={method.value}
-                              >
-                                {method.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.paymentMethod && (
-                      <p className="text-red-500 text-sm">
-                        {errors.paymentMethod.message}
+                {/* Payment Amount Display */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Amount (KSH)</Label>
+                  <div className="p-3 bg-background border rounded-lg">
+                    <p className="text-2xl font-bold text-slate-900">
+                      {formatPrice(calculatedAmount)}
+                    </p>
+                    {selectedMedicine && quantity && quantity > 0 && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {quantity}
+                        &times;
+                        {selectedMedicine.unitPrice.toLocaleString()} ={" "}
+                        {formatPrice(calculatedAmount)}
+                      </p>
+                    )}
+                    {(!quantity || quantity <= 0) && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Enter quantity to calculate amount
                       </p>
                     )}
                   </div>
+                </div>
 
-                  {/* Payment Amount */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="paymentAmount"
-                      className="text-sm font-medium"
-                    >
-                      Amount (KSH) <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="paymentAmount"
-                      type="number"
-                      min={1}
-                      placeholder="e.g. 500"
-                      disabled={isPending}
-                      className={cn(
-                        errors.paymentAmount
-                          ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                          : "focus-visible:ring-azure focus-visible:border-azure",
-                      )}
-                      {...register("paymentAmount", { valueAsNumber: true })}
-                    />
-                    {errors.paymentAmount && (
-                      <p className="text-red-500 text-sm">
-                        {errors.paymentAmount.message}
-                      </p>
+                {/* Payment Method */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Payment Method <span className="text-red-500">*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name="paymentMethod"
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isPending}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full",
+                            errors.paymentMethod
+                              ? "border-red-400 focus:ring-red-400"
+                              : "focus:ring-azure",
+                          )}
+                        >
+                          <SelectValue placeholder="Select method..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PAYMENT_METHODS.map((method) => (
+                            <SelectItem key={method.value} value={method.value}>
+                              {method.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     )}
-                  </div>
+                  />
+                  {errors.paymentMethod && (
+                    <p className="text-red-500 text-sm">
+                      {errors.paymentMethod.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Payment Code (not shown for cash) */}

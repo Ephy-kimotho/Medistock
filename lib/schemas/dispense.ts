@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 import { NAME_PATTERN, PHONE_PATTERN } from "@/lib/utils";
 
@@ -6,7 +7,7 @@ export const dispenseSchema = z
     medicineId: z.string().min(1, "Please select a medicine"),
     stockEntriesId: z.string().min(1, "Please select a batch"),
     quantity: z
-      .number({ error: "Quantity must be a number" })
+      .number({ error: "Quantity is required" })
       .int("Quantity must be a whole number")
       .positive("Quantity must be positive"),
 
@@ -18,9 +19,7 @@ export const dispenseSchema = z
     patient: z.string().optional(),
     phone: z.string().optional(),
     patientAgeGroup: z
-      .enum(["infant", "pediatric", "adult", "geriatric"], {
-        error: "Please select a valid age group"
-      })
+      .enum(["infant", "pediatric", "adult", "geriatric"])
       .optional(),
 
     notes: z.string().min(1, "Dosage is required"),
@@ -28,7 +27,7 @@ export const dispenseSchema = z
     // Payment fields
     collectPayment: z.boolean(),
     paymentMethod: z.enum(["cash", "mpesa", "card", "insurance"]).optional(),
-    paymentAmount: z.number().positive().optional(),
+    paymentAmount: z.number().positive().optional(), 
     paymentCode: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -90,13 +89,7 @@ export const dispenseSchema = z
         });
       }
 
-      if (!data.paymentAmount || data.paymentAmount <= 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Payment amount is required",
-          path: ["paymentAmount"],
-        });
-      }
+      // Note: paymentAmount is now auto-calculated, no validation needed here
 
       if (
         data.paymentMethod &&

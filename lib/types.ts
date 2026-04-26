@@ -100,6 +100,8 @@ export interface MedicineInput {
     categoryId: string;
     manufacturer?: string;
     ageGroup: AgeGroup;
+    dosage: string;
+    unitPrice: number;
 }
 
 export interface MedicineWithStock {
@@ -115,6 +117,8 @@ export interface MedicineWithStock {
     createdAt: Date;
     updatedAt: Date;
     totalStock: number;
+    dosage: string;
+    unitPrice: number;
     stockStatus: "in_stock" | "low_stock" | "out_of_stock";
 }
 
@@ -165,20 +169,6 @@ export interface BatchInfo {
     expiryDate: Date;
 }
 
-/* export interface DispenseInput {
-    stockEntriesId: string;
-    quantity: number;
-    patient: string;
-    phone: string;
-    patientAgeGroup: AgeGroup;
-    notes?: string | null;
-
-    collectPayment?: boolean;
-    paymentMethod?: "cash" | "mpesa" | "card" | "insurance";
-    paymentAmount?: number;
-    paymentCode?: string;
-} */
-
 export interface DispenseInput {
     stockEntriesId: string;
     quantity: number;
@@ -198,8 +188,6 @@ export interface DispenseInput {
     paymentCode?: string;
 }
 
-
-
 export interface WastageInput {
     stockEntriesId: string;
     quantity: number;
@@ -216,8 +204,8 @@ export interface TransactionWithDetails {
     batchNumber: string;
     userName: string;
     userRole: string;
-    patient: string | null;
-    phone: string | null;
+    patient: string | undefined;
+    phone: string | undefined;
     reason: string;
 }
 
@@ -325,6 +313,21 @@ export interface CategoryPageContentProps {
     stats: Stats;
 }
 
+/* export interface PendingPayment {
+    id: string;
+    quantity: number;
+    patient: string;
+    phone: string;
+    createdAt: Date;
+    medicine: {
+        name: string;
+        unit: string;
+    };
+    batch: {
+        batchNumber: string;
+    };
+} */
+
 export interface PendingPayment {
     id: string;
     quantity: number;
@@ -334,6 +337,7 @@ export interface PendingPayment {
     medicine: {
         name: string;
         unit: string;
+        unitPrice: number;
     };
     batch: {
         batchNumber: string;
@@ -363,14 +367,15 @@ export interface TransactionDetails {
     reason: string;
     notes: string | null;
     createdAt: Date;
-    patient: string | null;
-    phone: string | null;
-    patientAgeGroup: AgeGroup | null;
+    patient: string | undefined;
+    phone: string | undefined;
+    patientAgeGroup: AgeGroup | undefined;
     medicine: {
         id: string;
         name: string;
         unit: string;
         ageGroup: string;
+        unitPrice:number;
     };
     batch: {
         id: string;

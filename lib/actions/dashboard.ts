@@ -74,8 +74,6 @@ export async function getRecentTransactionsStaff() {
             select: {
                 id: true,
                 quantity: true,
-                patient: true,
-                phone: true,
                 createdAt: true,
                 stockEntry: {
                     select: {
@@ -86,6 +84,13 @@ export async function getRecentTransactionsStaff() {
                         },
                     },
                 },
+                patientRecord: {
+                    select: {
+                        name: true,
+                        phone: true,
+
+                    }
+                }
             },
             take: 5,
             orderBy: {
@@ -97,8 +102,8 @@ export async function getRecentTransactionsStaff() {
             id: tx.id,
             medicineName: tx.stockEntry.medicine.name,
             quantity: tx.quantity,
-            patient: tx.patient,
-            phone: tx.phone,
+            patient: tx.patientRecord?.name,
+            phone: tx.patientRecord?.phone,
             createdAt: tx.createdAt,
         }));
     } catch (error) {

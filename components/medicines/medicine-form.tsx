@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogTrigger,
@@ -77,6 +78,8 @@ function MedicineForm({
       categoryId: lockedCategoryId ?? initialValues?.categoryId ?? "",
       manufacturer: initialValues?.manufacturer ?? "",
       ageGroup: initialValues?.ageGroup ?? "all_ages",
+      dosage: initialValues?.dosage ?? "2 times daily",
+      unitPrice: initialValues?.unitPrice ?? 100,
     },
   });
 
@@ -90,6 +93,8 @@ function MedicineForm({
         categoryId: initialValues.categoryId,
         manufacturer: initialValues.manufacturer ?? "",
         ageGroup: initialValues.ageGroup ?? "all_ages",
+        dosage: initialValues.dosage ?? "2 times daily",
+        unitPrice: initialValues.unitPrice ?? 100,
       });
     }
   }, [isEditing, initialValues, reset]);
@@ -104,6 +109,8 @@ function MedicineForm({
         categoryId: lockedCategoryId,
         manufacturer: "",
         ageGroup: "all_ages",
+        dosage: "2 times daily",
+        unitPrice: 100,
       });
     }
   }, [open, isEditing, lockedCategoryId, reset]);
@@ -116,6 +123,8 @@ function MedicineForm({
       categoryId: lockedCategoryId ?? values.categoryId,
       ageGroup: values.ageGroup || "all_ages",
       manufacturer: values.manufacturer?.trim() || undefined,
+      dosage: values.dosage.trim(),
+      unitPrice: values.unitPrice,
     };
 
     if (isEditing && initialValues?.id) {
@@ -146,6 +155,8 @@ function MedicineForm({
         categoryId: lockedCategoryId ?? "",
         manufacturer: "",
         ageGroup: "all_ages",
+        dosage: "2 times daily",
+        unitPrice: 100,
       });
     }
   };
@@ -219,7 +230,6 @@ function MedicineForm({
                   Category <span className="text-red-500">*</span>
                 </Label>
                 {isCategoryLocked ? (
-                  // Locked category display
                   <div className="relative">
                     <Input
                       id="category"
@@ -230,7 +240,6 @@ function MedicineForm({
                     <Lock className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                   </div>
                 ) : (
-                  // Normal category select
                   <Controller
                     control={control}
                     name="categoryId"
@@ -362,11 +371,42 @@ function MedicineForm({
             </div>
           </section>
 
-          {/* Details Section */}
+          {/* Pricing & Dosage Section */}
           <section className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-900">Details</h3>
+            <h3 className="text-sm font-semibold text-slate-900">
+              Pricing & Dosage
+            </h3>
 
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Unit Price */}
+              <div className="space-y-2">
+                <Label htmlFor="unitPrice" className="text-sm font-medium">
+                  Unit Price (KSH) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="unitPrice"
+                  type="number"
+                  min={1}
+                  placeholder="e.g., 100"
+                  disabled={isPending}
+                  className={cn(
+                    "h-11",
+                    errors.unitPrice
+                      ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                      : "focus-visible:ring-azure focus-visible:border-azure",
+                  )}
+                  {...register("unitPrice", { valueAsNumber: true })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Price charged per unit when dispensing
+                </p>
+                {errors.unitPrice && (
+                  <p className="text-red-500 text-sm">
+                    {errors.unitPrice.message}
+                  </p>
+                )}
+              </div>
+
               {/* Reorder Level */}
               <div className="space-y-2">
                 <Label htmlFor="reorderlevel" className="text-sm font-medium">
@@ -395,30 +435,63 @@ function MedicineForm({
                   </p>
                 )}
               </div>
+            </div>
 
-              {/* Manufacturer */}
-              <div className="space-y-2">
-                <Label htmlFor="manufacturer" className="text-sm font-medium">
-                  Manufacturer (Optional)
-                </Label>
-                <Input
-                  id="manufacturer"
-                  placeholder="e.g., GSK, Pfizer, KEMRI"
-                  disabled={isPending}
-                  className={cn(
-                    "h-11",
-                    errors.manufacturer
-                      ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                      : "focus-visible:ring-azure focus-visible:border-azure",
-                  )}
-                  {...register("manufacturer")}
-                />
-                {errors.manufacturer && (
-                  <p className="text-red-500 text-sm">
-                    {errors.manufacturer.message}
-                  </p>
+            {/* Dosage */}
+            <div className="space-y-2">
+              <Label htmlFor="dosage" className="text-sm font-medium">
+                Standard Dosage <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                id="dosage"
+                rows={2}
+                placeholder="e.g., 2 tablets twice daily after meals"
+                disabled={isPending}
+                className={cn(
+                  "resize-none",
+                  errors.dosage
+                    ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                    : "focus-visible:ring-azure focus-visible:border-azure",
                 )}
-              </div>
+                {...register("dosage")}
+              />
+              <p className="text-xs text-muted-foreground">
+                Default dosage instructions shown during dispense
+              </p>
+              {errors.dosage && (
+                <p className="text-red-500 text-sm">{errors.dosage.message}</p>
+              )}
+            </div>
+          </section>
+
+          {/* Additional Details Section */}
+          <section className="space-y-4">
+            <h3 className="text-sm font-semibold text-slate-900">
+              Additional Details
+            </h3>
+
+            {/* Manufacturer */}
+            <div className="space-y-2">
+              <Label htmlFor="manufacturer" className="text-sm font-medium">
+                Manufacturer (Optional)
+              </Label>
+              <Input
+                id="manufacturer"
+                placeholder="e.g., GSK, Pfizer, KEMRI"
+                disabled={isPending}
+                className={cn(
+                  "h-11",
+                  errors.manufacturer
+                    ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                    : "focus-visible:ring-azure focus-visible:border-azure",
+                )}
+                {...register("manufacturer")}
+              />
+              {errors.manufacturer && (
+                <p className="text-red-500 text-sm">
+                  {errors.manufacturer.message}
+                </p>
+              )}
             </div>
           </section>
 

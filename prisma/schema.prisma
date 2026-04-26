@@ -256,12 +256,6 @@ model Transactions {
   quantity Int
   reason   String
 
-  // Keep for backwards compatibility (old transactions)
-  patient         String?
-  phone           String?
-  patientAgeGroup MEDICINE_AGE_GROUP?
-
-  // New: Reference to Patient (for new transactions)
   patientId     String?
   patientRecord Patient? @relation(fields: [patientId], references: [id])
 

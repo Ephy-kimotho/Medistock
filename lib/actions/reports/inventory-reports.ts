@@ -692,7 +692,6 @@ export async function generateDispensingReport(filters: DispensingFilters) {
       select: {
         id: true,
         quantity: true,
-        patient: true,
         notes: true,
         createdAt: true,
         user: {
@@ -723,6 +722,11 @@ export async function generateDispensingReport(filters: DispensingFilters) {
             method: true,
           },
         },
+        patientRecord: {
+          select: {
+            name: true
+          }
+        }
       },
       orderBy: { createdAt: "desc" },
     });
@@ -877,7 +881,7 @@ export async function generateDispensingReport(filters: DispensingFilters) {
     // Prepare table data
     const tableData = transactions.map((t) => ({
       date: format(new Date(t.createdAt), "dd/MM/yyyy"),
-      patient: t.patient ?? "-",
+      patient: t.patientRecord?.name ?? "-",
       medicine: t.stockEntry.medicine.name,
       batch: t.stockEntry.batchNumber,
       quantity: t.quantity,
