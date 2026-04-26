@@ -63,7 +63,8 @@ export const ModelName = {
   Transactions: 'Transactions',
   Alerts: 'Alerts',
   Settings: 'Settings',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  Patient: 'Patient'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -233,8 +234,9 @@ export const TransactionsScalarFieldEnum = {
   patient: 'patient',
   phone: 'phone',
   patientAgeGroup: 'patientAgeGroup',
-  notes: 'notes',
+  patientId: 'patientId',
   userId: 'userId',
+  notes: 'notes',
   createdAt: 'createdAt'
 } as const
 
@@ -279,6 +281,17 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const PatientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone',
+  ageGroup: 'ageGroup',
+  createdAt: 'createdAt'
+} as const
+
+export type PatientScalarFieldEnum = (typeof PatientScalarFieldEnum)[keyof typeof PatientScalarFieldEnum]
 
 
 export const SortOrder = {

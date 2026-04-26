@@ -252,13 +252,19 @@ model Transactions {
   quantity Int
   reason   String
 
+  // Keep for backwards compatibility (old transactions)
   patient         String?
   phone           String?
   patientAgeGroup MEDICINE_AGE_GROUP?
-  notes           String?
+
+  // New: Reference to Patient (for new transactions)
+  patientId     String?
+  patientRecord Patient? @relation(fields: [patientId], references: [id])
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  notes String?
 
   createdAt DateTime @default(now())
 
@@ -318,4 +324,18 @@ model Payment {
   @@index([transactionId])
   @@index([paymentCode])
   @@map("payments")
+}
+
+model Patient {
+  id       String             @id @default(cuid())
+  name     String
+  phone    String             @unique
+  ageGroup MEDICINE_AGE_GROUP
+
+  createdAt DateTime @default(now())
+
+  transactions Transactions[]
+
+  @@index([name, phone])
+  @@map("patients")
 }
