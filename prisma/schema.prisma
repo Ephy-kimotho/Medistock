@@ -203,13 +203,17 @@ model Medicines {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  manufacturer String?
-  ageGroup     MEDICINE_AGE_GROUP @default(all_ages)
-  isActive     Boolean            @default(true)
+  ageGroup MEDICINE_AGE_GROUP @default(all_ages)
+  isActive Boolean            @default(true)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  dosage    String @default("2 times daily")
+  unitPrice Int    @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deletedAt    DateTime?
+  manufacturer String?
 
   stockEntries StockEntries[]
   alerts       Alerts[]

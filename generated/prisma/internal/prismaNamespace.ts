@@ -1605,12 +1605,14 @@ export const MedicinesScalarFieldEnum = {
   unit: 'unit',
   reorderlevel: 'reorderlevel',
   categoryId: 'categoryId',
-  manufacturer: 'manufacturer',
   ageGroup: 'ageGroup',
   isActive: 'isActive',
+  dosage: 'dosage',
+  unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  manufacturer: 'manufacturer'
 } as const
 
 export type MedicinesScalarFieldEnum = (typeof MedicinesScalarFieldEnum)[keyof typeof MedicinesScalarFieldEnum]
