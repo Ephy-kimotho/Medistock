@@ -287,13 +287,12 @@ export type UserOrderByWithRelationInput = {
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  email?: string
   phone?: string
-  email_phone?: Prisma.UserEmailPhoneCompoundUniqueInput
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   name?: Prisma.StringFilter<"User"> | string
-  email?: Prisma.StringFilter<"User"> | string
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.StringFilter<"User"> | string
@@ -310,7 +309,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   payments?: Prisma.PaymentListRelationFilter
   sentInvitations?: Prisma.InvitationListRelationFilter
   requestedInvitations?: Prisma.InvitationRequestListRelationFilter
-}, "id" | "phone" | "email_phone">
+}, "id" | "email" | "phone">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -493,11 +492,6 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-}
-
-export type UserEmailPhoneCompoundUniqueInput = {
-  email: string
-  phone: string
 }
 
 export type UserCountOrderByAggregateInput = {
