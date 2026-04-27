@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/check-permissions";
-import { format } from "date-fns";
+import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from "date-fns";
 import {
     createPdfDocument,
     getFacilitySettings,
@@ -17,7 +17,7 @@ import {
     PDF_FONTS,
     type TableColumn,
 } from "@/lib/services/pdf/utils";
-
+import { drawSingleBarChart } from "@/lib/services/pdf/bar-chart";
 
 export interface SalesReportFilters {
     paymentMethod: string;
@@ -26,36 +26,30 @@ export interface SalesReportFilters {
 }
 
 function truncateCode(code: string): string {
-    if (code.length > 15) {
+    if (code.length > 20) {
         return code.substring(0, 12) + "...";
     }
     return code;
 }
 
-export async function generateSalesReport(
-    filters: SalesReportFilters
-) {
+export async function generateSalesReport(filters: SalesReportFilters) {
     try {
         await requirePermission("transaction", "read");
+
+        // Default date range: last 4 months
+        const dateTo = filters.dateTo ? new Date(filters.dateTo) : new Date();
+        const dateFrom = filters.dateFrom
+            ? new Date(filters.dateFrom)
+            : subMonths(dateTo, 4);
 
         // Build date range filter for transactions
         const transactionWhere: Record<string, unknown> = {
             type: "dispensed",
+            createdAt: {
+                gte: startOfMonth(dateFrom),
+                lte: endOfMonth(dateTo),
+            },
         };
-
-        if (filters.dateFrom || filters.dateTo) {
-            transactionWhere.createdAt = {};
-            if (filters.dateFrom) {
-                (transactionWhere.createdAt as Record<string, Date>).gte = new Date(
-                    filters.dateFrom
-                );
-            }
-            if (filters.dateTo) {
-                const toDate = new Date(filters.dateTo);
-                toDate.setHours(23, 59, 59, 999);
-                (transactionWhere.createdAt as Record<string, Date>).lte = toDate;
-            }
-        }
 
         // Fetch all dispense transactions with payment info
         const transactions = await prisma.transactions.findMany({
@@ -81,9 +75,9 @@ export async function generateSalesReport(
                 },
                 patientRecord: {
                     select: {
-                        name: true
-                    }
-                }
+                        name: true,
+                    },
+                },
             },
             orderBy: { createdAt: "desc" },
         });
@@ -96,8 +90,35 @@ export async function generateSalesReport(
             );
         }
 
-        // Get paid transactions only for the table
+        // Get paid transactions only
         const paidTransactions = filteredTransactions.filter((t) => t.payment);
+
+        // Generate all months in the range
+        const months = eachMonthOfInterval({
+            start: startOfMonth(dateFrom),
+            end: endOfMonth(dateTo),
+        });
+
+        // Group paid transactions by month
+        const monthlyData = months.map((monthDate) => {
+            const monthKey = format(monthDate, "yyyy-MM");
+
+            const monthTransactions = paidTransactions.filter(
+                (t) => format(t.createdAt, "yyyy-MM") === monthKey
+            );
+
+            const total = monthTransactions.reduce(
+                (sum, t) => sum + (t.payment?.amount || 0),
+                0
+            );
+
+            return {
+                label: format(monthDate, "MMM"),
+                fullLabel: format(monthDate, "MMM yyyy"),
+                total,
+                transactionCount: monthTransactions.length,
+            };
+        });
 
         // Calculate revenue by payment method
         const revenueByMethod: Record<string, number> = {
@@ -119,7 +140,7 @@ export async function generateSalesReport(
         );
 
         // Calculate pending payments (transactions without payment)
-        const pendingTransactions = transactions.filter((t) => !t.payment);
+        const pendingTransactions = filteredTransactions.filter((t) => !t.payment);
         const pendingCount = pendingTransactions.length;
 
         // Get facility settings
@@ -129,12 +150,7 @@ export async function generateSalesReport(
         const doc = createPdfDocument();
 
         // Generate header
-        generateHeader(
-            doc,
-            facility.name,
-            facility.address,
-            "Sales/Payment Report"
-        );
+        generateHeader(doc, facility.name, facility.address, "Cash In Report");
 
         // Payment method label
         const methodLabels: Record<string, string> = {
@@ -146,38 +162,78 @@ export async function generateSalesReport(
         };
 
         // Generate filters summary
-        const filterLabels = [
+        generateFiltersSummary(doc, [
             {
                 label: "Period",
-                value:
-                    filters.dateFrom || filters.dateTo
-                        ? `${filters.dateFrom ? format(new Date(filters.dateFrom), "MMM d, yyyy") : "Start"} - ${filters.dateTo ? format(new Date(filters.dateTo), "MMM d, yyyy") : "Present"}`
-                        : "All Time",
+                value: `${format(dateFrom, "MMM d, yyyy")} - ${format(dateTo, "MMM d, yyyy")}`,
             },
             {
                 label: "Payment Method",
                 value: methodLabels[filters.paymentMethod] ?? "All Methods",
             },
-        ];
-        generateFiltersSummary(doc, filterLabels);
+        ]);
 
         // Generate stats summary
         generateStatsSummary(doc, [
-            { label: "Total Transactions", value: transactions.length },
-            { label: "Paid", value: paidTransactions.length },
-            { label: "Pending", value: pendingCount },
+            { label: "Total Revenue", value: `KES ${totalRevenue.toLocaleString()}` },
+            { label: "Paid Transactions", value: paidTransactions.length },
+            { label: "Pending Payments", value: pendingCount },
         ]);
 
         const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
 
-        // ==========================================
+        // Monthly Cash In Bar Chart
+        drawSingleBarChart(
+            doc,
+            monthlyData.map((m) => ({ label: m.label, value: m.total })),
+            {
+                title: "Monthly Cash In",
+                width: pageWidth,
+                height: 250,
+                color: "#22c55e",
+                valuePrefix: "",
+            }
+        );
+
+        // Monthly Breakdown Table
+        doc.moveDown(1);
+        doc
+            .fontSize(PDF_FONTS.heading)
+            .font("Helvetica-Bold")
+            .fillColor(PDF_COLORS.primary)
+            .text("Monthly Breakdown");
+        doc.moveDown(0.5);
+
+        const monthlyColumns: TableColumn[] = [
+            { header: "Month", key: "fullLabel", width: 30 },
+            { header: "Transactions", key: "transactionCount", width: 25, align: "center" },
+            { header: "Revenue", key: "revenue", width: 45, align: "right" },
+        ];
+
+        const monthlyTableData = monthlyData.map((item) => ({
+            fullLabel: item.fullLabel,
+            transactionCount: item.transactionCount,
+            revenue: `KES ${item.total.toLocaleString()}`,
+        }));
+
+        // Add totals row
+        monthlyTableData.push({
+            fullLabel: "TOTAL",
+            transactionCount: paidTransactions.length,
+            revenue: `KES ${totalRevenue.toLocaleString()}`,
+        });
+
+        generateTable(doc, monthlyColumns, monthlyTableData);
+
+
         // Revenue Summary Section
-        // ==========================================
+
+        doc.moveDown(1);
         doc
             .fillColor(PDF_COLORS.primary)
             .fontSize(PDF_FONTS.heading)
             .font("Helvetica-Bold")
-            .text("Revenue Summary", { width: pageWidth });
+            .text("Revenue by Payment Method", { width: pageWidth });
 
         doc.moveDown(0.5);
 
@@ -257,9 +313,8 @@ export async function generateSalesReport(
 
         doc.moveDown(2);
 
-        // ==========================================
+
         // Payment Transactions Table
-        // ==========================================
         doc
             .fillColor(PDF_COLORS.primary)
             .fontSize(PDF_FONTS.heading)
@@ -327,5 +382,3 @@ export async function generateSalesReport(
         };
     }
 }
-
-

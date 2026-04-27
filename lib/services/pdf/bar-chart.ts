@@ -16,6 +16,19 @@ interface BarChartOptions {
     };
 }
 
+export interface SingleBarChartData {
+    label: string;
+    value: number;
+}
+
+interface SingleBarChartOptions {
+    title: string;
+    width: number;
+    height: number;
+    color: string;
+    valuePrefix?: string;
+}
+
 export function drawBarChart(
     doc: PDFKit.PDFDocument,
     data: BarChartData[],
@@ -206,3 +219,137 @@ function formatNumber(value: number): string {
     }
     return value.toString();
 }
+
+// Helper to format numbers compactly (e.g., 1.5K, 2.3M)
+function formatCompactNumber(value: number): string {
+    if (value >= 1000000) {
+        return (value / 1000000).toFixed(1) + "M";
+    }
+    if (value >= 1000) {
+        return (value / 1000).toFixed(1) + "K";
+    }
+    return value.toLocaleString();
+}
+
+
+
+
+
+export function drawSingleBarChart(
+    doc: PDFKit.PDFDocument,
+    data: SingleBarChartData[],
+    options: SingleBarChartOptions
+) {
+    const { title, width, height, color, valuePrefix = "" } = options;
+
+    // Chart positioning
+    const startX = PDF_MARGINS.left;
+    const startY = doc.y + 20;
+    const chartWidth = width;
+    const chartHeight = height - 80; // Leave room for title, labels, and legend
+
+    // Calculate max value for scaling
+    const maxValue = Math.max(...data.map((d) => d.value), 1);
+
+    // Round up to nice number for Y-axis
+    const yAxisMax = calculateNiceMax(maxValue);
+
+    // Bar dimensions
+    const barWidth = Math.min((chartWidth - 60) / data.length * 0.6, 50);
+    const groupWidth = (chartWidth - 60) / data.length;
+
+    // Draw title
+    doc
+        .fontSize(PDF_FONTS.heading)
+        .font("Helvetica-Bold")
+        .fillColor(PDF_COLORS.primary)
+        .text(title, startX, startY, {
+            width: chartWidth,
+            align: "center",
+        });
+
+    const chartStartY = startY + 30;
+    const chartEndY = chartStartY + chartHeight;
+
+    // Draw Y-axis
+    doc
+        .strokeColor(PDF_COLORS.border)
+        .lineWidth(1)
+        .moveTo(startX + 50, chartStartY)
+        .lineTo(startX + 50, chartEndY)
+        .stroke();
+
+    // Draw X-axis
+    doc
+        .moveTo(startX + 50, chartEndY)
+        .lineTo(startX + chartWidth, chartEndY)
+        .stroke();
+
+    // Draw Y-axis labels and grid lines
+    const yAxisSteps = 5;
+    doc.fontSize(PDF_FONTS.small).font("Helvetica").fillColor(PDF_COLORS.muted);
+
+    for (let i = 0; i <= yAxisSteps; i++) {
+        const value = (yAxisMax / yAxisSteps) * i;
+        const y = chartEndY - (chartHeight / yAxisSteps) * i;
+
+        // Y-axis label
+        doc.text(formatCompactNumber(value), startX, y - 4, {
+            width: 45,
+            align: "right",
+        });
+
+        // Grid line (except for baseline)
+        if (i > 0) {
+            doc
+                .strokeColor("#e5e7eb")
+                .lineWidth(0.5)
+                .moveTo(startX + 50, y)
+                .lineTo(startX + chartWidth, y)
+                .stroke();
+        }
+    }
+
+    // Draw bars
+    const barsStartX = startX + 55;
+
+    data.forEach((item, index) => {
+        const barCenterX = barsStartX + index * groupWidth + groupWidth / 2;
+        const barX = barCenterX - barWidth / 2;
+
+        // Bar height
+        const barHeight = yAxisMax > 0 ? (item.value / yAxisMax) * chartHeight : 0;
+        const barY = chartEndY - barHeight;
+
+        if (barHeight > 0) {
+            doc.fillColor(color).rect(barX, barY, barWidth, barHeight).fill();
+
+            // Value on top of bar
+            doc
+                .fontSize(7)
+                .fillColor(PDF_COLORS.text)
+                .text(
+                    `${valuePrefix}${formatCompactNumber(item.value)}`,
+                    barX - 10,
+                    barY - 12,
+                    {
+                        width: barWidth + 20,
+                        align: "center",
+                    }
+                );
+        }
+
+        // X-axis label (month)
+        doc
+            .fontSize(PDF_FONTS.small)
+            .fillColor(PDF_COLORS.muted)
+            .text(item.label, barCenterX - 20, chartEndY + 8, {
+                width: 40,
+                align: "center",
+            });
+    });
+
+    // Update doc.y position
+    doc.y = chartEndY + 35;
+}
+

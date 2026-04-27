@@ -1,4 +1,3 @@
-// components/reports/financial/sales-report-dialog.tsx
 "use client";
 
 import { Loader, FileText, CalendarIcon } from "lucide-react";
@@ -30,7 +29,7 @@ import { useSalesReport } from "@/hooks/useReports";
 import { useReportPreview } from "@/hooks/useReportPreview";
 import { PDFPreviewDialog } from "@/components/reports/pdf-preview-dialog";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, subMonths } from "date-fns";
 import type { SalesReportFilters } from "@/lib/actions/reports/financial-reports";
 
 const PAYMENT_METHODS = [
@@ -60,8 +59,8 @@ export function SalesReportDialog({ open, onClose }: SalesReportDialogProps) {
   const { handleSubmit, control, reset } = useForm<FormValues>({
     defaultValues: {
       paymentMethod: "all",
-      dateFrom: undefined,
-      dateTo: undefined,
+      dateFrom: subMonths(new Date(), 4),
+      dateTo: new Date(),
     },
   });
 

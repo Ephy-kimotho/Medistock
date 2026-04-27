@@ -4,7 +4,7 @@ import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories, getCategoryById } from "@/lib/actions/categories"
 import { getCategoryNames, } from "@/lib/actions/medicines"
-import { MEDICINE_AGE_GROUP, ALERT_TYPE } from "@/generated/prisma/client"
+import { MEDICINE_AGE_GROUP, ALERT_TYPE, ALERT_STATUS } from "@/generated/prisma/client"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -412,4 +412,44 @@ export interface RecentAlert {
   type: ALERT_TYPE;
   message: string;
   createdAt: Date;
+}
+
+export interface AlertFilters {
+  status?: ALERT_STATUS | "all";
+  type?: ALERT_TYPE | "all";
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AlertWithDetails {
+  id: string;
+  type: ALERT_TYPE;
+  message: string;
+  status: ALERT_STATUS;
+  createdAt: Date;
+  readAt: Date | null;
+  resolvedAt: Date | null;
+  resolvedBy: {
+    id: string;
+    name: string;
+  } | null;
+  stockEntry: {
+    id: string;
+    batchNumber: string;
+    quantity: number;
+  };
+  medicine: {
+    id: string;
+    name: string;
+    unit: string;
+    reorderlevel: number;
+  };
+  currentStock: number;
+}
+
+export interface AlertCounts {
+  all: number;
+  pending: number;
+  read: number;
+  resolved: number;
 }

@@ -45,37 +45,6 @@ export const useCategories = ({ page = 1, search = "" }: { page: number, search:
     })
 }
 
-// UPDATE a category
-/* export const useUpdateCategory = () => {
-
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: CreateCategory }) => {
-            return await updateCategory(id, data)
-
-        },
-        onSuccess: async (data) => {
-            await queryClient.invalidateQueries({
-                queryKey: CategoryKeys.lists()
-            })
-
-            const message = data.message || "Category updated successfully."
-            toast.success(message)
-        },
-        onError: (error) => {
-            let message = "Failed to update category";
-
-            if (error instanceof Error && error.message.includes("already exists")) {
-                message = error.message
-            }
-
-            toast.error(message)
-        }
-
-    })
-} */
-
 //  Archive a category
 export const useArchiveCategory = () => {
     const queryClient = useQueryClient();

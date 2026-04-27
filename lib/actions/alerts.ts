@@ -2,51 +2,15 @@
 
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/check-permissions";
-import type { ALERT_STATUS, ALERT_TYPE } from "@/generated/prisma/client";
-import { LIMIT } from "@/lib/utils"
-
-
-export interface AlertFilters {
-    status?: ALERT_STATUS | "all";
-    type?: ALERT_TYPE | "all";
-    page?: number;
-    pageSize?: number;
-}
-
-export interface AlertWithDetails {
-    id: string;
-    type: ALERT_TYPE;
-    message: string;
-    status: ALERT_STATUS;
-    createdAt: Date;
-    readAt: Date;
-    stockEntry: {
-        id: string;
-        batchNumber: string;
-        quantity: number;
-    };
-    medicine: {
-        id: string;
-        name: string;
-        unit: string;
-        reorderlevel: number;
-    };
-    currentStock: number;
-}
-
-export interface AlertCounts {
-    all: number;
-    pending: number;
-    read: number;
-    dismissed: number;
-}
+import type { AlertFilters, AlertWithDetails, AlertCounts } from "@/lib/types";
+import type { ALERT_STATUS, ALERT_TYPE } from "@/generated/prisma/client"
 
 
 export async function getAlerts(filters: AlertFilters = {}) {
     try {
         await requirePermission("medicine", "read");
 
-        const { status = "all", type = "all", page = 1 } = filters;
+        const { status = "all", type = "all", page = 1, pageSize = 20 } = filters;
 
         const where: {
             status?: ALERT_STATUS;
@@ -84,15 +48,20 @@ export async function getAlerts(filters: AlertFilters = {}) {
                             },
                         },
                     },
+                    resolvedBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
                 },
                 orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-                skip: (page - 1) * LIMIT,
-                take: LIMIT,
+                skip: (page - 1) * pageSize,
+                take: pageSize,
             }),
             prisma.alerts.count({ where }),
         ]);
 
-        // Transform to include current stock calculation
         const alertsWithDetails: AlertWithDetails[] = alerts.map((alert) => ({
             id: alert.id,
             type: alert.type,
@@ -100,6 +69,8 @@ export async function getAlerts(filters: AlertFilters = {}) {
             status: alert.status,
             createdAt: alert.createdAt,
             readAt: alert.readAt,
+            resolvedAt: alert.resolvedAt,
+            resolvedBy: alert.resolvedBy,
             stockEntry: alert.stockEntry,
             medicine: {
                 id: alert.medicines.id,
@@ -119,8 +90,8 @@ export async function getAlerts(filters: AlertFilters = {}) {
                 alerts: alertsWithDetails,
                 total,
                 page,
-                pageSize: LIMIT,
-                totalPages: Math.ceil(total / LIMIT),
+                pageSize,
+                totalPages: Math.ceil(total / pageSize),
             },
         };
     } catch (error) {
@@ -138,16 +109,16 @@ export async function getAlertCounts() {
     try {
         await requirePermission("medicine", "read");
 
-        const [all, pending, read, dismissed] = await Promise.all([
+        const [all, pending, read, resolved] = await Promise.all([
             prisma.alerts.count(),
             prisma.alerts.count({ where: { status: "pending" } }),
             prisma.alerts.count({ where: { status: "read" } }),
-            prisma.alerts.count({ where: { status: "dismissed" } }),
+            prisma.alerts.count({ where: { status: "resolved" } }),
         ]);
 
         return {
             success: true,
-            data: { all, pending, read, dismissed } as AlertCounts,
+            data: { all, pending, read, resolved } as AlertCounts,
         };
     } catch (error) {
         console.error("Failed to fetch alert counts:", error);
@@ -158,6 +129,7 @@ export async function getAlertCounts() {
         };
     }
 }
+
 
 export async function getPendingAlertCount() {
     try {
@@ -173,6 +145,7 @@ export async function getPendingAlertCount() {
         return { success: false, message: "Failed to fetch count" };
     }
 }
+
 
 export async function markAlertAsRead(alertId: string) {
     try {
@@ -197,28 +170,30 @@ export async function markAlertAsRead(alertId: string) {
     }
 }
 
-export async function dismissAlert(alertId: string) {
+
+export async function resolveAlert(alertId: string, userId: string) {
     try {
         await requirePermission("medicine", "update");
 
         const alert = await prisma.alerts.update({
             where: { id: alertId },
             data: {
-                status: "dismissed",
+                status: "resolved",
+                resolvedById: userId,
+                resolvedAt: new Date(),
             },
         });
 
         return { success: true, data: alert };
     } catch (error) {
-        console.error("Failed to dismiss alert:", error);
+        console.error("Failed to resolve alert:", error);
         return {
             success: false,
             message:
-                error instanceof Error ? error.message : "Failed to dismiss alert",
+                error instanceof Error ? error.message : "Failed to resolve alert",
         };
     }
 }
-
 
 export async function markAllAlertsAsRead() {
     try {
@@ -241,25 +216,6 @@ export async function markAllAlertsAsRead() {
                 error instanceof Error
                     ? error.message
                     : "Failed to mark all alerts as read",
-        };
-    }
-}
-
-export async function deleteAlert(alertId: string) {
-    try {
-        await requirePermission("medicine", "soft-delete");
-
-        await prisma.alerts.delete({
-            where: { id: alertId },
-        });
-
-        return { success: true };
-    } catch (error) {
-        console.error("Failed to delete alert:", error);
-        return {
-            success: false,
-            message:
-                error instanceof Error ? error.message : "Failed to delete alert",
         };
     }
 }
