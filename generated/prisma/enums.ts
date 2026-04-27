@@ -51,7 +51,6 @@ export type ALERT_TYPE = (typeof ALERT_TYPE)[keyof typeof ALERT_TYPE]
 export const ALERT_STATUS = {
   pending: 'pending',
   read: 'read',
-  dismissed: 'dismissed',
   resolved: 'resolved'
 } as const
 

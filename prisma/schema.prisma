@@ -41,7 +41,6 @@ enum ALERT_TYPE {
 enum ALERT_STATUS {
   pending
   read
-  dismissed
   resolved
 }
 
@@ -86,6 +85,7 @@ model User {
   payments             Payment[]
   sentInvitations      Invitation[]        @relation("SentInvitations")
   requestedInvitations InvitationRequest[] @relation("RequestedInvitations")
+  alerts               Alerts[]
 
   @@unique([email])
   @@unique([phone])
@@ -285,8 +285,12 @@ model Alerts {
   message String
   status  ALERT_STATUS @default(pending)
 
-  createdAt DateTime @default(now())
-  readAt    DateTime @updatedAt
+  resolvedById String?
+  resolvedBy   User?   @relation(fields: [resolvedById], references: [id])
+
+  createdAt  DateTime  @default(now())
+  readAt     DateTime?
+  resolvedAt DateTime?
 
   @@index([stockEntriesId, medicinesId])
   @@map("alerts")
