@@ -7,6 +7,7 @@ import { addDays, isBefore, isAfter } from "date-fns";
 import { StockInput } from "@/lib/types"
 import { LIMIT } from "@/lib/utils";
 import { Prisma } from "@/generated/prisma/client"
+import { resolveStockAlertsOnRestock } from "@/lib/utils/stock-alerts"
 import type { GetStockInventoryProps } from "@/lib/types"
 
 
@@ -267,6 +268,9 @@ export async function addNewStock(data: StockInput, userId: string) {
             return stock
         })
 
+
+        // Resolve any stock alerts since we just added inventory
+        await resolveStockAlertsOnRestock(data.medicineId);
 
         revalidatePath("/inventory")
 

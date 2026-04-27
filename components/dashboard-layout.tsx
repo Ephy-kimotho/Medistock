@@ -2,7 +2,6 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,12 +26,15 @@ import { AppSkeleton } from "./app-skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import { prefetchSettings } from "@/hooks/useSettings";
 import Link from "next/link";
+import { usePendingAlertCount } from "@/hooks/useAlerts";
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { currentUser, isSessionPending, isAdmin, isInventoryManager } =
     usePermissions();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  usePendingAlertCount()
 
   const handleLogout = async () => {
     try {
@@ -61,18 +63,6 @@ function Layout({ children }: { children: React.ReactNode }) {
 
             {/* Right side - Notifications & User */}
             <div className="flex items-center gap-4">
-              {/* Notification Bell */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative hover:bg-transparent"
-              >
-                <Bell className="size-5" />
-                <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
-                  3
-                </span>
-              </Button>
-
               {/* User Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

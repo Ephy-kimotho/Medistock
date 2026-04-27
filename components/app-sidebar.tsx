@@ -45,6 +45,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { useQueryClient } from "@tanstack/react-query";
 import { prefetchSettings } from "@/hooks/useSettings";
 import Link from "next/link";
+import { AlertBadge } from "@/components/alerts/alerts-badge";
 
 // Navigation items configuration
 const mainNavItems = [
@@ -82,7 +83,7 @@ const mainNavItems = [
     title: "Alerts",
     url: "/alerts",
     icon: Bell,
-    badge: 3,
+    badge: true,
   },
   {
     title: "Reports",
@@ -266,7 +267,9 @@ function AppSidebar() {
                                   subItem.title === "Wastage") &&
                                   isHR &&
                                   "hidden",
-                                  (subItem.title === "Pending Payments") && (isHR || isAuditor) &&  "hidden"
+                                subItem.title === "Pending Payments" &&
+                                  (isHR || isAuditor) &&
+                                  "hidden",
                               )}
                             >
                               <SidebarMenuSubButton
@@ -304,11 +307,7 @@ function AppSidebar() {
                       >
                         <item.icon className="size-4" />
                         <span className="text-base">{item.title}</span>
-                        {item.badge && (
-                          <span className="ml-auto flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
-                            {item.badge}
-                          </span>
-                        )}
+                        {item.badge && <AlertBadge />}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

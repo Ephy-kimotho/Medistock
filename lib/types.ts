@@ -4,7 +4,7 @@ import { getInvitations } from "@/lib/actions/invitations"
 import { getInvitationRequests } from "@/lib/actions/invitation-request"
 import { getCategories, getCategoryById } from "@/lib/actions/categories"
 import { getCategoryNames, } from "@/lib/actions/medicines"
-import { MEDICINE_AGE_GROUP } from "@/generated/prisma/client"
+import { MEDICINE_AGE_GROUP, ALERT_TYPE } from "@/generated/prisma/client"
 
 // ==================== TYPE DEFINITIONS ====================
 export type Role = "user" | "admin" | "auditor" | "inventory_manager" | "hr"
@@ -313,21 +313,6 @@ export interface CategoryPageContentProps {
     stats: Stats;
 }
 
-/* export interface PendingPayment {
-    id: string;
-    quantity: number;
-    patient: string;
-    phone: string;
-    createdAt: Date;
-    medicine: {
-        name: string;
-        unit: string;
-    };
-    batch: {
-        batchNumber: string;
-    };
-} */
-
 export interface PendingPayment {
     id: string;
     quantity: number;
@@ -420,4 +405,11 @@ export interface CreatePatientInput {
     name: string;
     phone: string;
     ageGroup: MEDICINE_AGE_GROUP;
+}
+
+export interface RecentAlert {
+  id: string;
+  type: ALERT_TYPE;
+  message: string;
+  createdAt: Date;
 }

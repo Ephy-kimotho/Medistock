@@ -1,4 +1,3 @@
-// components/wastage/wastage-form.tsx
 "use client";
 
 import { useState } from "react";
