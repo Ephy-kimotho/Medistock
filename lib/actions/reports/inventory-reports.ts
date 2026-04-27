@@ -16,15 +16,26 @@ import {
   PDF_MARGINS,
   type TableColumn,
 } from "@/lib/services/pdf/utils";
-import { format, addDays, isBefore, differenceInDays } from "date-fns";
+import {
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  format,
+  eachMonthOfInterval,
+  addDays, isBefore, differenceInDays
+} from "date-fns";
+import { drawBarChart } from "@/lib/services/pdf/bar-chart";
 
+// Interface definitions
 export interface CategoryOption {
   id: string;
   name: string;
 }
 
 export interface StockLevelFilters {
-  categoryId: string;
+  medicineId: string;
+  dateFrom: string | null;
+  dateTo: string | null;
 }
 
 export interface LowStockFilters {
@@ -49,6 +60,7 @@ export interface WastageReportFilters {
   dateTo: string | null;
 }
 
+// Utility function definition
 function truncateNotes(notes: string | null): string {
   if (!notes) return "-";
   if (notes.length > 20) {
@@ -57,6 +69,7 @@ function truncateNotes(notes: string | null): string {
   return notes;
 }
 
+// Generate report server actions
 export async function getCategoriesForReport() {
   try {
     await requirePermission("medicine", "read");
@@ -77,81 +90,105 @@ export async function getCategoriesForReport() {
   }
 }
 
+export async function getMedicinesForReport() {
+  try {
+    const medicines = await prisma.medicines.findMany({
+      where: {
+        isActive: true,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: { name: "asc" },
+    });
+
+    return { success: true, data: medicines };
+  } catch (error) {
+    console.error("Failed to fetch medicines for report:", error);
+    return { success: false, message: "Failed to fetch medicines" };
+  }
+}
+
 export async function generateStockLevelReport(filters: StockLevelFilters) {
   try {
     await requirePermission("medicine", "read");
 
-    // Build query filters
-    const where: Record<string, unknown> = {
-      isActive: true,
-      deletedAt: null,
-    };
+    // Default date range: last 6 months
+    const dateTo = filters.dateTo ? new Date(filters.dateTo) : new Date();
+    const dateFrom = filters.dateFrom
+      ? new Date(filters.dateFrom)
+      : subMonths(dateTo, 6);
 
-    if (filters.categoryId !== "all") {
-      where.categoryId = filters.categoryId;
-    }
-
-    // Fetch medicines with stock entries
-    const medicines = await prisma.medicines.findMany({
-      where,
+    // Fetch the medicine details
+    const medicine = await prisma.medicines.findUnique({
+      where: { id: filters.medicineId },
       select: {
         id: true,
         name: true,
         unit: true,
-        reorderlevel: true,
-        category: {
-          select: {
-            name: true,
-          },
-        },
-        stockEntries: {
-          where: {
-            quantity: { gt: 0 },
-          },
-          select: {
-            quantity: true,
-          },
-        },
+        category: { select: { name: true } },
       },
-      orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
     });
 
-    // Calculate stock levels
-    const stockData = medicines.map((medicine) => {
-      const totalStock = medicine.stockEntries.reduce(
-        (sum, entry) => sum + entry.quantity,
-        0,
+    if (!medicine) {
+      return { success: false, message: "Medicine not found" };
+    }
+
+    // Fetch all transactions for this medicine in the date range
+    // We need to join through stockEntries since transactions link to stockEntry, not medicine
+    const transactions = await prisma.transactions.findMany({
+      where: {
+        stockEntry: {
+          medicineId: filters.medicineId,
+        },
+        createdAt: {
+          gte: startOfMonth(dateFrom),
+          lte: endOfMonth(dateTo),
+        },
+        type: { in: ["stock_in", "dispensed", "wastage"] },
+      },
+      select: {
+        type: true,
+        quantity: true,
+        createdAt: true,
+      },
+    });
+
+    // Generate all months in the range
+    const months = eachMonthOfInterval({
+      start: startOfMonth(dateFrom),
+      end: endOfMonth(dateTo),
+    });
+
+    // Group transactions by month
+    const monthlyData = months.map((monthDate) => {
+      const monthKey = format(monthDate, "yyyy-MM");
+
+      const monthTransactions = transactions.filter(
+        (t) => format(t.createdAt, "yyyy-MM") === monthKey
       );
 
-      let status: string;
-      if (totalStock === 0) {
-        status = "Out of Stock";
-      } else if (totalStock <= medicine.reorderlevel) {
-        status = "Low Stock";
-      } else {
-        status = "In Stock";
-      }
+      const stockIn = monthTransactions
+        .filter((t) => t.type === "stock_in")
+        .reduce((sum, t) => sum + t.quantity, 0);
+
+      const stockOut = monthTransactions
+        .filter((t) => t.type === "dispensed" || t.type === "wastage")
+        .reduce((sum, t) => sum + t.quantity, 0);
 
       return {
-        id: medicine.id,
-        name: medicine.name,
-        category: medicine.category.name,
-        unit: medicine.unit,
-        totalStock,
-        reorderLevel: medicine.reorderlevel,
-        status,
+        label: format(monthDate, "MMM"), // Short month name for x-axis
+        fullLabel: format(monthDate, "MMM yyyy"),
+        stockIn,
+        stockOut,
       };
     });
 
-    // Get category name for filter display
-    let categoryName = "All Categories";
-    if (filters.categoryId !== "all") {
-      const category = await prisma.category.findUnique({
-        where: { id: filters.categoryId },
-        select: { name: true },
-      });
-      categoryName = category?.name ?? "Unknown";
-    }
+    // Calculate totals for summary
+    const totalStockIn = monthlyData.reduce((sum, m) => sum + m.stockIn, 0);
+    const totalStockOut = monthlyData.reduce((sum, m) => sum + m.stockOut, 0);
 
     // Get facility settings
     const facility = await getFacilitySettings();
@@ -163,56 +200,78 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
     generateHeader(doc, facility.name, facility.address, "Stock Level Report");
 
     // Generate filters summary
-    generateFiltersSummary(doc, [{ label: "Category", value: categoryName }]);
-
-    // Calculate summary stats
-    const totalMedicines = stockData.length;
-    const lowStockCount = stockData.filter(
-      (item) => item.status === "Low Stock",
-    ).length;
-    const outOfStockCount = stockData.filter(
-      (item) => item.status === "Out of Stock",
-    ).length;
-    const inStockCount = stockData.filter(
-      (item) => item.status === "In Stock",
-    ).length;
-
-    generateStatsSummary(doc, [
-      { label: "Total Medicines", value: totalMedicines },
-      { label: "In Stock", value: inStockCount },
-      { label: "Low Stock", value: lowStockCount },
-      { label: "Out of Stock", value: outOfStockCount },
+    generateFiltersSummary(doc, [
+      { label: "Medicine", value: medicine.name },
+      { label: "Category", value: medicine.category.name },
+      {
+        label: "Period",
+        value: `${format(dateFrom, "MMM d, yyyy")} - ${format(dateTo, "MMM d, yyyy")}`,
+      },
     ]);
 
-    // Define table columns
-    const columns: TableColumn[] = [
-      { header: "Medicine", key: "name", width: 25 },
-      { header: "Category", key: "category", width: 20 },
-      { header: "Stock Qty", key: "totalStock", width: 12, align: "center" },
-      { header: "Unit", key: "unit", width: 12, align: "center" },
+    // Generate stats summary
+    generateStatsSummary(doc, [
+      { label: "Total Stock In", value: `${totalStockIn} ${medicine.unit}` },
+      { label: "Total Stock Out", value: `${totalStockOut} ${medicine.unit}` },
       {
-        header: "Reorder Level",
-        key: "reorderLevel",
-        width: 15,
-        align: "center",
+        label: "Net Change",
+        value: `${totalStockIn - totalStockOut >= 0 ? "+" : ""}${totalStockIn - totalStockOut} ${medicine.unit}`,
       },
-      { header: "Status", key: "status", width: 16, align: "center" },
+    ]);
+
+    // Draw bar chart
+    const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
+
+    drawBarChart(doc, monthlyData, {
+      title: `Stock Movement - ${medicine.name}`,
+      width: pageWidth,
+      height: 280,
+      colors: {
+        stockIn: "#22c55e", // Green
+        stockOut: "#f97316", // Orange
+      },
+    });
+
+    // Add monthly breakdown table below chart
+    doc.moveDown(1);
+    doc
+      .fontSize(PDF_FONTS.heading)
+      .font("Helvetica-Bold")
+      .fillColor(PDF_COLORS.primary)
+      .text("Monthly Breakdown");
+    doc.moveDown(0.5);
+
+    const columns: TableColumn[] = [
+      { header: "Month", key: "fullLabel", width: 25 },
+      { header: "Stock In", key: "stockIn", width: 25, align: "center" },
+      { header: "Stock Out", key: "stockOut", width: 25, align: "center" },
+      { header: "Net Change", key: "netChange", width: 25, align: "center" },
     ];
 
-    // Prepare table data
-    const tableData = stockData.map((item) => ({
-      name: item.name,
-      category: item.category,
-      totalStock: item.totalStock,
-      unit: item.unit,
-      reorderLevel: item.reorderLevel,
-      status: item.status,
+    const tableData = monthlyData.map((item) => ({
+      fullLabel: item.fullLabel,
+      stockIn: item.stockIn,
+      stockOut: item.stockOut,
+      netChange:
+        item.stockIn - item.stockOut >= 0
+          ? `+${item.stockIn - item.stockOut}`
+          : `${item.stockIn - item.stockOut}`,
     }));
 
-    // Generate table
+    // Add totals row
+    tableData.push({
+      fullLabel: "TOTAL",
+      stockIn: totalStockIn,
+      stockOut: totalStockOut,
+      netChange:
+        totalStockIn - totalStockOut >= 0
+          ? `+${totalStockIn - totalStockOut}`
+          : `${totalStockIn - totalStockOut}`,
+    });
+
     const totalPages = generateTable(doc, columns, tableData);
 
-    // Generate footer on last page
+    // Generate footer
     generateFooter(doc, totalPages);
 
     // Convert to base64

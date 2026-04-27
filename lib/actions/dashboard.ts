@@ -114,3 +114,24 @@ export async function getRecentTransactionsStaff() {
         throw new Error("Failed to get recent transactions");
     }
 }
+
+export async function getRecentAlerts(limit: number = 5) {
+    try {
+        const alerts = await prisma.alerts.findMany({
+            where: { status: "pending" },
+            select: {
+                id: true,
+                type: true,
+                message: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: limit,
+        });
+
+        return alerts;
+    } catch (error) {
+        console.error("Failed to fetch recent alerts:", error);
+        return [];
+    }
+}

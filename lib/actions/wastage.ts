@@ -6,6 +6,7 @@ import { requirePermission } from "@/lib/check-permissions";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isBefore } from "date-fns";
+import { checkAndCreateStockAlert } from "@/lib/utils/stock-alerts"
 import type { WastageInput } from "@/lib/types";
 
 // Get batches including expired ones (for wastage recording)
@@ -55,7 +56,7 @@ export async function recordWastage(data: WastageInput, userId: string) {
                 expiryDate: true,
                 batchNumber: true,
                 medicine: {
-                    select: { name: true },
+                    select: { id: true, name: true },
                 },
             },
         });
@@ -114,6 +115,10 @@ export async function recordWastage(data: WastageInput, userId: string) {
                 },
             }),
         ]);
+
+        if (data.reason !== "expired") {
+            await checkAndCreateStockAlert(batch.medicine.id, data.stockEntriesId);
+        }
 
         revalidatePath("/transactions/wastage");
         revalidatePath("/inventory/stock");

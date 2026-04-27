@@ -4,6 +4,7 @@ import { getMedicineStats } from "@/lib/actions/medicines";
 import {
   getRecentTransactionsAdmin,
   getRecentTransactionsStaff,
+  getRecentAlerts,
 } from "@/lib/actions/dashboard";
 import { Greeting } from "@/components/dashboard/greeting";
 import { QuickActions } from "@/components/dashboard/quick-actions";
@@ -37,9 +38,10 @@ async function DashboardPage() {
   const isStaff = userRole === "user";
 
   // Fetch data based on role
-  const [stats, transactions] = await Promise.all([
+  const [stats, transactions, recentAlerts] = await Promise.all([
     getMedicineStats(),
     isStaff ? getRecentTransactionsStaff() : getRecentTransactionsAdmin(),
+    isStaff ? Promise.resolve([]) : getRecentAlerts(),
   ]);
 
   const statsInfo: StatCardProps[] = [
@@ -91,7 +93,7 @@ async function DashboardPage() {
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <RecentAlerts />
+          <RecentAlerts alerts={recentAlerts} />
           <RecentTransactionsAdmin
             transactions={transactions as RecentTransactionAdmin[]}
           />

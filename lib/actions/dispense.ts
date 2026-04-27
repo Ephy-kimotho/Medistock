@@ -5,7 +5,8 @@ import { requirePermission } from "@/lib/check-permissions";
 import { revalidatePath } from "next/cache";
 import { isBefore } from "date-fns";
 import { generateCashPaymentCode } from "@/lib/actions/common";
-import { Prisma, MEDICINE_AGE_GROUP } from "@/generated/prisma/client"
+import { Prisma, MEDICINE_AGE_GROUP } from "@/generated/prisma/client";
+import { checkAndCreateStockAlert } from "@/lib/utils/stock-alerts"
 import type { DispenseInput } from "@/lib/types"
 
 export async function getBatchesByMedicine(medicineId: string) {
@@ -49,7 +50,7 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
                 quantity: true,
                 expiryDate: true,
                 medicine: {
-                    select: { name: true, ageGroup: true },
+                    select: { id: true, name: true, ageGroup: true },
                 },
             },
         });
@@ -177,6 +178,8 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
 
             return transaction;
         });
+
+        await checkAndCreateStockAlert(batch.medicine.id, data.stockEntriesId);
 
         revalidatePath("/transactions");
         revalidatePath("/inventory/stock");
