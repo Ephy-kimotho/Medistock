@@ -1,13 +1,19 @@
 "use client";
 
-import { Clock, Plus, X, FileWarning } from "lucide-react";
+import {
+  Clock,
+  Plus,
+  FileWarning,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { AddStockForm } from "@/components/inventory/add-stock";
-import { useDismissAlert } from "@/hooks/useAlerts";
-import type { AlertWithDetails } from "@/lib/actions/alerts";
+import { useMarkAlertAsRead } from "@/hooks/useAlerts";
+import type { AlertWithDetails } from "@/lib/types";
 import type { ALERT_TYPE } from "@/generated/prisma/client";
 import Link from "next/link";
 
@@ -47,26 +53,24 @@ const alertTypeConfig: Record<
 };
 
 export function AlertCard({ alert, userId }: AlertCardProps) {
-  const { mutate: dismiss, isPending: isDismissing } = useDismissAlert();
+  const { mutate: markAsRead, isPending: isMarkingRead } = useMarkAlertAsRead();
 
   const config = alertTypeConfig[alert.type];
   const isStockAlert =
     alert.type === "low_stock" || alert.type === "out_of_stock";
-  const isExpiryAlert =
-    alert.type === "expiry_warning" || alert.type === "expired";
+  const isExpiryWarning = alert.type === "expiry_warning";
+  const isExpired = alert.type === "expired";
   const isPending = alert.status === "pending";
 
-  const handleDismiss = () => {
-    dismiss(alert.id);
+  const handleMarkAsRead = () => {
+    markAsRead(alert.id);
   };
 
   // Card border color based on alert type (only for pending alerts)
   const cardBorderClass = isPending
     ? alert.type === "out_of_stock" || alert.type === "expired"
-      ? "border-b-crimson-red"
-      : alert.type === "low_stock"
-        ? "border-princeton-orange"
-        : "border-princeton-orange"
+      ? "border-crimson-red"
+      : "border-princeton-orange"
     : "border-border";
 
   return (
@@ -113,10 +117,22 @@ export function AlertCard({ alert, userId }: AlertCardProps) {
         </span>
       </p>
 
+      {/* Recommendation for expiry warning */}
+      {isExpiryWarning && isPending && (
+        <div className="flex items-start gap-2 p-3 mb-4 rounded-md bg-amber-50 border border-amber-200">
+          <AlertTriangle className="size-4 text-amber-600 mt-0.5 shrink-0" />
+          <p className="text-sm text-amber-800">
+            <span className="font-medium">Recommendation:</span> Prioritize
+            dispensing medicines from this batch before expiry. If unable to
+            use, prepare to record as wastage.
+          </p>
+        </div>
+      )}
+
       {/* Actions */}
       {isPending && (
         <div className="flex flex-wrap gap-2">
-          {/* Add Stock Button - for stock alerts */}
+          {/* Add Stock Button - for stock alerts (low_stock, out_of_stock) */}
           {isStockAlert && (
             <AddStockForm
               userId={userId}
@@ -134,12 +150,12 @@ export function AlertCard({ alert, userId }: AlertCardProps) {
             </AddStockForm>
           )}
 
-          {/* Record Wastage Button - for expiry alerts */}
-          {isExpiryAlert && (
+          {/* Record Wastage Button - for expired alerts only */}
+          {isExpired && (
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 border-orange-500 text-orange-600 hover:bg-orange-50"
+              className="gap-2 border-crimson-red text-crimson-red hover:bg-crimson-red/10"
               asChild
             >
               <Link href="/transactions/wastage">
@@ -149,25 +165,40 @@ export function AlertCard({ alert, userId }: AlertCardProps) {
             </Button>
           )}
 
-          {/* Dismiss Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
-            onClick={handleDismiss}
-            disabled={isDismissing}
-          >
-            <X className="size-4" />
-            Dismiss
-          </Button>
+          {/* Mark as Read Button - for expiry warning only */}
+          {isExpiryWarning && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleMarkAsRead}
+              disabled={isMarkingRead}
+            >
+              <CheckCircle className="size-4" />
+              {isMarkingRead ? "Marking..." : "Mark as Read"}
+            </Button>
+          )}
         </div>
       )}
 
       {/* Status indicator for non-pending alerts */}
       {!isPending && (
-        <p className="text-sm text-muted-foreground italic">
-          {alert.status === "read" ? "Marked as read" : "Dismissed"}
-        </p>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {alert.status === "read" ? (
+            <span className="italic">Marked as read</span>
+          ) : (
+            <div className="flex flex-col gap-1">
+              <span className="italic text-green-600">Resolved</span>
+              {alert.resolvedBy && (
+                <span className="text-xs">
+                  by {alert.resolvedBy.name}{" "}
+                  {alert.resolvedAt &&
+                    formatDistanceToNow(alert.resolvedAt, { addSuffix: true })}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

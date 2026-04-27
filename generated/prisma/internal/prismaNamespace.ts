@@ -1658,8 +1658,10 @@ export const AlertsScalarFieldEnum = {
   medicinesId: 'medicinesId',
   message: 'message',
   status: 'status',
+  resolvedById: 'resolvedById',
   createdAt: 'createdAt',
-  readAt: 'readAt'
+  readAt: 'readAt',
+  resolvedAt: 'resolvedAt'
 } as const
 
 export type AlertsScalarFieldEnum = (typeof AlertsScalarFieldEnum)[keyof typeof AlertsScalarFieldEnum]

@@ -29,8 +29,8 @@ export const PDF_FONTS = {
 export const PDF_MARGINS = {
   top: 50,
   bottom: 50,
-  left: 50,
-  right: 50,
+  left: 25,
+  right: 25,
 };
 
 // Get facility settings

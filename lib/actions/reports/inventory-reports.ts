@@ -34,6 +34,7 @@ export interface CategoryOption {
 
 export interface StockLevelFilters {
   medicineId: string;
+  categoryId?: string;
   dateFrom: string | null;
   dateTo: string | null;
 }
@@ -121,34 +122,82 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
       ? new Date(filters.dateFrom)
       : subMonths(dateTo, 6);
 
-    // Fetch the medicine details
-    const medicine = await prisma.medicines.findUnique({
-      where: { id: filters.medicineId },
-      select: {
-        id: true,
-        name: true,
-        unit: true,
-        category: { select: { name: true } },
-      },
-    });
+    const isAllMedicines = filters.medicineId === "all";
+    const isAllCategories = filters.categoryId === "all";
 
-    if (!medicine) {
-      return { success: false, message: "Medicine not found" };
+    // Variables for report content
+    let medicineName: string;
+    let categoryName: string;
+    let unit: string;
+
+    if (isAllMedicines) {
+      medicineName = "All Medicines";
+      unit = "units";
+
+      if (isAllCategories) {
+        categoryName = "All Categories";
+      } else {
+        // Fetch specific category name
+        const category = await prisma.category.findUnique({
+          where: { id: filters.categoryId },
+          select: { name: true },
+        });
+
+        if (!category) {
+          return { success: false, message: "Category not found" };
+        }
+
+        categoryName = category.name;
+      }
+    } else {
+      // Fetch the specific medicine details
+      const medicine = await prisma.medicines.findUnique({
+        where: { id: filters.medicineId },
+        select: {
+          id: true,
+          name: true,
+          unit: true,
+          category: { select: { name: true } },
+        },
+      });
+
+      if (!medicine) {
+        return { success: false, message: "Medicine not found" };
+      }
+
+      medicineName = medicine.name;
+      categoryName = medicine.category.name;
+      unit = medicine.unit;
     }
 
-    // Fetch all transactions for this medicine in the date range
-    // We need to join through stockEntries since transactions link to stockEntry, not medicine
-    const transactions = await prisma.transactions.findMany({
-      where: {
-        stockEntry: {
-          medicineId: filters.medicineId,
-        },
-        createdAt: {
-          gte: startOfMonth(dateFrom),
-          lte: endOfMonth(dateTo),
-        },
-        type: { in: ["stock_in", "dispensed", "wastage"] },
+    // Build transaction query
+    const transactionWhere: Record<string, unknown> = {
+      createdAt: {
+        gte: startOfMonth(dateFrom),
+        lte: endOfMonth(dateTo),
       },
+      type: { in: ["stock_in", "dispensed", "wastage"] },
+    };
+
+    // Add filters based on selection
+    if (!isAllMedicines) {
+      // Specific medicine
+      transactionWhere.stockEntry = {
+        medicineId: filters.medicineId,
+      };
+    } else if (!isAllCategories) {
+      // All medicines in a specific category
+      transactionWhere.stockEntry = {
+        medicine: {
+          categoryId: filters.categoryId,
+        },
+      };
+    }
+    // If both are "all", no additional filter needed
+
+    // Fetch transactions
+    const transactions = await prisma.transactions.findMany({
+      where: transactionWhere,
       select: {
         type: true,
         quantity: true,
@@ -179,7 +228,7 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
         .reduce((sum, t) => sum + t.quantity, 0);
 
       return {
-        label: format(monthDate, "MMM"), // Short month name for x-axis
+        label: format(monthDate, "MMM"),
         fullLabel: format(monthDate, "MMM yyyy"),
         stockIn,
         stockOut,
@@ -201,8 +250,8 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
 
     // Generate filters summary
     generateFiltersSummary(doc, [
-      { label: "Medicine", value: medicine.name },
-      { label: "Category", value: medicine.category.name },
+      { label: "Medicine", value: medicineName },
+      { label: "Category", value: categoryName },
       {
         label: "Period",
         value: `${format(dateFrom, "MMM d, yyyy")} - ${format(dateTo, "MMM d, yyyy")}`,
@@ -211,24 +260,30 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
 
     // Generate stats summary
     generateStatsSummary(doc, [
-      { label: "Total Stock In", value: `${totalStockIn} ${medicine.unit}` },
-      { label: "Total Stock Out", value: `${totalStockOut} ${medicine.unit}` },
+      { label: "Total Stock In", value: `${totalStockIn} ${unit}` },
+      { label: "Total Stock Out", value: `${totalStockOut} ${unit}` },
       {
         label: "Net Change",
-        value: `${totalStockIn - totalStockOut >= 0 ? "+" : ""}${totalStockIn - totalStockOut} ${medicine.unit}`,
+        value: `${totalStockIn - totalStockOut >= 0 ? "+" : ""}${totalStockIn - totalStockOut} ${unit}`,
       },
     ]);
 
     // Draw bar chart
     const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
 
+    // Chart title based on selection
+    let chartTitle = `Stock Movement - ${medicineName}`;
+    if (isAllMedicines && !isAllCategories) {
+      chartTitle = `Stock Movement - ${categoryName}`;
+    }
+
     drawBarChart(doc, monthlyData, {
-      title: `Stock Movement - ${medicine.name}`,
+      title: chartTitle,
       width: pageWidth,
       height: 280,
       colors: {
-        stockIn: "#22c55e", // Green
-        stockOut: "#f97316", // Orange
+        stockIn: "#22c55e",
+        stockOut: "#f97316",
       },
     });
 
@@ -617,22 +672,6 @@ export async function generateExpiryReport(filters: ExpiryFilters) {
       { label: "Period", value: periodLabel },
     ]);
 
-    // Calculate summary stats
-    const expiredCount = expiryData.filter((item) => item.isExpired).length;
-    const criticalCount = expiryData.filter(
-      (item) => !item.isExpired && item.daysUntilExpiry <= 30,
-    ).length;
-    const warningCount = expiryData.filter(
-      (item) => item.daysUntilExpiry > 30 && item.daysUntilExpiry <= 60,
-    ).length;
-    const totalBatches = expiryData.length;
-
-    generateStatsSummary(doc, [
-      { label: "Total Batches", value: totalBatches },
-      { label: "Expired", value: expiredCount },
-      { label: "Critical (≤30 days)", value: criticalCount },
-      { label: "Warning (≤60 days)", value: warningCount },
-    ]);
 
     // Check if no expiry items
     if (expiryData.length === 0) {

@@ -7,13 +7,12 @@ import { addDays, isBefore, isAfter } from "date-fns";
 import { StockInput } from "@/lib/types"
 import { LIMIT } from "@/lib/utils";
 import { Prisma } from "@/generated/prisma/client"
-import { resolveStockAlertsOnRestock } from "@/lib/utils/stock-alerts"
+import { resolveStockAlertsOnRestock } from "@/lib/utils/stock-alerts";
 import type { GetStockInventoryProps } from "@/lib/types"
 
 
 export async function getInventoryStats() {
     try {
-
         // Get settings for expiryWarnDays
         const settings = await prisma.settings.findFirst();
         const expiryWarnDays = settings?.expiryWarnDays ?? 30;
@@ -24,12 +23,13 @@ export async function getInventoryStats() {
         // Get all stock entries with their medicine's reorder level
         const allStocks = await prisma.stockEntries.findMany({
             where: {
-                quantity: { gt: 0 }, // Only count batches with stock remaining
+                quantity: { gt: 0 },
             },
             select: {
                 id: true,
                 quantity: true,
                 expiryDate: true,
+                medicineId: true,
                 medicine: {
                     select: {
                         id: true,
@@ -41,25 +41,42 @@ export async function getInventoryStats() {
 
         // Calculate stats
         const totalBatches = allStocks.length;
-        let lowStockCount = 0;
         let expiringSoonCount = 0;
         let expiredCount = 0;
+
+        // Group stock by medicine to calculate total stock per medicine
+        const stockByMedicine = new Map<
+            string,
+            { totalQuantity: number; reorderlevel: number }
+        >();
 
         for (const stock of allStocks) {
             const expiryDate = new Date(stock.expiryDate);
 
-            // Low stock: batch quantity <= medicine's reorder level
-            if (stock.quantity <= stock.medicine.reorderlevel) {
-                lowStockCount++;
-            }
-
             // Check expiry status
             if (isBefore(expiryDate, now)) {
-                // Already expired
                 expiredCount++;
             } else if (isAfter(expiryDate, now) && isBefore(expiryDate, warnDate)) {
-                // Expiring soon (within expiryWarnDays)
                 expiringSoonCount++;
+            }
+
+            // Aggregate stock per medicine
+            const existing = stockByMedicine.get(stock.medicineId);
+            if (existing) {
+                existing.totalQuantity += stock.quantity;
+            } else {
+                stockByMedicine.set(stock.medicineId, {
+                    totalQuantity: stock.quantity,
+                    reorderlevel: stock.medicine.reorderlevel,
+                });
+            }
+        }
+
+        // Count medicines with low stock (total stock > 0 AND <= reorder level)
+        let lowStockCount = 0;
+        for (const [, data] of stockByMedicine) {
+            if (data.totalQuantity > 0 && data.totalQuantity <= data.reorderlevel) {
+                lowStockCount++;
             }
         }
 
@@ -232,60 +249,58 @@ export async function getStockInventory({
     }
 }
 
+
 export async function addNewStock(data: StockInput, userId: string) {
     try {
-        await requirePermission("stockEntry", "create")
+        await requirePermission("stockEntry", "create");
 
         const existing = await prisma.stockEntries.findUnique({
             where: {
-                batchNumber: data.batchNumber
-            }
-        })
+                batchNumber: data.batchNumber,
+            },
+        });
 
         if (existing) {
-            throw new Error("A batch with this batch number already exisits!")
+            throw new Error("A batch with this batch number already exists!");
         }
 
-
-        // use a transaction to ensure database atomicity
+        // Use a transaction to ensure database atomicity
         await prisma.$transaction(async (tx) => {
             // 1. Add the new stock
             const stock = await tx.stockEntries.create({
-                data
-            })
+                data,
+            });
 
-            // 2. Create the transaction 
+            // 2. Create the transaction
             await tx.transactions.create({
                 data: {
                     stockEntriesId: stock.id,
                     quantity: stock.initialtQuantity,
                     type: "stock_in",
                     reason: "Medicine stock in",
-                    userId
-                }
-            })
+                    userId,
+                },
+            });
 
-            return stock
-        })
+            return stock;
+        });
 
+        // Resolve any pending stock alerts for this medicine
+        await resolveStockAlertsOnRestock(data.medicineId, userId);
 
-        // Resolve any stock alerts since we just added inventory
-        await resolveStockAlertsOnRestock(data.medicineId);
-
-        revalidatePath("/inventory")
+        revalidatePath("/inventory");
+        revalidatePath("/alerts");
 
         return {
             success: true,
             message: "Batch added successfully.",
-        }
-
+        };
     } catch (error) {
-        console.error("Error adding new stock: ", error)
+        console.error("Error adding new stock: ", error);
         if (error instanceof Error) {
-            throw error
+            throw error;
         } else {
-            throw new Error("Failed to add new batch.")
+            throw new Error("Failed to add new batch.");
         }
-
     }
 }

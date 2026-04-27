@@ -31,8 +31,10 @@ export type AlertsMinAggregateOutputType = {
   medicinesId: string | null
   message: string | null
   status: $Enums.ALERT_STATUS | null
+  resolvedById: string | null
   createdAt: Date | null
   readAt: Date | null
+  resolvedAt: Date | null
 }
 
 export type AlertsMaxAggregateOutputType = {
@@ -42,8 +44,10 @@ export type AlertsMaxAggregateOutputType = {
   medicinesId: string | null
   message: string | null
   status: $Enums.ALERT_STATUS | null
+  resolvedById: string | null
   createdAt: Date | null
   readAt: Date | null
+  resolvedAt: Date | null
 }
 
 export type AlertsCountAggregateOutputType = {
@@ -53,8 +57,10 @@ export type AlertsCountAggregateOutputType = {
   medicinesId: number
   message: number
   status: number
+  resolvedById: number
   createdAt: number
   readAt: number
+  resolvedAt: number
   _all: number
 }
 
@@ -66,8 +72,10 @@ export type AlertsMinAggregateInputType = {
   medicinesId?: true
   message?: true
   status?: true
+  resolvedById?: true
   createdAt?: true
   readAt?: true
+  resolvedAt?: true
 }
 
 export type AlertsMaxAggregateInputType = {
@@ -77,8 +85,10 @@ export type AlertsMaxAggregateInputType = {
   medicinesId?: true
   message?: true
   status?: true
+  resolvedById?: true
   createdAt?: true
   readAt?: true
+  resolvedAt?: true
 }
 
 export type AlertsCountAggregateInputType = {
@@ -88,8 +98,10 @@ export type AlertsCountAggregateInputType = {
   medicinesId?: true
   message?: true
   status?: true
+  resolvedById?: true
   createdAt?: true
   readAt?: true
+  resolvedAt?: true
   _all?: true
 }
 
@@ -172,8 +184,10 @@ export type AlertsGroupByOutputType = {
   medicinesId: string
   message: string
   status: $Enums.ALERT_STATUS
+  resolvedById: string | null
   createdAt: Date
-  readAt: Date
+  readAt: Date | null
+  resolvedAt: Date | null
   _count: AlertsCountAggregateOutputType | null
   _min: AlertsMinAggregateOutputType | null
   _max: AlertsMaxAggregateOutputType | null
@@ -204,10 +218,13 @@ export type AlertsWhereInput = {
   medicinesId?: Prisma.StringFilter<"Alerts"> | string
   message?: Prisma.StringFilter<"Alerts"> | string
   status?: Prisma.EnumALERT_STATUSFilter<"Alerts"> | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.StringNullableFilter<"Alerts"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
-  readAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
+  readAt?: Prisma.DateTimeNullableFilter<"Alerts"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableFilter<"Alerts"> | Date | string | null
   stockEntry?: Prisma.XOR<Prisma.StockEntriesScalarRelationFilter, Prisma.StockEntriesWhereInput>
   medicines?: Prisma.XOR<Prisma.MedicinesScalarRelationFilter, Prisma.MedicinesWhereInput>
+  resolvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type AlertsOrderByWithRelationInput = {
@@ -217,10 +234,13 @@ export type AlertsOrderByWithRelationInput = {
   medicinesId?: Prisma.SortOrder
   message?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  readAt?: Prisma.SortOrder
+  readAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   stockEntry?: Prisma.StockEntriesOrderByWithRelationInput
   medicines?: Prisma.MedicinesOrderByWithRelationInput
+  resolvedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type AlertsWhereUniqueInput = Prisma.AtLeast<{
@@ -233,10 +253,13 @@ export type AlertsWhereUniqueInput = Prisma.AtLeast<{
   medicinesId?: Prisma.StringFilter<"Alerts"> | string
   message?: Prisma.StringFilter<"Alerts"> | string
   status?: Prisma.EnumALERT_STATUSFilter<"Alerts"> | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.StringNullableFilter<"Alerts"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
-  readAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
+  readAt?: Prisma.DateTimeNullableFilter<"Alerts"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableFilter<"Alerts"> | Date | string | null
   stockEntry?: Prisma.XOR<Prisma.StockEntriesScalarRelationFilter, Prisma.StockEntriesWhereInput>
   medicines?: Prisma.XOR<Prisma.MedicinesScalarRelationFilter, Prisma.MedicinesWhereInput>
+  resolvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type AlertsOrderByWithAggregationInput = {
@@ -246,8 +269,10 @@ export type AlertsOrderByWithAggregationInput = {
   medicinesId?: Prisma.SortOrder
   message?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  readAt?: Prisma.SortOrder
+  readAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AlertsCountOrderByAggregateInput
   _max?: Prisma.AlertsMaxOrderByAggregateInput
   _min?: Prisma.AlertsMinOrderByAggregateInput
@@ -263,8 +288,10 @@ export type AlertsScalarWhereWithAggregatesInput = {
   medicinesId?: Prisma.StringWithAggregatesFilter<"Alerts"> | string
   message?: Prisma.StringWithAggregatesFilter<"Alerts"> | string
   status?: Prisma.EnumALERT_STATUSWithAggregatesFilter<"Alerts"> | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.StringNullableWithAggregatesFilter<"Alerts"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Alerts"> | Date | string
-  readAt?: Prisma.DateTimeWithAggregatesFilter<"Alerts"> | Date | string
+  readAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Alerts"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Alerts"> | Date | string | null
 }
 
 export type AlertsCreateInput = {
@@ -273,9 +300,11 @@ export type AlertsCreateInput = {
   message: string
   status?: $Enums.ALERT_STATUS
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutAlertsInput
   medicines: Prisma.MedicinesCreateNestedOneWithoutAlertsInput
+  resolvedBy?: Prisma.UserCreateNestedOneWithoutAlertsInput
 }
 
 export type AlertsUncheckedCreateInput = {
@@ -285,8 +314,10 @@ export type AlertsUncheckedCreateInput = {
   medicinesId: string
   message: string
   status?: $Enums.ALERT_STATUS
+  resolvedById?: string | null
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
 }
 
 export type AlertsUpdateInput = {
@@ -295,9 +326,11 @@ export type AlertsUpdateInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutAlertsNestedInput
   medicines?: Prisma.MedicinesUpdateOneRequiredWithoutAlertsNestedInput
+  resolvedBy?: Prisma.UserUpdateOneWithoutAlertsNestedInput
 }
 
 export type AlertsUncheckedUpdateInput = {
@@ -307,8 +340,10 @@ export type AlertsUncheckedUpdateInput = {
   medicinesId?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AlertsCreateManyInput = {
@@ -318,8 +353,10 @@ export type AlertsCreateManyInput = {
   medicinesId: string
   message: string
   status?: $Enums.ALERT_STATUS
+  resolvedById?: string | null
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
 }
 
 export type AlertsUpdateManyMutationInput = {
@@ -328,7 +365,8 @@ export type AlertsUpdateManyMutationInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AlertsUncheckedUpdateManyInput = {
@@ -338,8 +376,10 @@ export type AlertsUncheckedUpdateManyInput = {
   medicinesId?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AlertsListRelationFilter = {
@@ -359,8 +399,10 @@ export type AlertsCountOrderByAggregateInput = {
   medicinesId?: Prisma.SortOrder
   message?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
 }
 
 export type AlertsMaxOrderByAggregateInput = {
@@ -370,8 +412,10 @@ export type AlertsMaxOrderByAggregateInput = {
   medicinesId?: Prisma.SortOrder
   message?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
 }
 
 export type AlertsMinOrderByAggregateInput = {
@@ -381,8 +425,52 @@ export type AlertsMinOrderByAggregateInput = {
   medicinesId?: Prisma.SortOrder
   message?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  resolvedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
+}
+
+export type AlertsCreateNestedManyWithoutResolvedByInput = {
+  create?: Prisma.XOR<Prisma.AlertsCreateWithoutResolvedByInput, Prisma.AlertsUncheckedCreateWithoutResolvedByInput> | Prisma.AlertsCreateWithoutResolvedByInput[] | Prisma.AlertsUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.AlertsCreateOrConnectWithoutResolvedByInput | Prisma.AlertsCreateOrConnectWithoutResolvedByInput[]
+  createMany?: Prisma.AlertsCreateManyResolvedByInputEnvelope
+  connect?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+}
+
+export type AlertsUncheckedCreateNestedManyWithoutResolvedByInput = {
+  create?: Prisma.XOR<Prisma.AlertsCreateWithoutResolvedByInput, Prisma.AlertsUncheckedCreateWithoutResolvedByInput> | Prisma.AlertsCreateWithoutResolvedByInput[] | Prisma.AlertsUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.AlertsCreateOrConnectWithoutResolvedByInput | Prisma.AlertsCreateOrConnectWithoutResolvedByInput[]
+  createMany?: Prisma.AlertsCreateManyResolvedByInputEnvelope
+  connect?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+}
+
+export type AlertsUpdateManyWithoutResolvedByNestedInput = {
+  create?: Prisma.XOR<Prisma.AlertsCreateWithoutResolvedByInput, Prisma.AlertsUncheckedCreateWithoutResolvedByInput> | Prisma.AlertsCreateWithoutResolvedByInput[] | Prisma.AlertsUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.AlertsCreateOrConnectWithoutResolvedByInput | Prisma.AlertsCreateOrConnectWithoutResolvedByInput[]
+  upsert?: Prisma.AlertsUpsertWithWhereUniqueWithoutResolvedByInput | Prisma.AlertsUpsertWithWhereUniqueWithoutResolvedByInput[]
+  createMany?: Prisma.AlertsCreateManyResolvedByInputEnvelope
+  set?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  disconnect?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  delete?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  connect?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  update?: Prisma.AlertsUpdateWithWhereUniqueWithoutResolvedByInput | Prisma.AlertsUpdateWithWhereUniqueWithoutResolvedByInput[]
+  updateMany?: Prisma.AlertsUpdateManyWithWhereWithoutResolvedByInput | Prisma.AlertsUpdateManyWithWhereWithoutResolvedByInput[]
+  deleteMany?: Prisma.AlertsScalarWhereInput | Prisma.AlertsScalarWhereInput[]
+}
+
+export type AlertsUncheckedUpdateManyWithoutResolvedByNestedInput = {
+  create?: Prisma.XOR<Prisma.AlertsCreateWithoutResolvedByInput, Prisma.AlertsUncheckedCreateWithoutResolvedByInput> | Prisma.AlertsCreateWithoutResolvedByInput[] | Prisma.AlertsUncheckedCreateWithoutResolvedByInput[]
+  connectOrCreate?: Prisma.AlertsCreateOrConnectWithoutResolvedByInput | Prisma.AlertsCreateOrConnectWithoutResolvedByInput[]
+  upsert?: Prisma.AlertsUpsertWithWhereUniqueWithoutResolvedByInput | Prisma.AlertsUpsertWithWhereUniqueWithoutResolvedByInput[]
+  createMany?: Prisma.AlertsCreateManyResolvedByInputEnvelope
+  set?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  disconnect?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  delete?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  connect?: Prisma.AlertsWhereUniqueInput | Prisma.AlertsWhereUniqueInput[]
+  update?: Prisma.AlertsUpdateWithWhereUniqueWithoutResolvedByInput | Prisma.AlertsUpdateWithWhereUniqueWithoutResolvedByInput[]
+  updateMany?: Prisma.AlertsUpdateManyWithWhereWithoutResolvedByInput | Prisma.AlertsUpdateManyWithWhereWithoutResolvedByInput[]
+  deleteMany?: Prisma.AlertsScalarWhereInput | Prisma.AlertsScalarWhereInput[]
 }
 
 export type AlertsCreateNestedManyWithoutMedicinesInput = {
@@ -477,14 +565,82 @@ export type EnumALERT_STATUSFieldUpdateOperationsInput = {
   set?: $Enums.ALERT_STATUS
 }
 
+export type AlertsCreateWithoutResolvedByInput = {
+  id?: string
+  type?: $Enums.ALERT_TYPE
+  message: string
+  status?: $Enums.ALERT_STATUS
+  createdAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  stockEntry: Prisma.StockEntriesCreateNestedOneWithoutAlertsInput
+  medicines: Prisma.MedicinesCreateNestedOneWithoutAlertsInput
+}
+
+export type AlertsUncheckedCreateWithoutResolvedByInput = {
+  id?: string
+  type?: $Enums.ALERT_TYPE
+  stockEntriesId: string
+  medicinesId: string
+  message: string
+  status?: $Enums.ALERT_STATUS
+  createdAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
+}
+
+export type AlertsCreateOrConnectWithoutResolvedByInput = {
+  where: Prisma.AlertsWhereUniqueInput
+  create: Prisma.XOR<Prisma.AlertsCreateWithoutResolvedByInput, Prisma.AlertsUncheckedCreateWithoutResolvedByInput>
+}
+
+export type AlertsCreateManyResolvedByInputEnvelope = {
+  data: Prisma.AlertsCreateManyResolvedByInput | Prisma.AlertsCreateManyResolvedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type AlertsUpsertWithWhereUniqueWithoutResolvedByInput = {
+  where: Prisma.AlertsWhereUniqueInput
+  update: Prisma.XOR<Prisma.AlertsUpdateWithoutResolvedByInput, Prisma.AlertsUncheckedUpdateWithoutResolvedByInput>
+  create: Prisma.XOR<Prisma.AlertsCreateWithoutResolvedByInput, Prisma.AlertsUncheckedCreateWithoutResolvedByInput>
+}
+
+export type AlertsUpdateWithWhereUniqueWithoutResolvedByInput = {
+  where: Prisma.AlertsWhereUniqueInput
+  data: Prisma.XOR<Prisma.AlertsUpdateWithoutResolvedByInput, Prisma.AlertsUncheckedUpdateWithoutResolvedByInput>
+}
+
+export type AlertsUpdateManyWithWhereWithoutResolvedByInput = {
+  where: Prisma.AlertsScalarWhereInput
+  data: Prisma.XOR<Prisma.AlertsUpdateManyMutationInput, Prisma.AlertsUncheckedUpdateManyWithoutResolvedByInput>
+}
+
+export type AlertsScalarWhereInput = {
+  AND?: Prisma.AlertsScalarWhereInput | Prisma.AlertsScalarWhereInput[]
+  OR?: Prisma.AlertsScalarWhereInput[]
+  NOT?: Prisma.AlertsScalarWhereInput | Prisma.AlertsScalarWhereInput[]
+  id?: Prisma.StringFilter<"Alerts"> | string
+  type?: Prisma.EnumALERT_TYPEFilter<"Alerts"> | $Enums.ALERT_TYPE
+  stockEntriesId?: Prisma.StringFilter<"Alerts"> | string
+  medicinesId?: Prisma.StringFilter<"Alerts"> | string
+  message?: Prisma.StringFilter<"Alerts"> | string
+  status?: Prisma.EnumALERT_STATUSFilter<"Alerts"> | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.StringNullableFilter<"Alerts"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
+  readAt?: Prisma.DateTimeNullableFilter<"Alerts"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableFilter<"Alerts"> | Date | string | null
+}
+
 export type AlertsCreateWithoutMedicinesInput = {
   id?: string
   type?: $Enums.ALERT_TYPE
   message: string
   status?: $Enums.ALERT_STATUS
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
   stockEntry: Prisma.StockEntriesCreateNestedOneWithoutAlertsInput
+  resolvedBy?: Prisma.UserCreateNestedOneWithoutAlertsInput
 }
 
 export type AlertsUncheckedCreateWithoutMedicinesInput = {
@@ -493,8 +649,10 @@ export type AlertsUncheckedCreateWithoutMedicinesInput = {
   stockEntriesId: string
   message: string
   status?: $Enums.ALERT_STATUS
+  resolvedById?: string | null
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
 }
 
 export type AlertsCreateOrConnectWithoutMedicinesInput = {
@@ -523,28 +681,16 @@ export type AlertsUpdateManyWithWhereWithoutMedicinesInput = {
   data: Prisma.XOR<Prisma.AlertsUpdateManyMutationInput, Prisma.AlertsUncheckedUpdateManyWithoutMedicinesInput>
 }
 
-export type AlertsScalarWhereInput = {
-  AND?: Prisma.AlertsScalarWhereInput | Prisma.AlertsScalarWhereInput[]
-  OR?: Prisma.AlertsScalarWhereInput[]
-  NOT?: Prisma.AlertsScalarWhereInput | Prisma.AlertsScalarWhereInput[]
-  id?: Prisma.StringFilter<"Alerts"> | string
-  type?: Prisma.EnumALERT_TYPEFilter<"Alerts"> | $Enums.ALERT_TYPE
-  stockEntriesId?: Prisma.StringFilter<"Alerts"> | string
-  medicinesId?: Prisma.StringFilter<"Alerts"> | string
-  message?: Prisma.StringFilter<"Alerts"> | string
-  status?: Prisma.EnumALERT_STATUSFilter<"Alerts"> | $Enums.ALERT_STATUS
-  createdAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
-  readAt?: Prisma.DateTimeFilter<"Alerts"> | Date | string
-}
-
 export type AlertsCreateWithoutStockEntryInput = {
   id?: string
   type?: $Enums.ALERT_TYPE
   message: string
   status?: $Enums.ALERT_STATUS
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
   medicines: Prisma.MedicinesCreateNestedOneWithoutAlertsInput
+  resolvedBy?: Prisma.UserCreateNestedOneWithoutAlertsInput
 }
 
 export type AlertsUncheckedCreateWithoutStockEntryInput = {
@@ -553,8 +699,10 @@ export type AlertsUncheckedCreateWithoutStockEntryInput = {
   medicinesId: string
   message: string
   status?: $Enums.ALERT_STATUS
+  resolvedById?: string | null
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
 }
 
 export type AlertsCreateOrConnectWithoutStockEntryInput = {
@@ -583,14 +731,64 @@ export type AlertsUpdateManyWithWhereWithoutStockEntryInput = {
   data: Prisma.XOR<Prisma.AlertsUpdateManyMutationInput, Prisma.AlertsUncheckedUpdateManyWithoutStockEntryInput>
 }
 
+export type AlertsCreateManyResolvedByInput = {
+  id?: string
+  type?: $Enums.ALERT_TYPE
+  stockEntriesId: string
+  medicinesId: string
+  message: string
+  status?: $Enums.ALERT_STATUS
+  createdAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
+}
+
+export type AlertsUpdateWithoutResolvedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumALERT_TYPEFieldUpdateOperationsInput | $Enums.ALERT_TYPE
+  message?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutAlertsNestedInput
+  medicines?: Prisma.MedicinesUpdateOneRequiredWithoutAlertsNestedInput
+}
+
+export type AlertsUncheckedUpdateWithoutResolvedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumALERT_TYPEFieldUpdateOperationsInput | $Enums.ALERT_TYPE
+  stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicinesId?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type AlertsUncheckedUpdateManyWithoutResolvedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumALERT_TYPEFieldUpdateOperationsInput | $Enums.ALERT_TYPE
+  stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicinesId?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
 export type AlertsCreateManyMedicinesInput = {
   id?: string
   type?: $Enums.ALERT_TYPE
   stockEntriesId: string
   message: string
   status?: $Enums.ALERT_STATUS
+  resolvedById?: string | null
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
 }
 
 export type AlertsUpdateWithoutMedicinesInput = {
@@ -599,8 +797,10 @@ export type AlertsUpdateWithoutMedicinesInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stockEntry?: Prisma.StockEntriesUpdateOneRequiredWithoutAlertsNestedInput
+  resolvedBy?: Prisma.UserUpdateOneWithoutAlertsNestedInput
 }
 
 export type AlertsUncheckedUpdateWithoutMedicinesInput = {
@@ -609,8 +809,10 @@ export type AlertsUncheckedUpdateWithoutMedicinesInput = {
   stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AlertsUncheckedUpdateManyWithoutMedicinesInput = {
@@ -619,8 +821,10 @@ export type AlertsUncheckedUpdateManyWithoutMedicinesInput = {
   stockEntriesId?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AlertsCreateManyStockEntryInput = {
@@ -629,8 +833,10 @@ export type AlertsCreateManyStockEntryInput = {
   medicinesId: string
   message: string
   status?: $Enums.ALERT_STATUS
+  resolvedById?: string | null
   createdAt?: Date | string
-  readAt?: Date | string
+  readAt?: Date | string | null
+  resolvedAt?: Date | string | null
 }
 
 export type AlertsUpdateWithoutStockEntryInput = {
@@ -639,8 +845,10 @@ export type AlertsUpdateWithoutStockEntryInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   medicines?: Prisma.MedicinesUpdateOneRequiredWithoutAlertsNestedInput
+  resolvedBy?: Prisma.UserUpdateOneWithoutAlertsNestedInput
 }
 
 export type AlertsUncheckedUpdateWithoutStockEntryInput = {
@@ -649,8 +857,10 @@ export type AlertsUncheckedUpdateWithoutStockEntryInput = {
   medicinesId?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AlertsUncheckedUpdateManyWithoutStockEntryInput = {
@@ -659,8 +869,10 @@ export type AlertsUncheckedUpdateManyWithoutStockEntryInput = {
   medicinesId?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumALERT_STATUSFieldUpdateOperationsInput | $Enums.ALERT_STATUS
+  resolvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  readAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -672,10 +884,13 @@ export type AlertsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   medicinesId?: boolean
   message?: boolean
   status?: boolean
+  resolvedById?: boolean
   createdAt?: boolean
   readAt?: boolean
+  resolvedAt?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   medicines?: boolean | Prisma.MedicinesDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.Alerts$resolvedByArgs<ExtArgs>
 }, ExtArgs["result"]["alerts"]>
 
 export type AlertsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -685,10 +900,13 @@ export type AlertsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   medicinesId?: boolean
   message?: boolean
   status?: boolean
+  resolvedById?: boolean
   createdAt?: boolean
   readAt?: boolean
+  resolvedAt?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   medicines?: boolean | Prisma.MedicinesDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.Alerts$resolvedByArgs<ExtArgs>
 }, ExtArgs["result"]["alerts"]>
 
 export type AlertsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -698,10 +916,13 @@ export type AlertsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   medicinesId?: boolean
   message?: boolean
   status?: boolean
+  resolvedById?: boolean
   createdAt?: boolean
   readAt?: boolean
+  resolvedAt?: boolean
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   medicines?: boolean | Prisma.MedicinesDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.Alerts$resolvedByArgs<ExtArgs>
 }, ExtArgs["result"]["alerts"]>
 
 export type AlertsSelectScalar = {
@@ -711,22 +932,27 @@ export type AlertsSelectScalar = {
   medicinesId?: boolean
   message?: boolean
   status?: boolean
+  resolvedById?: boolean
   createdAt?: boolean
   readAt?: boolean
+  resolvedAt?: boolean
 }
 
-export type AlertsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "stockEntriesId" | "medicinesId" | "message" | "status" | "createdAt" | "readAt", ExtArgs["result"]["alerts"]>
+export type AlertsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "stockEntriesId" | "medicinesId" | "message" | "status" | "resolvedById" | "createdAt" | "readAt" | "resolvedAt", ExtArgs["result"]["alerts"]>
 export type AlertsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   medicines?: boolean | Prisma.MedicinesDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.Alerts$resolvedByArgs<ExtArgs>
 }
 export type AlertsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   medicines?: boolean | Prisma.MedicinesDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.Alerts$resolvedByArgs<ExtArgs>
 }
 export type AlertsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockEntry?: boolean | Prisma.StockEntriesDefaultArgs<ExtArgs>
   medicines?: boolean | Prisma.MedicinesDefaultArgs<ExtArgs>
+  resolvedBy?: boolean | Prisma.Alerts$resolvedByArgs<ExtArgs>
 }
 
 export type $AlertsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -734,6 +960,7 @@ export type $AlertsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     stockEntry: Prisma.$StockEntriesPayload<ExtArgs>
     medicines: Prisma.$MedicinesPayload<ExtArgs>
+    resolvedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -742,8 +969,10 @@ export type $AlertsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     medicinesId: string
     message: string
     status: $Enums.ALERT_STATUS
+    resolvedById: string | null
     createdAt: Date
-    readAt: Date
+    readAt: Date | null
+    resolvedAt: Date | null
   }, ExtArgs["result"]["alerts"]>
   composites: {}
 }
@@ -1140,6 +1369,7 @@ export interface Prisma__AlertsClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   stockEntry<T extends Prisma.StockEntriesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockEntriesDefaultArgs<ExtArgs>>): Prisma.Prisma__StockEntriesClient<runtime.Types.Result.GetResult<Prisma.$StockEntriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   medicines<T extends Prisma.MedicinesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicinesDefaultArgs<ExtArgs>>): Prisma.Prisma__MedicinesClient<runtime.Types.Result.GetResult<Prisma.$MedicinesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  resolvedBy<T extends Prisma.Alerts$resolvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Alerts$resolvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1175,8 +1405,10 @@ export interface AlertsFieldRefs {
   readonly medicinesId: Prisma.FieldRef<"Alerts", 'String'>
   readonly message: Prisma.FieldRef<"Alerts", 'String'>
   readonly status: Prisma.FieldRef<"Alerts", 'ALERT_STATUS'>
+  readonly resolvedById: Prisma.FieldRef<"Alerts", 'String'>
   readonly createdAt: Prisma.FieldRef<"Alerts", 'DateTime'>
   readonly readAt: Prisma.FieldRef<"Alerts", 'DateTime'>
+  readonly resolvedAt: Prisma.FieldRef<"Alerts", 'DateTime'>
 }
     
 
@@ -1570,6 +1802,25 @@ export type AlertsDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Alerts to delete.
    */
   limit?: number
+}
+
+/**
+ * Alerts.resolvedBy
+ */
+export type Alerts$resolvedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

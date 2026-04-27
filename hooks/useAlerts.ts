@@ -5,16 +5,15 @@ import {
   getAlertCounts,
   getPendingAlertCount,
   markAlertAsRead,
-  dismissAlert,
+  resolveAlert,
   markAllAlertsAsRead,
-  type AlertFilters,
 } from "@/lib/actions/alerts";
+import type { AlertFilters } from "@/lib/types";
 
 // Query keys
 const ALERTS_KEY = "alerts";
 const ALERT_COUNTS_KEY = "alert-counts";
 const PENDING_COUNT_KEY = "pending-alert-count";
-
 
 export function useAlerts(filters: AlertFilters = {}) {
   return useQuery({
@@ -52,7 +51,6 @@ export function usePendingAlertCount() {
       }
       return result.data;
     },
-    // Refetch every 5 minutes for sidebar badge
     refetchInterval: 5 * 60 * 1000,
   });
 }
@@ -64,6 +62,7 @@ export function useMarkAlertAsRead() {
     mutationFn: markAlertAsRead,
     onSuccess: (result) => {
       if (result.success) {
+        toast.success("Alert marked as read");
         queryClient.invalidateQueries({ queryKey: [ALERTS_KEY] });
         queryClient.invalidateQueries({ queryKey: [ALERT_COUNTS_KEY] });
         queryClient.invalidateQueries({ queryKey: [PENDING_COUNT_KEY] });
@@ -75,21 +74,22 @@ export function useMarkAlertAsRead() {
   });
 }
 
-export function useDismissAlert() {
+export function useResolveAlert() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: dismissAlert,
+    mutationFn: ({ alertId, userId }: { alertId: string; userId: string }) =>
+      resolveAlert(alertId, userId),
     onSuccess: (result) => {
       if (result.success) {
-        toast.success("Alert dismissed");
+        toast.success("Alert resolved");
         queryClient.invalidateQueries({ queryKey: [ALERTS_KEY] });
         queryClient.invalidateQueries({ queryKey: [ALERT_COUNTS_KEY] });
         queryClient.invalidateQueries({ queryKey: [PENDING_COUNT_KEY] });
       }
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to dismiss alert");
+      toast.error(error.message || "Failed to resolve alert");
     },
   });
 }

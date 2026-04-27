@@ -25,8 +25,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller, SubmitHandler, useWatch } from "react-hook-form";
 import { useStockLevelReport, useMedicinesForReport } from "@/hooks/useReports";
+import { useMedicineCategories } from "@/hooks/useMedicines";
 import { useReportPreview } from "@/hooks/useReportPreview";
 import { PDFPreviewDialog } from "@/components/reports/pdf-preview-dialog";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ import type { StockLevelFilters } from "@/lib/actions/reports/inventory-reports"
 
 interface FormValues {
   medicineId: string;
+  categoryId: string;
   dateFrom: Date | undefined;
   dateTo: Date | undefined;
 }
@@ -48,20 +50,28 @@ export function StockLevelDialog({ open, onClose }: StockLevelDialogProps) {
   const { mutate: generateReport, isPending } = useStockLevelReport();
   const { data: medicines = [], isLoading: isLoadingMedicines } =
     useMedicinesForReport();
+  const { data: categories = [], isLoading: isLoadingCategories } =
+    useMedicineCategories();
   const { pdfData, isPreviewOpen, openPreview, setPreviewOpen } =
     useReportPreview();
 
-  const { handleSubmit, control, reset } = useForm<FormValues>({
+  const { handleSubmit, control, reset, setValue } = useForm<FormValues>({
     defaultValues: {
       medicineId: "",
-      dateFrom: subMonths(new Date(), 6), 
+      categoryId: "",
+      dateFrom: subMonths(new Date(), 6),
       dateTo: new Date(),
     },
   });
 
+  // Watch medicineId to conditionally show category selector
+  const medicineId = useWatch({ control, name: "medicineId" });
+  const isAllMedicines = medicineId === "all";
+
   const onSubmit: SubmitHandler<FormValues> = (values) => {
     const filters: StockLevelFilters = {
       medicineId: values.medicineId,
+      categoryId: isAllMedicines ? values.categoryId : undefined,
       dateFrom: values.dateFrom ? values.dateFrom.toISOString() : null,
       dateTo: values.dateTo ? values.dateTo.toISOString() : null,
     };
@@ -82,6 +92,17 @@ export function StockLevelDialog({ open, onClose }: StockLevelDialogProps) {
     }
   };
 
+  const handleMedicineChange = (
+    value: string,
+    onChange: (value: string) => void,
+  ) => {
+    onChange(value);
+    // Reset category when switching away from "all"
+    if (value !== "all") {
+      setValue("categoryId", "");
+    }
+  };
+
   const filename = `stock-level-${format(new Date(), "yyyy-MM-dd")}.pdf`;
 
   return (
@@ -91,8 +112,7 @@ export function StockLevelDialog({ open, onClose }: StockLevelDialogProps) {
           <DialogHeader>
             <DialogTitle>Stock Level Report</DialogTitle>
             <DialogDescription>
-              Generate a bar chart report showing stock in/out trends for a
-              medicine over time
+              Generate a bar chart report showing stock in/out trends over time
             </DialogDescription>
           </DialogHeader>
 
@@ -109,7 +129,9 @@ export function StockLevelDialog({ open, onClose }: StockLevelDialogProps) {
                 render={({ field, fieldState }) => (
                   <>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) =>
+                        handleMedicineChange(value, field.onChange)
+                      }
                       value={field.value}
                       disabled={isPending || isLoadingMedicines}
                     >
@@ -122,6 +144,7 @@ export function StockLevelDialog({ open, onClose }: StockLevelDialogProps) {
                         <SelectValue placeholder="Select medicine..." />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="all">All Medicines</SelectItem>
                         {medicines.map((medicine) => (
                           <SelectItem key={medicine.id} value={medicine.id}>
                             {medicine.name}
@@ -138,6 +161,55 @@ export function StockLevelDialog({ open, onClose }: StockLevelDialogProps) {
                 )}
               />
             </div>
+
+            {/* Category Selector - Only shown when "All Medicines" is selected */}
+            {isAllMedicines && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Category <span className="text-destructive">*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name="categoryId"
+                  rules={{
+                    required: isAllMedicines
+                      ? "Please select a category"
+                      : false,
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isPending || isLoadingCategories}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full",
+                            fieldState.error && "border-destructive",
+                          )}
+                        >
+                          <SelectValue placeholder="Select category..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Categories</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {fieldState.error && (
+                        <p className="text-sm text-destructive">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+            )}
 
             {/* Date Range */}
             <div className="grid grid-cols-2 gap-4">

@@ -30,7 +30,7 @@ const STATUS_TABS: { value: ALERT_STATUS | "all"; label: string }[] = [
   { value: "all", label: "All" },
   { value: "pending", label: "Pending" },
   { value: "read", label: "Read" },
-  { value: "dismissed", label: "Dismissed" },
+  { value: "resolved", label: "Resolved" },
 ];
 
 const TYPE_OPTIONS: { value: ALERT_TYPE | "all"; label: string }[] = [
@@ -72,8 +72,8 @@ export function AlertsContent({ userId }: AlertsContentProps) {
         return counts.pending;
       case "read":
         return counts.read;
-      case "dismissed":
-        return counts.dismissed;
+      case "resolved":
+        return counts.resolved;
       default:
         return 0;
     }

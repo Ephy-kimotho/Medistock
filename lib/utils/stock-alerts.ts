@@ -2,12 +2,12 @@ import { prisma } from "@/lib/prisma";
 import type { ALERT_TYPE } from "@/generated/prisma/client";
 
 
+// Check and create low_stock or out_of_stock alerts after dispense/wastage
 export async function checkAndCreateStockAlert(
     medicineId: string,
     stockEntryId: string
 ) {
     try {
-        // Fetch medicine with reorder level and all stock entries
         const medicine = await prisma.medicines.findUnique({
             where: { id: medicineId },
             select: {
@@ -23,28 +23,25 @@ export async function checkAndCreateStockAlert(
 
         if (!medicine) return;
 
-        // Calculate total stock
         const totalStock = medicine.stockEntries.reduce(
             (sum, entry) => sum + entry.quantity,
             0
         );
 
-        // Determine alert type needed
         let alertType: ALERT_TYPE | null = null;
         let message = "";
 
         if (totalStock === 0) {
             alertType = "out_of_stock";
-            message = `${medicine.name} is out of stock`;
+            message = `${medicine.name} is out of stock.`;
         } else if (totalStock <= medicine.reorderlevel) {
             alertType = "low_stock";
-            message = `${medicine.name} is below reorder level stock`;
+            message = `${medicine.name} is below reorder level threshold.`;
         }
 
-        // No alert needed
         if (!alertType) return;
 
-        // Check if a pending alert of this type already exists for this medicine
+        // Check if a pending alert of this type already exists
         const existingAlert = await prisma.alerts.findFirst({
             where: {
                 medicinesId: medicineId,
@@ -53,10 +50,8 @@ export async function checkAndCreateStockAlert(
             },
         });
 
-        // Don't create duplicate alerts
         if (existingAlert) return;
 
-        // Create the alert
         await prisma.alerts.create({
             data: {
                 type: alertType,
@@ -67,17 +62,16 @@ export async function checkAndCreateStockAlert(
             },
         });
     } catch (error) {
-        // Log but don't throw - alerts are non-critical
         console.error("Failed to create stock alert:", error);
     }
 }
 
-
+// Function to resolve alerts on restock
 export async function resolveStockAlertsOnRestock(
-    medicineId: string
+    medicineId: string,
+    userId: string
 ) {
     try {
-        // Fetch medicine with reorder level and all stock entries
         const medicine = await prisma.medicines.findUnique({
             where: { id: medicineId },
             select: {
@@ -91,28 +85,23 @@ export async function resolveStockAlertsOnRestock(
 
         if (!medicine) return;
 
-        // Calculate total stock
         const totalStock = medicine.stockEntries.reduce(
             (sum, entry) => sum + entry.quantity,
             0
         );
 
-        // Determine which alerts to resolve
         const alertTypesToResolve: ALERT_TYPE[] = [];
 
         if (totalStock > 0) {
-            // No longer out of stock
             alertTypesToResolve.push("out_of_stock");
         }
 
         if (totalStock > medicine.reorderlevel) {
-            // No longer low stock
             alertTypesToResolve.push("low_stock");
         }
 
         if (alertTypesToResolve.length === 0) return;
 
-        // Dismiss pending alerts of these types
         await prisma.alerts.updateMany({
             where: {
                 medicinesId: medicineId,
@@ -120,19 +109,21 @@ export async function resolveStockAlertsOnRestock(
                 status: "pending",
             },
             data: {
-                status: "dismissed",
+                status: "resolved",
+                resolvedById: userId,
+                resolvedAt: new Date(),
             },
         });
     } catch (error) {
-        // Log but don't throw - alerts are non-critical
         console.error("Failed to resolve stock alerts:", error);
     }
 }
 
 
+// Check and create expiry alerts (for cron job)
 export async function checkAndCreateExpiryAlerts(
     daysUntilExpiry: number = 30
-): Promise<{ created: number; types: Record<string, number> }> {
+) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -146,7 +137,6 @@ export async function checkAndCreateExpiryAlerts(
     };
 
     try {
-        // Find stock entries that are expired or expiring soon
         const stockEntries = await prisma.stockEntries.findMany({
             where: {
                 quantity: { gt: 0 },
@@ -167,7 +157,6 @@ export async function checkAndCreateExpiryAlerts(
             const isExpired = entry.expiryDate < today;
             const alertType: ALERT_TYPE = isExpired ? "expired" : "expiry_warning";
 
-            // Check for existing pending alert for this specific batch
             const existingAlert = await prisma.alerts.findFirst({
                 where: {
                     stockEntriesId: entry.id,
@@ -203,7 +192,7 @@ export async function checkAndCreateExpiryAlerts(
     }
 }
 
-
+// Check all medicines for stock level alerts (for cron job)
 export async function checkAllStockLevelAlerts() {
     let createdCount = 0;
     const typeCount: Record<string, number> = {
@@ -212,7 +201,6 @@ export async function checkAllStockLevelAlerts() {
     };
 
     try {
-        // Fetch all active medicines with their stock
         const medicines = await prisma.medicines.findMany({
             where: {
                 isActive: true,
@@ -246,12 +234,11 @@ export async function checkAllStockLevelAlerts() {
                 message = `${medicine.name} is out of stock`;
             } else if (totalStock <= medicine.reorderlevel) {
                 alertType = "low_stock";
-                message = `${medicine.name} is below reorder level stock`;
+                message = `${medicine.name} is below reorder level`;
             }
 
             if (!alertType) continue;
 
-            // Check for existing pending alert
             const existingAlert = await prisma.alerts.findFirst({
                 where: {
                     medicinesId: medicine.id,
@@ -262,12 +249,7 @@ export async function checkAllStockLevelAlerts() {
 
             if (existingAlert) continue;
 
-            // Get a stock entry to link (use first one, or create without if none)
-            const stockEntryId = medicine.stockEntries[0]?.id;
-
-            // For out_of_stock, we need to find ANY stock entry for this medicine
-            // since all current entries have 0 quantity
-            let linkStockEntryId: string | undefined = stockEntryId;
+            let linkStockEntryId: string | undefined = medicine.stockEntries[0]?.id;
 
             if (!linkStockEntryId) {
                 const anyStockEntry = await prisma.stockEntries.findFirst({
@@ -277,7 +259,6 @@ export async function checkAllStockLevelAlerts() {
                 linkStockEntryId = anyStockEntry?.id;
             }
 
-            // Skip if no stock entry exists at all
             if (!linkStockEntryId) continue;
 
             await prisma.alerts.create({
