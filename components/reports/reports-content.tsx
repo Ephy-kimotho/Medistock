@@ -135,12 +135,9 @@ export function ReportsContent({
 
       {/* Financial Reports */}
       {canAccessInventory && (
-        <ReportSection
-          title="Financial Reports"
-          description="Sales and payment tracking"
-        >
+        <ReportSection title="Financial Reports" description="Cash In tracking">
           <ReportCard
-            title="Sales Report"
+            title="Cash In Report"
             description="Revenue breakdown by payment method and period"
             icon={CreditCard}
             iconColor="text-medium-jungle"

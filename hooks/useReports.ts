@@ -27,9 +27,8 @@ import {
     generateSalesReport,
     type SalesReportFilters,
 } from "@/lib/actions/reports/financial-reports";
-import { downloadPdf } from "@/lib/utils";
 import { toast } from "sonner";
-import { format } from "date-fns";
+
 
 
 export function useEmployeeDirectoryReport() {
@@ -38,9 +37,7 @@ export function useEmployeeDirectoryReport() {
             generateEmployeeDirectoryReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `employee-directory-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -66,9 +63,7 @@ export function useEmployeeActivityReport() {
             generateEmployeeActivityReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `employee-activity-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -87,9 +82,7 @@ export function useRoleDistributionReport() {
             generateRoleDistributionReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `role-distribution-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -115,9 +108,7 @@ export function useStockLevelReport() {
             generateStockLevelReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `stock-level-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -135,9 +126,7 @@ export function useLowStockReport() {
         mutationFn: (filters: LowStockFilters) => generateLowStockReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `low-stock-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -155,9 +144,7 @@ export function useExpiryReport() {
         mutationFn: (filters: ExpiryFilters) => generateExpiryReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `expiry-report-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -176,9 +163,7 @@ export function useDispensingReport() {
             generateDispensingReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `dispensing-report-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -197,9 +182,7 @@ export function useWastageReport() {
             generateWastageReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `wastage-report-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
@@ -217,9 +200,7 @@ export function useSalesReport() {
         mutationFn: (filters: SalesReportFilters) => generateSalesReport(filters),
         onSuccess: (result) => {
             if (result.success && result.data) {
-                const filename = `sales-report-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-                downloadPdf(result.data, filename);
-                toast.success("Report downloaded successfully");
+                toast.success("Report generated successfully");
             } else {
                 toast.error(result.message ?? "Failed to generate report");
             }
