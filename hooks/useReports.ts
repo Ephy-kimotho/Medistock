@@ -17,6 +17,7 @@ import {
     generateExpiryReport,
     generateDispensingReport,
     generateWastageReport,
+    getMedicinesForReport,
     type LowStockFilters,
     type StockLevelFilters,
     type ExpiryFilters,
@@ -99,6 +100,19 @@ export function useCategoriesForReport() {
     return useQuery({
         queryKey: ["categories-for-report"],
         queryFn: () => getCategoriesForReport(),
+    });
+}
+
+export function useMedicinesForReport() {
+    return useQuery({
+        queryKey: ["medicines-for-report"],
+        queryFn: async () => {
+            const result = await getMedicinesForReport();
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+            return result.data;
+        },
     });
 }
 
