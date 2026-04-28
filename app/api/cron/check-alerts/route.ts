@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
     const emailPromises = recipients.map((recipient) =>
       resend.emails
         .send({
-          from: `MediStock <${process.env.EMAIL_FROM || "noreply@medistock.com"}>`,
+          from: process.env.EMAIL_FROM || "Medistock <noreply@medistock.health>",
           to: recipient.email,
           subject: `MediStock Alert Summary - ${format(new Date(), "MMMM d, yyyy")}`,
           react: AlertSummaryEmail({
