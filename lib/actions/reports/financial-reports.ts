@@ -40,7 +40,7 @@ export async function generateSalesReport(filters: SalesReportFilters) {
         const dateTo = filters.dateTo ? new Date(filters.dateTo) : new Date();
         const dateFrom = filters.dateFrom
             ? new Date(filters.dateFrom)
-            : subMonths(dateTo, 4);
+            : subMonths(dateTo, 3);
 
         // Build date range filter for transactions
         const transactionWhere: Record<string, unknown> = {

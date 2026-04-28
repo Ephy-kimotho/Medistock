@@ -116,11 +116,11 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
   try {
     await requirePermission("medicine", "read");
 
-    // Default date range: last 6 months
+    // Default date range: last 3 months
     const dateTo = filters.dateTo ? new Date(filters.dateTo) : new Date();
     const dateFrom = filters.dateFrom
       ? new Date(filters.dateFrom)
-      : subMonths(dateTo, 6);
+      : subMonths(dateTo, 3);
 
     const isAllMedicines = filters.medicineId === "all";
     const isAllCategories = filters.categoryId === "all";
@@ -1229,6 +1229,3 @@ export async function generateWastageReport(
     };
   }
 }
-
-
-
