@@ -213,6 +213,24 @@ export type EnumMEDICINE_AGE_GROUPFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP
 }
 
+export type IntNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type EnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.DOSAGE_FREQUENCY | Prisma.EnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel> | $Enums.DOSAGE_FREQUENCY | null
+}
+
 export type IntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -237,6 +255,32 @@ export type EnumMEDICINE_AGE_GROUPWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
   _max?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
+}
+
+export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
+export type EnumDOSAGE_FREQUENCYNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DOSAGE_FREQUENCY | Prisma.EnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableWithAggregatesFilter<$PrismaModel> | $Enums.DOSAGE_FREQUENCY | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel>
 }
 
 export type EnumTRANSACTION_TYPEFilter<$PrismaModel = never> = {
@@ -508,6 +552,13 @@ export type NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel> | $Enums.MEDICINE_AGE_GROUP
 }
 
+export type NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.DOSAGE_FREQUENCY | Prisma.EnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel> | $Enums.DOSAGE_FREQUENCY | null
+}
+
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -543,6 +594,43 @@ export type NestedEnumMEDICINE_AGE_GROUPWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
   _max?: Prisma.NestedEnumMEDICINE_AGE_GROUPFilter<$PrismaModel>
+}
+
+export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
+}
+
+export type NestedFloatNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumDOSAGE_FREQUENCYNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DOSAGE_FREQUENCY | Prisma.EnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DOSAGE_FREQUENCY[] | Prisma.ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableWithAggregatesFilter<$PrismaModel> | $Enums.DOSAGE_FREQUENCY | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDOSAGE_FREQUENCYNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumTRANSACTION_TYPEFilter<$PrismaModel = never> = {

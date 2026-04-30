@@ -176,3 +176,24 @@ export const PAYMENT_METHODS = [
 ] as const;
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]["value"];
+
+/* ------------------------- DOSAGE CONSTANTS ------------------------- */
+
+export const DOSAGE_FREQUENCY_OPTIONS = [
+  { value: "once_daily", label: "Once daily", multiplier: 1 },
+  { value: "twice_daily", label: "Twice daily", multiplier: 2 },
+  { value: "three_times_daily", label: "3 times daily", multiplier: 3 },
+  { value: "four_times_daily", label: "4 times daily", multiplier: 4 },
+  { value: "every_4_hours", label: "Every 4 hours", multiplier: 6 },
+  { value: "every_6_hours", label: "Every 6 hours", multiplier: 4 },
+  { value: "every_8_hours", label: "Every 8 hours", multiplier: 3 },
+  { value: "as_needed", label: "As needed", multiplier: 1 },
+  { value: "single_dose", label: "Single dose", multiplier: 1 },
+] as const;
+
+export const frequencyValues = DOSAGE_FREQUENCY_OPTIONS.map((f) => f.value) as [
+  string,
+  ...string[]
+];
+
+export type DosageFrequency = (typeof DOSAGE_FREQUENCY_OPTIONS)[number]["value"];

@@ -151,7 +151,9 @@ export function generateFiltersSummary(
     .font("Helvetica")
     .text(
       "Filters Applied: " +
-        filters.map((f) => `${f.label}: ${f.value}`).join(" | "),
+      filters.map((f) => `${f.label}: ${f.value}`).join(" | "),
+      PDF_MARGINS.left,
+      doc.y,
       { width: pageWidth }
     );
 
@@ -169,22 +171,76 @@ export function generateStatsSummary(
     .fillColor(PDF_COLORS.text)
     .fontSize(PDF_FONTS.body)
     .font("Helvetica-Bold")
-    .text(stats.map((s) => `${s.label}: ${s.value}`).join(" | "), {
-      width: pageWidth,
-    });
+    .text(
+      stats.map((s) => `${s.label}: ${s.value}`).join(" | "),
+      PDF_MARGINS.left,
+      doc.y,
+      { width: pageWidth }
+    );
 
   doc.moveDown(1);
+}
+
+// ==================== SECTION TITLE HELPER ====================
+
+/**
+ * Renders a section title (e.g. "Staff Performance") with proper positioning.
+ *
+ * Fixes two issues:
+ * 1. Always resets doc.x to PDF_MARGINS.left so titles never drift right
+ *    after a table has moved the cursor across columns.
+ * 2. Checks remaining vertical space — if there isn't enough room for the
+ *    title plus a configurable minimum body height, it adds a new page first
+ *    so the title is never orphaned at the bottom of a page.
+ *
+ * @param doc          The PDFKit document
+ * @param title        The section title text
+ * @param options.minBodyHeight  Minimum space (in points) needed below the title
+ *                               for the content that follows (default 120 — roughly
+ *                               a table header + 3 data rows at 25pt each).
+ */
+export function generateSectionTitle(
+  doc: PDFKit.PDFDocument,
+  title: string,
+  options?: { minBodyHeight?: number }
+) {
+  const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
+  const minBodyHeight = options?.minBodyHeight ?? 120;
+
+  // Height the title itself will occupy (font size + moveDown spacing)
+  const titleHeight = PDF_FONTS.heading + 10;
+
+  // Total space we need: title + minimum body content
+  const requiredSpace = titleHeight + minBodyHeight;
+
+  // Available space on the current page
+  const availableSpace =
+    doc.page.height - doc.y - PDF_MARGINS.bottom - 30;
+
+  // If not enough room, start a new page
+  if (availableSpace < requiredSpace) {
+    doc.addPage();
+  }
+
+  // Always reset x to the left margin and render the title
+  doc
+    .fillColor(PDF_COLORS.primary)
+    .fontSize(PDF_FONTS.heading)
+    .font("Helvetica-Bold")
+    .text(title, PDF_MARGINS.left, doc.y, { width: pageWidth });
+
+  doc.moveDown(0.5);
 }
 
 // Table configuration type
 export interface TableColumn {
   header: string;
   key: string;
-  width: number; // Percentage of available width
+  width: number;
   align?: "left" | "center" | "right";
 }
 
-// Generate table
+// Generate 
 export function generateTable(
   doc: PDFKit.PDFDocument,
   columns: TableColumn[],
@@ -211,6 +267,19 @@ export function generateTable(
     currentX += width;
   }
 
+  // Minimum space needed: header + at least 3 data rows
+  const minSpaceNeeded = rowHeight * 4;
+
+  // Check if we need a new page before starting the table
+  const checkSpaceBeforeTable = () => {
+    const remainingSpace = doc.page.height - startY - PDF_MARGINS.bottom - 30;
+    if (remainingSpace < minSpaceNeeded) {
+      doc.addPage();
+      currentPage++;
+      startY = PDF_MARGINS.top;
+    }
+  };
+
   // Draw header row
   const drawHeader = (y: number) => {
     // Header background
@@ -219,7 +288,7 @@ export function generateTable(
       .rect(PDF_MARGINS.left, y, pageWidth, rowHeight)
       .fill();
 
-    // Header text
+    // Header text - all left-aligned for uniformity
     doc
       .fillColor(PDF_COLORS.primary)
       .fontSize(PDF_FONTS.small)
@@ -228,7 +297,7 @@ export function generateTable(
     columns.forEach((col, i) => {
       doc.text(col.header, xPositions[i] + 5, y + 8, {
         width: columnWidths[i] - 10,
-        align: col.align ?? "left",
+        align: "left", // Always left-align headers
       });
     });
 
@@ -267,10 +336,13 @@ export function generateTable(
     return y + rowHeight;
   };
 
-  // Check if we need a new page
+  // Check if we need a new page (need space for row + some buffer)
   const needsNewPage = (y: number) => {
     return y + rowHeight > doc.page.height - PDF_MARGINS.bottom - 30;
   };
+
+  // Check space before starting table
+  checkSpaceBeforeTable();
 
   // Draw header
   startY = drawHeader(startY);
@@ -278,17 +350,19 @@ export function generateTable(
   // Draw data rows
   for (const row of data) {
     if (needsNewPage(startY)) {
-      generateFooter(doc, currentPage);
       doc.addPage();
       currentPage++;
       startY = PDF_MARGINS.top;
+      // Re-draw header on new page
       startY = drawHeader(startY);
     }
     startY = drawRow(row, startY);
   }
 
-  // Update doc.y position
+  // Update doc.y position AND reset doc.x to left margin
+  // This prevents subsequent text calls from inheriting a stale x offset
   doc.y = startY + 10;
+  doc.x = PDF_MARGINS.left;
 
   return currentPage;
 }

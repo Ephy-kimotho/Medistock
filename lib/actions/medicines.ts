@@ -9,6 +9,8 @@ import { requireRole } from "@/lib/check-permissions";
 import { LIMIT } from "@/lib/utils";
 import { addDays, isBefore, isAfter } from "date-fns";
 import type { MedicineInput, GetMedicinesParams } from "@/lib/types";
+import { DOSAGE_FREQUENCY } from "@/generated/prisma/client"
+import { DosageFrequency } from "@/constants";
 
 
 export async function getCategoryNames() {
@@ -41,20 +43,20 @@ export async function getMedicines({
 }: GetMedicinesParams) {
     try {
         const session = await getServerSession();
-        const user = session?.user
+        const user = session?.user;
 
         if (!user) {
             redirect("/login");
         }
 
-        const isAdminOrManager = user.role === "admin" || user.role === "inventory_manager"
+        const isAdminOrManager =
+            user.role === "admin" || user.role === "inventory_manager";
 
         // Build the where clause dynamically
         const where: Prisma.MedicinesWhereInput = {
-
             ...(!isAdminOrManager && {
                 isActive: true,
-                deletedAt: null
+                deletedAt: null,
             }),
 
             // Search filter
@@ -95,7 +97,6 @@ export async function getMedicines({
 
         // Transform and calculate stock status
         const formattedMedicines = allMedicines.map((medicine) => {
-
             const totalStock = medicine.stockEntries.reduce(
                 (sum, entry) => sum + entry.quantity,
                 0
@@ -122,9 +123,17 @@ export async function getMedicines({
                 isActive: medicine.isActive,
                 createdAt: medicine.createdAt,
                 updatedAt: medicine.updatedAt,
-                dosage: medicine.dosage,
+                // New dosage fields
+                dosageQuantity: medicine.dosageQuantity,
+                dosageFrequency: medicine.dosageFrequency,
+                dosageDays: medicine.dosageDays,
                 unitPrice: medicine.unitPrice,
-                ageGroup: medicine.ageGroup as "infant" | "pediatric" | "adult" | "geriatric" | "all_ages",
+                ageGroup: medicine.ageGroup as
+                    | "infant"
+                    | "pediatric"
+                    | "adult"
+                    | "geriatric"
+                    | "all_ages",
                 totalStock,
                 stockStatus,
             };
@@ -270,6 +279,10 @@ export async function createMedicine(data: MedicineInput) {
                 categoryId: data.categoryId,
                 ageGroup: data.ageGroup,
                 manufacturer: data.manufacturer || null,
+                dosageQuantity: data.dosageQuantity,
+                dosageFrequency: data.dosageFrequency as DOSAGE_FREQUENCY,
+                dosageDays: data.dosageDays,
+                unitPrice: data.unitPrice,
             },
         });
 
@@ -293,7 +306,7 @@ export async function updateMedicine(id: string, data: MedicineInput) {
     try {
         await requireRole(["admin", "inventory_manager"]);
 
-        // Check if name already exists (excluding current medicine)
+        // Check if another medicine with the same name exists
         const existing = await prisma.medicines.findFirst({
             where: {
                 name: { equals: data.name, mode: "insensitive" },
@@ -315,6 +328,10 @@ export async function updateMedicine(id: string, data: MedicineInput) {
                 categoryId: data.categoryId,
                 ageGroup: data.ageGroup,
                 manufacturer: data.manufacturer || null,
+                dosageQuantity: data.dosageQuantity,
+                dosageFrequency: data.dosageFrequency as DosageFrequency,
+                dosageDays: data.dosageDays,
+                unitPrice: data.unitPrice,
             },
         });
 
@@ -322,7 +339,7 @@ export async function updateMedicine(id: string, data: MedicineInput) {
 
         return {
             success: true,
-            message: `${medicine.name.charAt(0).toUpperCase() + medicine.name.substring(1)} updated successfully.`
+            message: `${medicine.name} updated successfully.`,
         };
     } catch (error) {
         console.error("Error updating medicine:", error);

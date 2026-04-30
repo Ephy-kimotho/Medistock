@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Loader, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -29,6 +28,11 @@ import { MedicineCombobox } from "@/components/medicine-combobox";
 import { BatchCombobox } from "./batch-combobox";
 import { PatientCombobox } from "./patient-combobox";
 import { cn, preventNumbers, preventLetters, formatPrice } from "@/lib/utils";
+import {
+  formatDosage,
+  calculateTotalQuantity,
+  getDosageDisplayUnit,
+} from "@/lib/utils/dosage";
 import { AGE_GROUPS, PAYMENT_METHODS, getAgeGroupLabel } from "@/constants";
 import { toast } from "sonner";
 import type { DispenseInput, PatientOption } from "@/lib/types";
@@ -59,6 +63,22 @@ export function DispenseForm({ userId }: DispenseFormProps) {
   const selectedBatch = batches?.find((b) => b.id === selectedBatchId);
   const selectedMedicine = medicines?.find((m) => m.id === selectedMedicineId);
 
+  // Check if medicine has dosage settings
+  const hasDosageSettings = !!(
+    selectedMedicine?.dosageQuantity && selectedMedicine?.dosageFrequency
+  );
+
+  // Check if frequency is "as_needed" 
+  const isAsNeeded = selectedMedicine?.dosageFrequency === "as_needed";
+
+  // Should auto-calculate quantity? Only if has settings AND not as_needed
+  const shouldAutoCalculate = hasDosageSettings && !isAsNeeded;
+
+  // Get display unit for dosage
+  const displayUnit = selectedMedicine
+    ? getDosageDisplayUnit(selectedMedicine.unit)
+    : "unit";
+
   const {
     register,
     handleSubmit,
@@ -79,16 +99,13 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       phone: "",
       patientAgeGroup: undefined,
       notes: "",
-      collectPayment: false,
       paymentMethod: undefined,
-      paymentAmount: undefined,
       paymentCode: "",
     },
   });
 
   const isNewPatient = useWatch({ control, name: "isNewPatient" });
   const phoneValue = useWatch({ control, name: "phone" });
-  const collectPayment = useWatch({ control, name: "collectPayment" });
   const paymentMethod = useWatch({ control, name: "paymentMethod" });
   const quantity = useWatch({ control, name: "quantity" });
 
@@ -120,11 +137,32 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     setSelectedBatchId("");
     setValue("medicineId", value);
     setValue("stockEntriesId", "");
-    setValue("quantity", undefined as unknown as number);
 
-    // Pre-fill dosage from medicine
-    if (medicine) {
-      setValue("notes", medicine.dosage);
+    if (medicine?.dosageQuantity && medicine?.dosageFrequency) {
+      // Set formatted dosage as notes
+      const formattedDosage = formatDosage(
+        medicine.dosageQuantity,
+        medicine.dosageFrequency,
+        medicine.dosageDays,
+        medicine.unit,
+      );
+      setValue("notes", formattedDosage);
+
+      // Only auto-calculate quantity if NOT as_needed
+      if (medicine.dosageFrequency !== "as_needed") {
+        const totalQuantity = calculateTotalQuantity(
+          medicine.dosageQuantity,
+          medicine.dosageFrequency,
+          medicine.dosageDays,
+        );
+        setValue("quantity", totalQuantity);
+      } else {
+        // For as_needed, clear quantity so pharmacist can enter manually
+        setValue("quantity", undefined as unknown as number);
+      }
+    } else {
+      setValue("quantity", undefined as unknown as number);
+      setValue("notes", "");
     }
 
     // Auto-select age group for new patients if medicine has a specific age group
@@ -170,21 +208,11 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     setSelectedPatient(patient);
   };
 
-  // Handle payment toggle
-  const handlePaymentToggle = (checked: boolean) => {
-    setValue("collectPayment", checked);
-    if (!checked) {
-      setValue("paymentMethod", undefined);
-      setValue("paymentAmount", undefined as unknown as number);
-      setValue("paymentCode", "");
-    }
-  };
-
   const onSubmit: SubmitHandler<DispenseFormData> = (values) => {
     // Validate quantity against available stock
     if (selectedBatch && values.quantity > selectedBatch.quantity) {
       return toast.warning(
-        `Insufficient stock. Only ${selectedBatch.quantity} units available.`,
+        `Insufficient stock. Only ${selectedBatch.quantity} ${displayUnit} available.`,
       );
     }
 
@@ -197,10 +225,9 @@ export function DispenseForm({ userId }: DispenseFormProps) {
       phone: values.phone?.trim(),
       patientAgeGroup: values.patientAgeGroup,
       notes: values.notes?.trim() || null,
-      collectPayment: values.collectPayment,
+      collectPayment: true, // Always collect payment
       paymentMethod: values.paymentMethod,
-      // Use calculated amount instead of user input
-      paymentAmount: values.collectPayment ? calculatedAmount : undefined,
+      paymentAmount: calculatedAmount,
       paymentCode: values.paymentCode?.trim(),
     };
 
@@ -513,7 +540,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
           </CardContent>
         </Card>
 
-        {/* Additional details */}
+        {/* Quantity & Dosage */}
         <Card>
           <CardContent className="space-y-4">
             {/* Quantity */}
@@ -521,33 +548,94 @@ export function DispenseForm({ userId }: DispenseFormProps) {
               <Label htmlFor="quantity" className="text-sm font-medium">
                 Quantity <span className="text-red-500">*</span>
               </Label>
-              <Input
-                id="quantity"
-                type="number"
-                min={1}
-                max={selectedBatch?.quantity}
-                placeholder="Enter quantity to dispense"
-                disabled={!isFormEnabled || isPending}
-                className={cn(
-                  "h-11",
-                  errors.quantity
-                    ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                    : "focus-visible:ring-azure focus-visible:border-azure",
-                  !isFormEnabled && "opacity-50 cursor-not-allowed",
-                )}
-                {...register("quantity", { valueAsNumber: true })}
-              />
+
+              {shouldAutoCalculate ? (
+                // Auto-calculated quantity (read-only display) - NOT as_needed
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Calculator className="size-5 text-blue-600 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-2xl font-bold text-blue-900">
+                        {quantity || 0} {displayUnit}
+                      </p>
+                      <p className="text-sm text-blue-700">
+                        Auto-calculated from dosage:{" "}
+                        {formatDosage(
+                          selectedMedicine?.dosageQuantity ?? null,
+                          selectedMedicine?.dosageFrequency ?? null,
+                          selectedMedicine?.dosageDays ?? null,
+                          selectedMedicine?.unit || "unit",
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Hidden input to register the value */}
+                  <input
+                    type="hidden"
+                    {...register("quantity", { valueAsNumber: true })}
+                  />
+                </div>
+              ) : (
+                // Manual quantity input (as_needed OR no dosage settings)
+                <>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min={1}
+                    max={selectedBatch?.quantity}
+                    placeholder={`Enter quantity to dispense (${displayUnit})`}
+                    disabled={!isFormEnabled || isPending}
+                    className={cn(
+                      "h-11",
+                      errors.quantity
+                        ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                        : "focus-visible:ring-azure focus-visible:border-azure",
+                      !isFormEnabled && "opacity-50 cursor-not-allowed",
+                    )}
+                    {...register("quantity", { valueAsNumber: true })}
+                  />
+                  {isAsNeeded && selectedMedicine && (
+                    <p className="text-sm text-blue-600">
+                      Dosage:{" "}
+                      {formatDosage(
+                        selectedMedicine.dosageQuantity,
+                        selectedMedicine.dosageFrequency,
+                        selectedMedicine.dosageDays,
+                        selectedMedicine.unit,
+                      )}
+                      . Enter quantity to dispense.
+                    </p>
+                  )}
+                  {!hasDosageSettings && selectedMedicine && (
+                    <p className="text-sm text-amber-600">
+                      This medicine has no dosage settings. Please enter
+                      quantity manually.
+                    </p>
+                  )}
+                </>
+              )}
+
               <div className="flex flex-col gap-1">
                 {selectedBatch && (
                   <p className="text-sm text-muted-foreground">
-                    Available: {selectedBatch.quantity} units
+                    Available: {selectedBatch.quantity} {displayUnit}
                   </p>
                 )}
                 {selectedMedicine && (
                   <p className="text-sm text-muted-foreground">
-                    Unit Price: {formatPrice(selectedMedicine.unitPrice)}
+                    Unit Price: {formatPrice(selectedMedicine.unitPrice)} per{" "}
+                    {displayUnit}
                   </p>
                 )}
+                {/* Show warning if quantity exceeds available stock */}
+                {selectedBatch &&
+                  quantity &&
+                  quantity > selectedBatch.quantity && (
+                    <p className="text-sm text-red-500 font-medium">
+                      ⚠️ Insufficient stock. Required: {quantity} {displayUnit},
+                      Available: {selectedBatch.quantity} {displayUnit}
+                    </p>
+                  )}
               </div>
               {errors.quantity && (
                 <p className="text-red-500 text-sm">
@@ -556,28 +644,35 @@ export function DispenseForm({ userId }: DispenseFormProps) {
               )}
             </div>
 
-            {/* Dosage */}
+            {/* Dosage Instructions */}
             <div className="space-y-2">
               <Label htmlFor="notes" className="text-sm font-medium">
-                Dosage <span className="text-red-500">*</span>
+                Dosage Instructions{" "}
+                {!hasDosageSettings && <span className="text-red-500">*</span>}
               </Label>
               <Textarea
                 id="notes"
                 rows={3}
-                placeholder="e.g. 2 times daily."
-                disabled={!isFormEnabled || isPending}
+                placeholder="e.g. 2 tablets twice daily after meals"
+                disabled={!isFormEnabled || isPending || hasDosageSettings}
                 className={cn(
                   "resize-none",
                   errors.notes
                     ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
                     : "focus-visible:ring-azure focus-visible:border-azure",
-                  !isFormEnabled && "opacity-50 cursor-not-allowed",
+                  (!isFormEnabled || hasDosageSettings) &&
+                    "opacity-50 cursor-not-allowed bg-muted/50",
                 )}
                 {...register("notes")}
               />
-              {selectedMedicine && (
+              {hasDosageSettings && (
                 <p className="text-sm text-muted-foreground">
-                  Pre-filled from medicine. You can adjust if needed.
+                  Auto-filled from medicine dosage settings.
+                </p>
+              )}
+              {!hasDosageSettings && selectedMedicine && (
+                <p className="text-sm text-muted-foreground">
+                  Enter dosage instructions for this dispense.
                 </p>
               )}
               {errors.notes && (
@@ -587,141 +682,121 @@ export function DispenseForm({ userId }: DispenseFormProps) {
           </CardContent>
         </Card>
 
-        {/* Payment Section */}
+        {/* Payment Section - Always Required */}
         <Card>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="collectPayment" className="text-sm font-medium">
-                  Collect Payment
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Record payment for this dispense
-                </p>
-              </div>
-              <Controller
-                control={control}
-                name="collectPayment"
-                render={({ field }) => (
-                  <Switch
-                    id="collectPayment"
-                    checked={field.value}
-                    onCheckedChange={handlePaymentToggle}
-                    disabled={!isFormEnabled || isPending}
-                    className="disabled:opacity-50 disabled:cursor-not-allowed data-[state=unchecked]:disabled:bg-gray-500 cursor-pointer"
-                  />
-                )}
-              />
+            <div>
+              <Label className="text-sm font-medium">
+                Payment <span className="text-red-500">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Payment is required for all dispenses
+              </p>
             </div>
 
-            {collectPayment && (
-              <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-                {/* Payment Amount Display */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Amount (KSH)</Label>
-                  <div className="p-3 bg-background border rounded-lg">
-                    <p className="text-2xl font-bold text-slate-900">
+            <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+              {/* Payment Amount Display */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Amount (KSH)</Label>
+                <div className="p-3 bg-background border rounded-lg">
+                  <p className="text-2xl font-bold text-slate-900">
+                    {formatPrice(calculatedAmount)}
+                  </p>
+                  {selectedMedicine && quantity && quantity > 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {quantity} {displayUnit} &times;{" "}
+                      {formatPrice(selectedMedicine.unitPrice)} ={" "}
                       {formatPrice(calculatedAmount)}
                     </p>
-                    {selectedMedicine && quantity && quantity > 0 && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {quantity}
-                        &times;
-                        {selectedMedicine.unitPrice.toLocaleString()} ={" "}
-                        {formatPrice(calculatedAmount)}
-                      </p>
-                    )}
-                    {(!quantity || quantity <= 0) && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Enter quantity to calculate amount
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Payment Method */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Payment Method <span className="text-red-500">*</span>
-                  </Label>
-                  <Controller
-                    control={control}
-                    name="paymentMethod"
-                    render={({ field }) => (
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        disabled={isPending}
-                      >
-                        <SelectTrigger
-                          className={cn(
-                            "w-full",
-                            errors.paymentMethod
-                              ? "border-red-400 focus:ring-red-400"
-                              : "focus:ring-azure",
-                          )}
-                        >
-                          <SelectValue placeholder="Select method..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PAYMENT_METHODS.map((method) => (
-                            <SelectItem key={method.value} value={method.value}>
-                              {method.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  {errors.paymentMethod && (
-                    <p className="text-red-500 text-sm">
-                      {errors.paymentMethod.message}
+                  )}
+                  {(!quantity || quantity <= 0) && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Enter quantity to calculate amount
                     </p>
                   )}
                 </div>
+              </div>
 
-                {/* Payment Code (not shown for cash) */}
-                {paymentMethod && paymentMethod !== "cash" && (
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="paymentCode"
-                      className="text-sm font-medium"
+              {/* Payment Method */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Payment Method <span className="text-red-500">*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name="paymentMethod"
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!isFormEnabled || isPending}
                     >
-                      Payment Code <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="paymentCode"
-                      placeholder={
-                        paymentMethod === "mpesa"
-                          ? "e.g. SFK7H2JDKL"
-                          : paymentMethod === "card"
-                            ? "e.g. TXN123456"
-                            : "e.g. INS-2024-001"
-                      }
-                      disabled={isPending}
-                      className={cn(
-                        "h-11",
-                        errors.paymentCode
-                          ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                          : "focus-visible:ring-azure focus-visible:border-azure",
-                      )}
-                      {...register("paymentCode")}
-                    />
-                    {errors.paymentCode && (
-                      <p className="text-red-500 text-sm">
-                        {errors.paymentCode.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {paymentMethod === "cash" && (
-                  <p className="text-sm text-muted-foreground">
-                    A payment code will be auto-generated for cash payments.
+                      <SelectTrigger
+                        className={cn(
+                          "w-full",
+                          errors.paymentMethod
+                            ? "border-red-400 focus:ring-red-400"
+                            : "focus:ring-azure",
+                          !isFormEnabled && "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        <SelectValue placeholder="Select method..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_METHODS.map((method) => (
+                          <SelectItem key={method.value} value={method.value}>
+                            {method.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.paymentMethod && (
+                  <p className="text-red-500 text-sm">
+                    {errors.paymentMethod.message}
                   </p>
                 )}
               </div>
-            )}
+
+              {/* Payment Code (not shown for cash) */}
+              {paymentMethod && paymentMethod !== "cash" && (
+                <div className="space-y-2">
+                  <Label htmlFor="paymentCode" className="text-sm font-medium">
+                    Payment Code <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="paymentCode"
+                    placeholder={
+                      paymentMethod === "mpesa"
+                        ? "e.g. SFK7H2JDKL"
+                        : paymentMethod === "card"
+                          ? "e.g. TXN123456"
+                          : "e.g. INS-2024-001"
+                    }
+                    disabled={isPending}
+                    className={cn(
+                      "h-11",
+                      errors.paymentCode
+                        ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                        : "focus-visible:ring-azure focus-visible:border-azure",
+                    )}
+                    {...register("paymentCode")}
+                  />
+                  {errors.paymentCode && (
+                    <p className="text-red-500 text-sm">
+                      {errors.paymentCode.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {paymentMethod === "cash" && (
+                <p className="text-sm text-muted-foreground">
+                  A payment code will be auto-generated for cash payments.
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
 

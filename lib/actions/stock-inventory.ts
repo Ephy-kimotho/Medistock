@@ -107,20 +107,21 @@ export async function getMedicineNames() {
             select: {
                 id: true,
                 name: true,
+                unit: true,
                 ageGroup: true,
-                dosage: true,
                 unitPrice: true,
+                dosageQuantity: true,
+                dosageFrequency: true,
+                dosageDays: true,
             },
             orderBy: { name: "asc" },
-        })
+        });
 
-        return medicines
-
+        return medicines;
     } catch (error) {
-        console.error("Failed to get medicine names and IDs.", error)
-        throw new Error("Failed to get medicine names")
+        console.error("Failed to get medicine names and IDs.", error);
+        throw new Error("Failed to get medicine names");
     }
-
 }
 
 export async function getStockInventory({

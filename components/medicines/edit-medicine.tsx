@@ -35,8 +35,10 @@ export function EditMedicineForm({
         reorderlevel: medicine.reorderlevel,
         categoryId: medicine.categoryId,
         manufacturer: medicine.manufacturer ?? "",
-        ageGroup: medicine.ageGroup ?? "",
-        dosage: medicine.dosage,
+        ageGroup: medicine.ageGroup ?? "all_ages",
+        dosageQuantity: medicine.dosageQuantity,
+        dosageFrequency: medicine.dosageFrequency,
+        dosageDays: medicine.dosageDays,
         unitPrice: medicine.unitPrice,
       }}
     />
