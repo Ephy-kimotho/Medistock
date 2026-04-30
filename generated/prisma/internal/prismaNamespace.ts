@@ -1607,7 +1607,9 @@ export const MedicinesScalarFieldEnum = {
   categoryId: 'categoryId',
   ageGroup: 'ageGroup',
   isActive: 'isActive',
-  dosage: 'dosage',
+  dosageQuantity: 'dosageQuantity',
+  dosageFrequency: 'dosageFrequency',
+  dosageDays: 'dosageDays',
   unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -1822,6 +1824,20 @@ export type EnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'MEDICINE_AGE_GROUP[]'
  */
 export type ListEnumMEDICINE_AGE_GROUPFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MEDICINE_AGE_GROUP[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DOSAGE_FREQUENCY'
+ */
+export type EnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DOSAGE_FREQUENCY'>
+    
+
+
+/**
+ * Reference to a field of type 'DOSAGE_FREQUENCY[]'
+ */
+export type ListEnumDOSAGE_FREQUENCYFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DOSAGE_FREQUENCY[]'>
     
 
 

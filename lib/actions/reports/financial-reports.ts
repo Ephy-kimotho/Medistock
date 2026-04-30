@@ -15,6 +15,7 @@ import {
     PDF_MARGINS,
     PDF_COLORS,
     PDF_FONTS,
+    generateSectionTitle,
     type TableColumn,
 } from "@/lib/services/pdf/utils";
 import { drawSingleBarChart } from "@/lib/services/pdf/bar-chart";
@@ -26,7 +27,7 @@ export interface SalesReportFilters {
 }
 
 function truncateCode(code: string): string {
-    if (code.length > 20) {
+    if (code.length > 18) {
         return code.substring(0, 12) + "...";
     }
     return code;
@@ -36,11 +37,11 @@ export async function generateSalesReport(filters: SalesReportFilters) {
     try {
         await requirePermission("transaction", "read");
 
-        // Default date range: last 4 months
+        // Default date range: last 3 months
         const dateTo = filters.dateTo ? new Date(filters.dateTo) : new Date();
         const dateFrom = filters.dateFrom
             ? new Date(filters.dateFrom)
-            : subMonths(dateTo, 4);
+            : subMonths(dateTo, 3);
 
         // Build date range filter for transactions
         const transactionWhere: Record<string, unknown> = {
@@ -49,7 +50,17 @@ export async function generateSalesReport(filters: SalesReportFilters) {
                 gte: startOfMonth(dateFrom),
                 lte: endOfMonth(dateTo),
             },
+            // Only fetch transactions with payments
+            payment: { isNot: null },
         };
+
+        // Add payment method filter if specified
+        if (filters.paymentMethod !== "all") {
+            transactionWhere.payment = {
+                isNot: null,
+                method: filters.paymentMethod,
+            };
+        }
 
         // Fetch all dispense transactions with payment info
         const transactions = await prisma.transactions.findMany({
@@ -82,28 +93,17 @@ export async function generateSalesReport(filters: SalesReportFilters) {
             orderBy: { createdAt: "desc" },
         });
 
-        // Filter by payment method if specified
-        let filteredTransactions = transactions;
-        if (filters.paymentMethod !== "all") {
-            filteredTransactions = transactions.filter(
-                (t) => t.payment?.method === filters.paymentMethod
-            );
-        }
-
-        // Get paid transactions only
-        const paidTransactions = filteredTransactions.filter((t) => t.payment);
-
         // Generate all months in the range
         const months = eachMonthOfInterval({
             start: startOfMonth(dateFrom),
             end: endOfMonth(dateTo),
         });
 
-        // Group paid transactions by month
+        // Group transactions by month
         const monthlyData = months.map((monthDate) => {
             const monthKey = format(monthDate, "yyyy-MM");
 
-            const monthTransactions = paidTransactions.filter(
+            const monthTransactions = transactions.filter(
                 (t) => format(t.createdAt, "yyyy-MM") === monthKey
             );
 
@@ -128,7 +128,7 @@ export async function generateSalesReport(filters: SalesReportFilters) {
             insurance: 0,
         };
 
-        for (const t of paidTransactions) {
+        for (const t of transactions) {
             if (t.payment) {
                 revenueByMethod[t.payment.method] += t.payment.amount;
             }
@@ -138,10 +138,6 @@ export async function generateSalesReport(filters: SalesReportFilters) {
             (sum, val) => sum + val,
             0
         );
-
-        // Calculate pending payments (transactions without payment)
-        const pendingTransactions = filteredTransactions.filter((t) => !t.payment);
-        const pendingCount = pendingTransactions.length;
 
         // Get facility settings
         const facility = await getFacilitySettings();
@@ -176,8 +172,7 @@ export async function generateSalesReport(filters: SalesReportFilters) {
         // Generate stats summary
         generateStatsSummary(doc, [
             { label: "Total Revenue", value: `KES ${totalRevenue.toLocaleString()}` },
-            { label: "Paid Transactions", value: paidTransactions.length },
-            { label: "Pending Payments", value: pendingCount },
+            { label: "Total Transactions", value: transactions.length },
         ]);
 
         const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
@@ -197,12 +192,7 @@ export async function generateSalesReport(filters: SalesReportFilters) {
 
         // Monthly Breakdown Table
         doc.moveDown(1);
-        doc
-            .fontSize(PDF_FONTS.heading)
-            .font("Helvetica-Bold")
-            .fillColor(PDF_COLORS.primary)
-            .text("Monthly Breakdown");
-        doc.moveDown(0.5);
+        generateSectionTitle(doc, "Monthly Breakdown");
 
         const monthlyColumns: TableColumn[] = [
             { header: "Month", key: "fullLabel", width: 30 },
@@ -219,28 +209,21 @@ export async function generateSalesReport(filters: SalesReportFilters) {
         // Add totals row
         monthlyTableData.push({
             fullLabel: "TOTAL",
-            transactionCount: paidTransactions.length,
+            transactionCount: transactions.length,
             revenue: `KES ${totalRevenue.toLocaleString()}`,
         });
 
         generateTable(doc, monthlyColumns, monthlyTableData);
 
-
-        // Revenue Summary Section
-
+        // Revenue by Payment Method Table
         doc.moveDown(1);
-        doc
-            .fillColor(PDF_COLORS.primary)
-            .fontSize(PDF_FONTS.heading)
-            .font("Helvetica-Bold")
-            .text("Revenue by Payment Method", { width: pageWidth });
+        generateSectionTitle(doc, "Revenue by Payment Method");
 
-        doc.moveDown(0.5);
+        const revenueColumns: TableColumn[] = [
+            { header: "Payment Method", key: "method", width: 50 },
+            { header: "Revenue", key: "revenue", width: 50, align: "right" },
+        ];
 
-        const labelWidth = pageWidth * 0.6;
-        const amountWidth = pageWidth * 0.4;
-
-        // Revenue by method
         const methodOrder = [
             { key: "cash", label: "Cash" },
             { key: "mpesa", label: "M-Pesa" },
@@ -248,89 +231,31 @@ export async function generateSalesReport(filters: SalesReportFilters) {
             { key: "insurance", label: "Insurance" },
         ];
 
-        for (const method of methodOrder) {
-            const amount = revenueByMethod[method.key];
-            const currentY = doc.y;
+        const revenueTableData = methodOrder.map((m) => ({
+            method: m.label,
+            revenue: `KES ${revenueByMethod[m.key].toLocaleString()}`,
+        }));
 
-            doc
-                .fillColor(PDF_COLORS.text)
-                .fontSize(PDF_FONTS.body)
-                .font("Helvetica")
-                .text(method.label, PDF_MARGINS.left, currentY, {
-                    width: labelWidth,
-                });
+        // Add total row
+        revenueTableData.push({
+            method: "TOTAL",
+            revenue: `KES ${totalRevenue.toLocaleString()}`,
+        });
 
-            doc
-                .fillColor(PDF_COLORS.text)
-                .fontSize(PDF_FONTS.body)
-                .font("Helvetica")
-                .text(
-                    `KES ${amount.toLocaleString()}`,
-                    PDF_MARGINS.left + labelWidth,
-                    currentY,
-                    {
-                        width: amountWidth,
-                        align: "right",
-                    }
-                );
-
-            doc.y = currentY + 20;
-        }
-
-        // Divider line
-        doc
-            .strokeColor(PDF_COLORS.border)
-            .lineWidth(1)
-            .moveTo(PDF_MARGINS.left, doc.y)
-            .lineTo(PDF_MARGINS.left + pageWidth, doc.y)
-            .stroke();
-
-        doc.y += 8;
-
-        // Total Revenue
-        const totalY = doc.y;
-        doc
-            .fillColor(PDF_COLORS.primary)
-            .fontSize(PDF_FONTS.body)
-            .font("Helvetica-Bold")
-            .text("Total Revenue", PDF_MARGINS.left, totalY, {
-                width: labelWidth,
-            });
-
-        doc
-            .fillColor(PDF_COLORS.primary)
-            .fontSize(PDF_FONTS.body)
-            .font("Helvetica-Bold")
-            .text(
-                `KES ${totalRevenue.toLocaleString()}`,
-                PDF_MARGINS.left + labelWidth,
-                totalY,
-                {
-                    width: amountWidth,
-                    align: "right",
-                }
-            );
-
-        doc.moveDown(2);
-
+        generateTable(doc, revenueColumns, revenueTableData);
 
         // Payment Transactions Table
-        doc
-            .fillColor(PDF_COLORS.primary)
-            .fontSize(PDF_FONTS.heading)
-            .font("Helvetica-Bold")
-            .text("Payment Transactions", { width: pageWidth });
+        doc.moveDown(1);
+        generateSectionTitle(doc, "Payment Transactions");
 
-        doc.moveDown(0.5);
-
-        // Check if no paid transactions
-        if (paidTransactions.length === 0) {
+        // Check if no transactions
+        if (transactions.length === 0) {
             doc.moveDown(1);
             doc
                 .fillColor(PDF_COLORS.muted)
                 .fontSize(PDF_FONTS.body)
                 .font("Helvetica")
-                .text("No payment transactions found for the selected criteria.", {
+                .text("No transactions found for the selected criteria.", PDF_MARGINS.left, doc.y, {
                     width: pageWidth,
                     align: "center",
                 });
@@ -351,7 +276,7 @@ export async function generateSalesReport(filters: SalesReportFilters) {
         ];
 
         // Prepare table data
-        const tableData = paidTransactions.map((t) => ({
+        const tableData = transactions.map((t) => ({
             date: format(new Date(t.createdAt), "dd/MM/yyyy"),
             patient: t.patientRecord?.name ?? "-",
             medicine: t.stockEntry.medicine.name,

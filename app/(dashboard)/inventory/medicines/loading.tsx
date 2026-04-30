@@ -66,15 +66,11 @@ export default function MedicinesLoading() {
               <TableHead className="font-semibold">Medicine Name</TableHead>
               <TableHead className="font-semibold">Category</TableHead>
               <TableHead className="font-semibold">Unit</TableHead>
+              <TableHead className="font-semibold">Age group</TableHead>
               <TableHead className="font-semibold text-center">
                 Total Stock
               </TableHead>
               <TableHead className="font-semibold">Status</TableHead>
-              {isAdminOrManager && (
-                <TableHead className="font-semibold text-center">
-                  Active Status
-                </TableHead>
-              )}
               {isAdminOrManager && (
                 <TableHead className="font-semibold text-center">
                   Actions
@@ -94,17 +90,15 @@ export default function MedicinesLoading() {
                 <TableCell>
                   <Skeleton className="h-5 w-16" />
                 </TableCell>
+                <TableCell>
+                  <Skeleton className="h-5 w-16" />
+                </TableCell>
                 <TableCell className="text-center">
                   <Skeleton className="h-5 w-12 mx-auto" />
                 </TableCell>
                 <TableCell>
                   <Skeleton className="h-7 w-24 rounded-md" />
                 </TableCell>
-                {isAdminOrManager && (
-                  <TableCell className="text-center">
-                    <Skeleton className="h-7 w-20 rounded-full mx-auto" />
-                  </TableCell>
-                )}
                 {isAdminOrManager && (
                   <TableCell className="text-center">
                     <Skeleton className="size-8 rounded-md mx-auto" />

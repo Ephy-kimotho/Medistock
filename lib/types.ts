@@ -98,9 +98,11 @@ export interface MedicineInput {
     unit: string;
     reorderlevel: number;
     categoryId: string;
-    manufacturer?: string;
     ageGroup: AgeGroup;
-    dosage: string;
+    manufacturer?: string;
+    dosageQuantity: number | null;
+    dosageFrequency: string | null;
+    dosageDays: number | null;
     unitPrice: number;
 }
 
@@ -113,12 +115,14 @@ export interface MedicineWithStock {
     categoryName: string;
     manufacturer: string | null;
     isActive: boolean;
-    ageGroup: AgeGroup;
     createdAt: Date;
     updatedAt: Date;
-    totalStock: number;
-    dosage: string;
+    dosageQuantity: number | null;
+    dosageFrequency: string | null;
+    dosageDays: number | null;
     unitPrice: number;
+    ageGroup: AgeGroup;
+    totalStock: number;
     stockStatus: "in_stock" | "low_stock" | "out_of_stock";
 }
 
@@ -313,38 +317,6 @@ export interface CategoryPageContentProps {
     stats: Stats;
 }
 
-export interface PendingPayment {
-    id: string;
-    quantity: number;
-    patient: string;
-    phone: string;
-    createdAt: Date;
-    medicine: {
-        name: string;
-        unit: string;
-        unitPrice: number;
-    };
-    batch: {
-        batchNumber: string;
-    };
-}
-
-export interface PendingPaymentsResponse {
-    payments: PendingPayment[];
-    totalCount: number;
-    totalPages: number;
-    currentPage: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-}
-
-export interface AddPaymentInput {
-    transactionId: string;
-    method: "cash" | "mpesa" | "card" | "insurance";
-    amount: number;
-    paymentCode?: string;
-}
-
 export interface TransactionDetails {
     id: string;
     type: string;
@@ -360,7 +332,7 @@ export interface TransactionDetails {
         name: string;
         unit: string;
         ageGroup: string;
-        unitPrice:number;
+        unitPrice: number;
     };
     batch: {
         id: string;
@@ -408,48 +380,48 @@ export interface CreatePatientInput {
 }
 
 export interface RecentAlert {
-  id: string;
-  type: ALERT_TYPE;
-  message: string;
-  createdAt: Date;
+    id: string;
+    type: ALERT_TYPE;
+    message: string;
+    createdAt: Date;
 }
 
 export interface AlertFilters {
-  status?: ALERT_STATUS | "all";
-  type?: ALERT_TYPE | "all";
-  page?: number;
-  pageSize?: number;
+    status?: ALERT_STATUS | "all";
+    type?: ALERT_TYPE | "all";
+    page?: number;
+    pageSize?: number;
 }
 
 export interface AlertWithDetails {
-  id: string;
-  type: ALERT_TYPE;
-  message: string;
-  status: ALERT_STATUS;
-  createdAt: Date;
-  readAt: Date | null;
-  resolvedAt: Date | null;
-  resolvedBy: {
     id: string;
-    name: string;
-  } | null;
-  stockEntry: {
-    id: string;
-    batchNumber: string;
-    quantity: number;
-  };
-  medicine: {
-    id: string;
-    name: string;
-    unit: string;
-    reorderlevel: number;
-  };
-  currentStock: number;
+    type: ALERT_TYPE;
+    message: string;
+    status: ALERT_STATUS;
+    createdAt: Date;
+    readAt: Date | null;
+    resolvedAt: Date | null;
+    resolvedBy: {
+        id: string;
+        name: string;
+    } | null;
+    stockEntry: {
+        id: string;
+        batchNumber: string;
+        quantity: number;
+    };
+    medicine: {
+        id: string;
+        name: string;
+        unit: string;
+        reorderlevel: number;
+    };
+    currentStock: number;
 }
 
 export interface AlertCounts {
-  all: number;
-  pending: number;
-  read: number;
-  resolved: number;
+    all: number;
+    pending: number;
+    read: number;
+    resolved: number;
 }

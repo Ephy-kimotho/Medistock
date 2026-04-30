@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +11,6 @@ import {
   ClipboardList,
   AlertTriangle,
   CheckCircle2,
-  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,16 +22,10 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, formatPrice } from "@/lib/utils";
 import { getAgeGroupLabel } from "@/constants";
-import { AddPaymentDialog } from "@/components/payments/add-payment-dialog";
-import type {
-  PendingPayment,
-  TransactionDetails,
-  TransactionType,
-} from "@/lib/types";
+import type { TransactionDetails, TransactionType } from "@/lib/types";
 
 interface TransactionDetailsContentProps {
   transaction: TransactionDetails;
-  userId: string;
 }
 
 function getTransactionTypeLabel(type: Omit<"all", TransactionType>) {
@@ -51,14 +43,11 @@ function getTransactionTypeLabel(type: Omit<"all", TransactionType>) {
 
 export function TransactionDetailsContent({
   transaction,
-  userId,
 }: TransactionDetailsContentProps) {
   const router = useRouter();
-  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
 
   const isDispense = transaction.type === "dispensed";
   const isWastage = transaction.type === "wastage";
-  const hasPendingPayment = isDispense && !transaction.payment;
 
   const formatRole = (role: string) => {
     switch (role) {
@@ -106,25 +95,6 @@ export function TransactionDetailsContent({
         return reason;
     }
   };
-
-  // Convert transaction to PendingPayment format for dialog
-  const pendingPaymentData: PendingPayment | null = hasPendingPayment
-    ? {
-        id: transaction.id,
-        quantity: transaction.quantity,
-        patient: transaction.patient ?? "Unknown",
-        phone: transaction.phone ?? "N/A",
-        createdAt: transaction.createdAt,
-        medicine: {
-          name: transaction.medicine.name,
-          unit: transaction.medicine.unit,
-          unitPrice:transaction.medicine.unitPrice
-        },
-        batch: {
-          batchNumber: transaction.batch.batchNumber,
-        },
-      }
-    : null;
 
   return (
     <section className="flex-1 flex flex-col gap-4 py-6">
@@ -273,7 +243,7 @@ export function TransactionDetailsContent({
         )}
 
         {/* Payment Card (Dispense only) */}
-        {isDispense && (
+        {isDispense && transaction.payment && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -281,63 +251,45 @@ export function TransactionDetailsContent({
                 Payment
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              {transaction.payment ? (
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Status</span>
-                    <div className="flex items-center gap-1.5 text-medium-jungle">
-                      <CheckCircle2 className="size-4" />
-                      <span className="font-medium">Paid</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Method</span>
-                    <span className="font-medium">
-                      {formatPaymentMethod(transaction.payment.method)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-bold text-base">Amount</span>
-                    <span className="font-bold text-base">
-                      {formatPrice(transaction.payment.amount)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-bold text-base">Payment Code</span>
-                    <span className="font-bold text-base">
-                      {transaction.payment.paymentCode}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-medium">
-                    <span className="capitalize">Processed By</span>
-                    <span>{transaction.payment.processedBy}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Paid On</span>
-                    <span>
-                      {format(
-                        new Date(transaction.payment.createdAt),
-                        "MMMM d, yyyy, hh:mm a",
-                      )}
-                    </span>
-                  </div>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Status</span>
+                <div className="flex items-center gap-1.5 text-medium-jungle">
+                  <CheckCircle2 className="size-4" />
+                  <span className="font-medium">Paid</span>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-princeton-orange">
-                    <Clock className="size-4" />
-                    <span className="font-medium">Payment Pending</span>
-                  </div>
-                  <Button
-                    className="w-full bg-azure hover:bg-blue-600"
-                    onClick={() => setPaymentDialogOpen(true)}
-                  >
-                    <CreditCard className="size-4 mr-2" />
-                    Add Payment
-                  </Button>
-                </div>
-              )}
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Method</span>
+                <span className="font-medium">
+                  {formatPaymentMethod(transaction.payment.method)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-bold text-base">Amount</span>
+                <span className="font-bold text-base">
+                  {formatPrice(transaction.payment.amount)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-bold text-base">Payment Code</span>
+                <span className="font-bold text-base">
+                  {transaction.payment.paymentCode}
+                </span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span className="capitalize">Processed By</span>
+                <span>{transaction.payment.processedBy}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Paid On</span>
+                <span>
+                  {format(
+                    new Date(transaction.payment.createdAt),
+                    "MMMM d, yyyy, hh:mm a",
+                  )}
+                </span>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -384,16 +336,6 @@ export function TransactionDetailsContent({
           </CardContent>
         </Card>
       </div>
-
-      {/* Add Payment Dialog */}
-      {pendingPaymentData && (
-        <AddPaymentDialog
-          open={paymentDialogOpen}
-          setOpen={setPaymentDialogOpen}
-          transaction={pendingPaymentData}
-          userId={userId}
-        />
-      )}
     </section>
   );
 }

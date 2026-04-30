@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogTrigger,
@@ -13,7 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, SubmitHandler, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -29,10 +28,12 @@ import {
   MEDICINE_UNIT_GROUPS,
   type MedicineUnit,
   AGE_GROUPS,
+  DOSAGE_FREQUENCY_OPTIONS,
 } from "@/constants";
 import { useCreateMedicine, useUpdateMedicine } from "@/hooks/useMedicines";
 import { cn } from "@/lib/utils";
-import { Loader, Lock } from "lucide-react";
+import { Loader, Lock, Info } from "lucide-react";
+import { formatDosage, requiresDays } from "@/lib/utils/dosage";
 import type { MedicineInput, CategoryInfo } from "@/lib/types";
 
 interface MedicineFormProps {
@@ -67,6 +68,9 @@ function MedicineForm({
     handleSubmit,
     reset,
     control,
+    setValue,
+    trigger,
+    clearErrors,
     formState: { errors },
   } = useForm<MedicineFormData>({
     mode: "all",
@@ -78,10 +82,35 @@ function MedicineForm({
       categoryId: lockedCategoryId ?? initialValues?.categoryId ?? "",
       manufacturer: initialValues?.manufacturer ?? "",
       ageGroup: initialValues?.ageGroup ?? "all_ages",
-      dosage: initialValues?.dosage ?? "2 times daily",
+      dosageQuantity: initialValues?.dosageQuantity ?? null,
+      dosageFrequency: initialValues?.dosageFrequency ?? null,
+      dosageDays: initialValues?.dosageDays ?? null,
       unitPrice: initialValues?.unitPrice ?? 100,
     },
   });
+
+  // Watch dosage fields for preview and conditional rendering
+  const unit = useWatch({ control, name: "unit" });
+  const dosageQuantity = useWatch({ control, name: "dosageQuantity" });
+  const dosageFrequency = useWatch({ control, name: "dosageFrequency" });
+  const dosageDays = useWatch({ control, name: "dosageDays" });
+
+  // Check if days field is required based on frequency
+  const isDaysRequired = requiresDays(dosageFrequency);
+
+  // Check if days field should be disabled (as_needed or single_dose)
+  const isDaysDisabled =
+    !dosageFrequency ||
+    dosageFrequency === "as_needed" ||
+    dosageFrequency === "single_dose";
+
+  // Generate dosage preview
+  const dosagePreview = formatDosage(
+    dosageQuantity,
+    dosageFrequency,
+    dosageDays,
+    unit || "unit",
+  );
 
   // Reset form when initialValues change (for editing different medicines)
   useEffect(() => {
@@ -93,7 +122,9 @@ function MedicineForm({
         categoryId: initialValues.categoryId,
         manufacturer: initialValues.manufacturer ?? "",
         ageGroup: initialValues.ageGroup ?? "all_ages",
-        dosage: initialValues.dosage ?? "2 times daily",
+        dosageQuantity: initialValues.dosageQuantity ?? null,
+        dosageFrequency: initialValues.dosageFrequency ?? null,
+        dosageDays: initialValues.dosageDays ?? null,
         unitPrice: initialValues.unitPrice ?? 100,
       });
     }
@@ -109,11 +140,32 @@ function MedicineForm({
         categoryId: lockedCategoryId,
         manufacturer: "",
         ageGroup: "all_ages",
-        dosage: "2 times daily",
+        dosageQuantity: null,
+        dosageFrequency: null,
+        dosageDays: null,
         unitPrice: 100,
       });
     }
   }, [open, isEditing, lockedCategoryId, reset]);
+
+  const handleFrequencyChange = (
+    value: string,
+    onChange: (value: string | null) => void,
+  ) => {
+    onChange(value);
+
+    if (value === "as_needed") {
+      // Set null WITHOUT triggering validation, then clear any stale error
+      setValue("dosageDays", null, { shouldValidate: false });
+      clearErrors("dosageDays");
+    } else if (value === "single_dose") {
+      // Auto-set to 1 day and validate
+      setValue("dosageDays", 1, { shouldValidate: true });
+    } else {
+      // For other frequencies, trigger validation to show error if days is missing
+      trigger("dosageDays");
+    }
+  };
 
   const onSubmit: SubmitHandler<MedicineFormData> = (values) => {
     const data: MedicineInput = {
@@ -123,7 +175,9 @@ function MedicineForm({
       categoryId: lockedCategoryId ?? values.categoryId,
       ageGroup: values.ageGroup || "all_ages",
       manufacturer: values.manufacturer?.trim() || undefined,
-      dosage: values.dosage.trim(),
+      dosageQuantity: values.dosageQuantity,
+      dosageFrequency: values.dosageFrequency,
+      dosageDays: values.dosageDays,
       unitPrice: values.unitPrice,
     };
 
@@ -155,7 +209,9 @@ function MedicineForm({
         categoryId: lockedCategoryId ?? "",
         manufacturer: "",
         ageGroup: "all_ages",
-        dosage: "2 times daily",
+        dosageQuantity: null,
+        dosageFrequency: null,
+        dosageDays: null,
         unitPrice: 100,
       });
     }
@@ -371,10 +427,10 @@ function MedicineForm({
             </div>
           </section>
 
-          {/* Pricing & Dosage Section */}
+          {/* Pricing & Inventory Section */}
           <section className="space-y-4">
             <h3 className="text-sm font-semibold text-slate-900">
-              Pricing & Dosage
+              Pricing & Inventory
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -436,32 +492,149 @@ function MedicineForm({
                 )}
               </div>
             </div>
+          </section>
 
-            {/* Dosage */}
-            <div className="space-y-2">
-              <Label htmlFor="dosage" className="text-sm font-medium">
-                Standard Dosage <span className="text-red-500">*</span>
-              </Label>
-              <Textarea
-                id="dosage"
-                rows={2}
-                placeholder="e.g., 2 tablets twice daily after meals"
-                disabled={isPending}
-                className={cn(
-                  "resize-none",
-                  errors.dosage
-                    ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
-                    : "focus-visible:ring-azure focus-visible:border-azure",
+          {/* Dosage Section */}
+          <section className="space-y-4">
+            <h3 className="text-sm font-semibold text-slate-900">
+              Standard Dosage <span className="text-crimson-red">*</span>
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Dosage Quantity */}
+              <div className="space-y-2">
+                <Label htmlFor="dosageQuantity" className="text-sm font-medium">
+                  Quantity per Dose
+                </Label>
+                <Input
+                  id="dosageQuantity"
+                  type="number"
+                  min={1}
+                  placeholder="e.g., 10"
+                  disabled={isPending}
+                  className={cn(
+                    errors.dosageQuantity
+                      ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                      : "focus-visible:ring-azure focus-visible:border-azure",
+                  )}
+                  {...register("dosageQuantity", {
+                    setValueAs: (v) =>
+                      v === "" || v === undefined || v === null
+                        ? null
+                        : parseInt(v, 10),
+                  })}
+                />
+                {errors.dosageQuantity && (
+                  <p className="text-red-500 text-sm">
+                    {errors.dosageQuantity.message}
+                  </p>
                 )}
-                {...register("dosage")}
-              />
-              <p className="text-xs text-muted-foreground">
-                Default dosage instructions shown during dispense
-              </p>
-              {errors.dosage && (
-                <p className="text-red-500 text-sm">{errors.dosage.message}</p>
-              )}
+              </div>
+
+              {/* Dosage Frequency */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="dosageFrequency"
+                  className="text-sm font-medium"
+                >
+                  Frequency
+                </Label>
+                <Controller
+                  control={control}
+                  name="dosageFrequency"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ?? ""}
+                      onValueChange={(value) =>
+                        handleFrequencyChange(value, field.onChange)
+                      }
+                      disabled={isPending}
+                    >
+                      <SelectTrigger
+                        id="dosageFrequency"
+                        className={cn(
+                          "w-full",
+                          errors.dosageFrequency
+                            ? "border-red-400 focus:ring-red-400"
+                            : "focus:ring-azure",
+                        )}
+                      >
+                        <SelectValue placeholder="Select frequency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DOSAGE_FREQUENCY_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.dosageFrequency && (
+                  <p className="text-red-500 text-sm">
+                    {errors.dosageFrequency.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Dosage Days */}
+              <div className="space-y-2">
+                <Label htmlFor="dosageDays" className="text-sm font-medium">
+                  Number of Days
+                  {isDaysRequired && <span className="text-red-500"> *</span>}
+                </Label>
+                <Input
+                  id="dosageDays"
+                  type="number"
+                  min={1}
+                  placeholder="e.g., 5"
+                  disabled={isPending || isDaysDisabled}
+                  className={cn(
+                    isDaysDisabled && "bg-muted/50",
+                    errors.dosageDays
+                      ? "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400"
+                      : "focus-visible:ring-azure focus-visible:border-azure",
+                  )}
+                  {...register("dosageDays", {
+                    setValueAs: (v) =>
+                      v === "" || v === undefined || v === null
+                        ? null
+                        : parseInt(v, 10),
+                  })}
+                />
+                {dosageFrequency === "single_dose" && (
+                  <p className="text-xs text-muted-foreground">
+                    Auto-set to 1 day for single dose
+                  </p>
+                )}
+                {dosageFrequency === "as_needed" && (
+                  <p className="text-xs text-muted-foreground">
+                    Not applicable for as-needed medications
+                  </p>
+                )}
+                {errors.dosageDays && (
+                  <p className="text-red-500 text-sm">
+                    {errors.dosageDays.message}
+                  </p>
+                )}
+              </div>
             </div>
+
+            {/* Dosage Preview */}
+            {(dosageQuantity || dosageFrequency) && (
+              <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <Info className="size-4 text-blue-600 mt-0.5 shrink-0" />
+                <div className="text-sm">
+                  <span className="font-medium text-blue-900">Preview: </span>
+                  <span className="text-blue-800">{dosagePreview}</span>
+                </div>
+              </div>
+            )}
+
+            <p className="text-xs text-muted-foreground">
+              Used to auto-calculate quantity when dispensing
+            </p>
           </section>
 
           {/* Additional Details Section */}

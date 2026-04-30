@@ -76,3 +76,18 @@ export const PAYMENT_METHOD = {
 } as const
 
 export type PAYMENT_METHOD = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD]
+
+
+export const DOSAGE_FREQUENCY = {
+  once_daily: 'once_daily',
+  twice_daily: 'twice_daily',
+  three_times_daily: 'three_times_daily',
+  four_times_daily: 'four_times_daily',
+  every_4_hours: 'every_4_hours',
+  every_6_hours: 'every_6_hours',
+  every_8_hours: 'every_8_hours',
+  as_needed: 'as_needed',
+  single_dose: 'single_dose'
+} as const
+
+export type DOSAGE_FREQUENCY = (typeof DOSAGE_FREQUENCY)[keyof typeof DOSAGE_FREQUENCY]

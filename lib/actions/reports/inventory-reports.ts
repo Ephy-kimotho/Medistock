@@ -14,6 +14,7 @@ import {
   PDF_COLORS,
   PDF_FONTS,
   PDF_MARGINS,
+  generateSectionTitle,
   type TableColumn,
 } from "@/lib/services/pdf/utils";
 import {
@@ -24,7 +25,7 @@ import {
   eachMonthOfInterval,
   addDays, isBefore, differenceInDays
 } from "date-fns";
-import { drawBarChart } from "@/lib/services/pdf/bar-chart";
+import { drawBarChart, drawSingleBarChart } from "@/lib/services/pdf/bar-chart";
 
 // Interface definitions
 export interface CategoryOption {
@@ -70,7 +71,7 @@ function truncateNotes(notes: string | null): string {
   return notes;
 }
 
-// Generate report server actions
+// Helper functions
 export async function getCategoriesForReport() {
   try {
     await requirePermission("medicine", "read");
@@ -112,15 +113,16 @@ export async function getMedicinesForReport() {
   }
 }
 
+// Generate report server actions
 export async function generateStockLevelReport(filters: StockLevelFilters) {
   try {
     await requirePermission("medicine", "read");
 
-    // Default date range: last 6 months
+    // Default date range: last 3 months
     const dateTo = filters.dateTo ? new Date(filters.dateTo) : new Date();
     const dateFrom = filters.dateFrom
       ? new Date(filters.dateFrom)
-      : subMonths(dateTo, 6);
+      : subMonths(dateTo, 3);
 
     const isAllMedicines = filters.medicineId === "all";
     const isAllCategories = filters.categoryId === "all";
@@ -289,12 +291,7 @@ export async function generateStockLevelReport(filters: StockLevelFilters) {
 
     // Add monthly breakdown table below chart
     doc.moveDown(1);
-    doc
-      .fontSize(PDF_FONTS.heading)
-      .font("Helvetica-Bold")
-      .fillColor(PDF_COLORS.primary)
-      .text("Monthly Breakdown");
-    doc.moveDown(0.5);
+    generateSectionTitle(doc, "Monthly Breakdown");
 
     const columns: TableColumn[] = [
       { header: "Month", key: "fullLabel", width: 25 },
@@ -470,7 +467,7 @@ export async function generateLowStockReport(filters: LowStockFilters) {
         .fillColor(PDF_COLORS.primary)
         .fontSize(PDF_FONTS.heading)
         .font("Helvetica-Bold")
-        .text("All stock levels are healthy!", {
+        .text("All stock levels are healthy!", PDF_MARGINS.left, doc.y, {
           width: pageWidth,
           align: "center",
         });
@@ -480,10 +477,15 @@ export async function generateLowStockReport(filters: LowStockFilters) {
         .fillColor(PDF_COLORS.muted)
         .fontSize(PDF_FONTS.body)
         .font("Helvetica")
-        .text("No medicines are currently below their reorder level.", {
-          width: pageWidth,
-          align: "center",
-        });
+        .text(
+          "No medicines are currently below their reorder level.",
+          PDF_MARGINS.left,
+          doc.y,
+          {
+            width: pageWidth,
+            align: "center",
+          }
+        );
 
       generateFooter(doc, 1);
       const base64 = await pdfToBase64(doc);
@@ -758,6 +760,8 @@ export async function generateDispensingReport(filters: DispensingFilters) {
     // Build query filters
     const where: Record<string, unknown> = {
       type: "dispensed",
+      // All dispenses now have payments
+      payment: { isNot: null },
     };
 
     // Date range filter
@@ -765,7 +769,7 @@ export async function generateDispensingReport(filters: DispensingFilters) {
       where.createdAt = {};
       if (filters.dateFrom) {
         (where.createdAt as Record<string, Date>).gte = new Date(
-          filters.dateFrom,
+          filters.dateFrom
         );
       }
       if (filters.dateTo) {
@@ -794,6 +798,7 @@ export async function generateDispensingReport(filters: DispensingFilters) {
         createdAt: true,
         user: {
           select: {
+            id: true,
             name: true,
           },
         },
@@ -802,6 +807,7 @@ export async function generateDispensingReport(filters: DispensingFilters) {
             batchNumber: true,
             medicine: {
               select: {
+                id: true,
                 name: true,
                 unit: true,
                 ageGroup: true,
@@ -822,9 +828,11 @@ export async function generateDispensingReport(filters: DispensingFilters) {
         },
         patientRecord: {
           select: {
-            name: true
-          }
-        }
+            id: true,
+            name: true,
+            createdAt: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -864,33 +872,30 @@ export async function generateDispensingReport(filters: DispensingFilters) {
     // Calculate summary stats
     const totalDispenses = transactions.length;
     const totalUnits = transactions.reduce((sum, t) => sum + t.quantity, 0);
-    const paidTransactions = transactions.filter((t) => t.payment);
-    const pendingPayments = transactions.filter((t) => !t.payment).length;
-
-    // Age group breakdown
-    const ageGroupCounts: Record<string, number> = {};
-    for (const t of transactions) {
-      const ageGroup = t.stockEntry.medicine.ageGroup ?? "Unspecified";
-      ageGroupCounts[ageGroup] = (ageGroupCounts[ageGroup] ?? 0) + 1;
-    }
+    const totalRevenue = transactions.reduce(
+      (sum, t) => sum + (t.payment?.amount || 0),
+      0
+    );
+    const averageTransaction =
+      totalDispenses > 0 ? Math.round(totalRevenue / totalDispenses) : 0;
 
     generateStatsSummary(doc, [
       { label: "Total Dispenses", value: totalDispenses },
       { label: "Total Units", value: totalUnits },
-      { label: "Paid", value: paidTransactions.length },
-      { label: "Pending Payment", value: pendingPayments },
+      { label: "Total Revenue", value: `KES ${totalRevenue.toLocaleString()}` },
+      { label: "Avg. Transaction", value: `KES ${averageTransaction.toLocaleString()}` },
     ]);
+
+    const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
 
     // Check if no transactions
     if (transactions.length === 0) {
-      const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
-
       doc.moveDown(2);
       doc
         .fillColor(PDF_COLORS.primary)
         .fontSize(PDF_FONTS.heading)
         .font("Helvetica-Bold")
-        .text("No dispenses found!", {
+        .text("No dispenses found!", PDF_MARGINS.left, doc.y, {
           width: pageWidth,
           align: "center",
         });
@@ -900,7 +905,7 @@ export async function generateDispensingReport(filters: DispensingFilters) {
         .fillColor(PDF_COLORS.muted)
         .fontSize(PDF_FONTS.body)
         .font("Helvetica")
-        .text("No dispense transactions match the selected criteria.", {
+        .text("No dispense transactions match the selected criteria.", PDF_MARGINS.left, doc.y, {
           width: pageWidth,
           align: "center",
         });
@@ -910,70 +915,205 @@ export async function generateDispensingReport(filters: DispensingFilters) {
       return { success: true, data: base64 };
     }
 
-    // Age Group Summary Section
-    const pageWidth = doc.page.width - PDF_MARGINS.left - PDF_MARGINS.right;
+    // ==================== TOP MEDICINES SECTION ====================
+    // Aggregate by medicine
+    const medicineStats: Record<
+      string,
+      { name: string; category: string; quantity: number; revenue: number }
+    > = {};
 
-    doc
-      .fillColor(PDF_COLORS.primary)
-      .fontSize(PDF_FONTS.heading)
-      .font("Helvetica-Bold")
-      .text("Patient Demographics (by Age Group)", { width: pageWidth });
+    for (const t of transactions) {
+      const medId = t.stockEntry.medicine.id;
+      if (!medicineStats[medId]) {
+        medicineStats[medId] = {
+          name: t.stockEntry.medicine.name,
+          category: t.stockEntry.medicine.category.name,
+          quantity: 0,
+          revenue: 0,
+        };
+      }
+      medicineStats[medId].quantity += t.quantity;
+      medicineStats[medId].revenue += t.payment?.amount || 0;
+    }
 
-    doc.moveDown(0.5);
+    // Sort by quantity and get top 10
+    const topMedicines = Object.values(medicineStats)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 10);
+
+    // Top Medicines Bar Chart
+    drawSingleBarChart(
+      doc,
+      topMedicines.map((m) => ({
+        label: m.name.substring(0, 12),
+        value: m.quantity,
+      })),
+      {
+        title: "Top Dispensed Medicines (by Quantity)",
+        width: pageWidth,
+        height: 200,
+        color: "#3b82f6",
+        valuePrefix: "",
+      }
+    );
+
+    // Top Medicines Table
+    doc.moveDown(1);
+    generateSectionTitle(doc, "Top Medicines Summary");
+
+    const topMedicinesColumns: TableColumn[] = [
+      { header: "Medicine", key: "name", width: 30 },
+      { header: "Category", key: "category", width: 25 },
+      { header: "Qty Dispensed", key: "quantity", width: 20, align: "center" },
+      { header: "Revenue", key: "revenue", width: 25, align: "right" },
+    ];
+
+    const topMedicinesData = topMedicines.map((m) => ({
+      name: m.name,
+      category: m.category,
+      quantity: m.quantity,
+      revenue: `KES ${m.revenue.toLocaleString()}`,
+    }));
+
+    generateTable(doc, topMedicinesColumns, topMedicinesData);
+
+    // ==================== REVENUE BY PAYMENT METHOD ====================
+    doc.moveDown(1);
+    generateSectionTitle(doc, "Revenue by Payment Method");
+
+    const revenueByMethod: Record<string, number> = {
+      cash: 0,
+      mpesa: 0,
+      card: 0,
+      insurance: 0,
+    };
+
+    for (const t of transactions) {
+      if (t.payment) {
+        revenueByMethod[t.payment.method] += t.payment.amount;
+      }
+    }
+
+    const methodLabels: Record<string, string> = {
+      cash: "Cash",
+      mpesa: "M-Pesa",
+      card: "Card",
+      insurance: "Insurance",
+    };
+
+    const revenueColumns: TableColumn[] = [
+      { header: "Payment Method", key: "method", width: 50 },
+      { header: "Revenue", key: "revenue", width: 50, align: "right" },
+    ];
+
+    const revenueTableData = Object.entries(revenueByMethod).map(
+      ([method, amount]) => ({
+        method: methodLabels[method],
+        revenue: `KES ${amount.toLocaleString()}`,
+      })
+    );
+
+    // Add total row
+    revenueTableData.push({
+      method: "TOTAL",
+      revenue: `KES ${totalRevenue.toLocaleString()}`,
+    });
+
+    generateTable(doc, revenueColumns, revenueTableData);
+
+    // ==================== STAFF PERFORMANCE ====================
+    doc.moveDown(1);
+    generateSectionTitle(doc, "Staff Performance");
+
+    // Aggregate by staff
+    const staffStats: Record<
+      string,
+      { name: string; dispenses: number; revenue: number }
+    > = {};
+
+    for (const t of transactions) {
+      const userId = t.user.id;
+      if (!staffStats[userId]) {
+        staffStats[userId] = {
+          name: t.user.name,
+          dispenses: 0,
+          revenue: 0,
+        };
+      }
+      staffStats[userId].dispenses += 1;
+      staffStats[userId].revenue += t.payment?.amount || 0;
+    }
+
+    const staffData = Object.values(staffStats).sort(
+      (a, b) => b.dispenses - a.dispenses
+    );
+
+    const staffColumns: TableColumn[] = [
+      { header: "Staff Member", key: "name", width: 35 },
+      { header: "Dispenses", key: "dispenses", width: 25, align: "center" },
+      { header: "Revenue Generated", key: "revenue", width: 40, align: "right" },
+    ];
+
+    const staffTableData = staffData.map((s) => ({
+      name: s.name,
+      dispenses: s.dispenses,
+      revenue: `KES ${s.revenue.toLocaleString()}`,
+    }));
+
+    generateTable(doc, staffColumns, staffTableData);
+
+    // ==================== AGE GROUP DEMOGRAPHICS ====================
+    doc.moveDown(1);
+    generateSectionTitle(doc, "Patient Demographics (by Medicine Age Group)");
+
+    const ageGroupCounts: Record<string, number> = {};
+    for (const t of transactions) {
+      const ageGroup = t.stockEntry.medicine.ageGroup ?? "all_ages";
+      ageGroupCounts[ageGroup] = (ageGroupCounts[ageGroup] ?? 0) + 1;
+    }
 
     const ageGroupLabels: Record<string, string> = {
-      infant: "Infant < 1 year",
+      infant: "Infant (< 1 year)",
       pediatric: "Pediatric (1-17 years)",
       adult: "Adult (18-64 years)",
       geriatric: "Elderly (65+ years)",
-      all_ages: "All ages"
+      all_ages: "All Ages",
     };
 
-    for (const [group, count] of Object.entries(ageGroupCounts)) {
-      const labelWidth = pageWidth * 0.7;
-      const countWidth = pageWidth * 0.3;
-      const currentY = doc.y;
+    const demographicsColumns: TableColumn[] = [
+      { header: "Age Group", key: "ageGroup", width: 60 },
+      { header: "Dispenses", key: "count", width: 40, align: "right" },
+    ];
 
-      doc
-        .fillColor(PDF_COLORS.text)
-        .fontSize(PDF_FONTS.body)
-        .font("Helvetica")
-        .text(ageGroupLabels[group] ?? group, PDF_MARGINS.left, currentY, {
-          width: labelWidth,
-        });
+    const demographicsData = Object.entries(ageGroupCounts).map(
+      ([group, count]) => ({
+        ageGroup: ageGroupLabels[group] ?? group,
+        count,
+      })
+    );
 
-      doc
-        .fillColor(PDF_COLORS.text)
-        .fontSize(PDF_FONTS.body)
-        .font("Helvetica-Bold")
-        .text(count.toString(), PDF_MARGINS.left + labelWidth, currentY, {
-          width: countWidth,
-          align: "right",
-        });
+    // Add total row
+    demographicsData.push({
+      ageGroup: "TOTAL",
+      count: transactions.length,
+    });
 
-      doc.y = currentY + 18;
-    }
+    generateTable(doc, demographicsColumns, demographicsData);
 
-    doc.moveDown(1.5);
-
-    // Dispense Transactions Table
-    doc
-      .fillColor(PDF_COLORS.primary)
-      .fontSize(PDF_FONTS.heading)
-      .font("Helvetica-Bold")
-      .text("Dispense Transactions", { width: pageWidth });
-
-    doc.moveDown(0.5);
+    // ==================== DETAILED TRANSACTIONS TABLE ====================
+    doc.moveDown(1);
+    generateSectionTitle(doc, "Dispense Transactions");
 
     // Define table columns
     const columns: TableColumn[] = [
-      { header: "Date", key: "date", width: 12 },
-      { header: "Patient", key: "patient", width: 18 },
-      { header: "Medicine", key: "medicine", width: 18 },
-      { header: "Batch", key: "batch", width: 12 },
-      { header: "Qty", key: "quantity", width: 7, align: "center" },
-      { header: "Dosage", key: "dosage", width: 15 },
-      { header: "Dispensed By", key: "dispensedBy", width: 18 },
+      { header: "Date", key: "date", width: 11 },
+      { header: "Patient", key: "patient", width: 16 },
+      { header: "Medicine", key: "medicine", width: 16 },
+      { header: "Qty", key: "quantity", width: 6, align: "center" },
+      { header: "Amount", key: "amount", width: 12, align: "right" },
+      { header: "Method", key: "method", width: 10, align: "center" },
+      { header: "Dosage", key: "dosage", width: 14 },
+      { header: "Staff", key: "staff", width: 15 },
     ];
 
     // Prepare table data
@@ -981,10 +1121,11 @@ export async function generateDispensingReport(filters: DispensingFilters) {
       date: format(new Date(t.createdAt), "dd/MM/yyyy"),
       patient: t.patientRecord?.name ?? "-",
       medicine: t.stockEntry.medicine.name,
-      batch: t.stockEntry.batchNumber,
       quantity: t.quantity,
-      dosage: t.notes ?? "-",
-      dispensedBy: t.user.name,
+      amount: `KES ${(t.payment?.amount || 0).toLocaleString()}`,
+      method: methodLabels[t.payment?.method || "cash"],
+      dosage: t.notes ? t.notes.substring(0, 20) : "-",
+      staff: t.user.name,
     }));
 
     // Generate table
@@ -1229,6 +1370,3 @@ export async function generateWastageReport(
     };
   }
 }
-
-
-

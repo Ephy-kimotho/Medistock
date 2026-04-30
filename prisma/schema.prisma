@@ -59,6 +59,18 @@ enum PAYMENT_METHOD {
   insurance
 }
 
+enum DOSAGE_FREQUENCY {
+  once_daily
+  twice_daily
+  three_times_daily
+  four_times_daily
+  every_4_hours
+  every_6_hours
+  every_8_hours
+  as_needed
+  single_dose
+}
+
 /**
  * -------------------------------- MODELS --------------------------------
  */
@@ -206,8 +218,11 @@ model Medicines {
   ageGroup MEDICINE_AGE_GROUP @default(all_ages)
   isActive Boolean            @default(true)
 
-  dosage    String @default("2 times daily")
-  unitPrice Int    @default(100)
+  dosageQuantity  Int?
+  dosageFrequency DOSAGE_FREQUENCY?
+  dosageDays      Int?
+
+  unitPrice Int 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

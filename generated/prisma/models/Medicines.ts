@@ -28,11 +28,15 @@ export type AggregateMedicines = {
 
 export type MedicinesAvgAggregateOutputType = {
   reorderlevel: number | null
+  dosageQuantity: number | null
+  dosageDays: number | null
   unitPrice: number | null
 }
 
 export type MedicinesSumAggregateOutputType = {
   reorderlevel: number | null
+  dosageQuantity: number | null
+  dosageDays: number | null
   unitPrice: number | null
 }
 
@@ -44,7 +48,9 @@ export type MedicinesMinAggregateOutputType = {
   categoryId: string | null
   ageGroup: $Enums.MEDICINE_AGE_GROUP | null
   isActive: boolean | null
-  dosage: string | null
+  dosageQuantity: number | null
+  dosageFrequency: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays: number | null
   unitPrice: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -60,7 +66,9 @@ export type MedicinesMaxAggregateOutputType = {
   categoryId: string | null
   ageGroup: $Enums.MEDICINE_AGE_GROUP | null
   isActive: boolean | null
-  dosage: string | null
+  dosageQuantity: number | null
+  dosageFrequency: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays: number | null
   unitPrice: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -76,7 +84,9 @@ export type MedicinesCountAggregateOutputType = {
   categoryId: number
   ageGroup: number
   isActive: number
-  dosage: number
+  dosageQuantity: number
+  dosageFrequency: number
+  dosageDays: number
   unitPrice: number
   createdAt: number
   updatedAt: number
@@ -88,11 +98,15 @@ export type MedicinesCountAggregateOutputType = {
 
 export type MedicinesAvgAggregateInputType = {
   reorderlevel?: true
+  dosageQuantity?: true
+  dosageDays?: true
   unitPrice?: true
 }
 
 export type MedicinesSumAggregateInputType = {
   reorderlevel?: true
+  dosageQuantity?: true
+  dosageDays?: true
   unitPrice?: true
 }
 
@@ -104,7 +118,9 @@ export type MedicinesMinAggregateInputType = {
   categoryId?: true
   ageGroup?: true
   isActive?: true
-  dosage?: true
+  dosageQuantity?: true
+  dosageFrequency?: true
+  dosageDays?: true
   unitPrice?: true
   createdAt?: true
   updatedAt?: true
@@ -120,7 +136,9 @@ export type MedicinesMaxAggregateInputType = {
   categoryId?: true
   ageGroup?: true
   isActive?: true
-  dosage?: true
+  dosageQuantity?: true
+  dosageFrequency?: true
+  dosageDays?: true
   unitPrice?: true
   createdAt?: true
   updatedAt?: true
@@ -136,7 +154,9 @@ export type MedicinesCountAggregateInputType = {
   categoryId?: true
   ageGroup?: true
   isActive?: true
-  dosage?: true
+  dosageQuantity?: true
+  dosageFrequency?: true
+  dosageDays?: true
   unitPrice?: true
   createdAt?: true
   updatedAt?: true
@@ -239,7 +259,9 @@ export type MedicinesGroupByOutputType = {
   categoryId: string
   ageGroup: $Enums.MEDICINE_AGE_GROUP
   isActive: boolean
-  dosage: string
+  dosageQuantity: number | null
+  dosageFrequency: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays: number | null
   unitPrice: number
   createdAt: Date
   updatedAt: Date
@@ -278,7 +300,9 @@ export type MedicinesWhereInput = {
   categoryId?: Prisma.StringFilter<"Medicines"> | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFilter<"Medicines"> | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFilter<"Medicines"> | boolean
-  dosage?: Prisma.StringFilter<"Medicines"> | string
+  dosageQuantity?: Prisma.IntNullableFilter<"Medicines"> | number | null
+  dosageFrequency?: Prisma.EnumDOSAGE_FREQUENCYNullableFilter<"Medicines"> | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.IntNullableFilter<"Medicines"> | number | null
   unitPrice?: Prisma.IntFilter<"Medicines"> | number
   createdAt?: Prisma.DateTimeFilter<"Medicines"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medicines"> | Date | string
@@ -297,7 +321,9 @@ export type MedicinesOrderByWithRelationInput = {
   categoryId?: Prisma.SortOrder
   ageGroup?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  dosageFrequency?: Prisma.SortOrderInput | Prisma.SortOrder
+  dosageDays?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -319,7 +345,9 @@ export type MedicinesWhereUniqueInput = Prisma.AtLeast<{
   categoryId?: Prisma.StringFilter<"Medicines"> | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFilter<"Medicines"> | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFilter<"Medicines"> | boolean
-  dosage?: Prisma.StringFilter<"Medicines"> | string
+  dosageQuantity?: Prisma.IntNullableFilter<"Medicines"> | number | null
+  dosageFrequency?: Prisma.EnumDOSAGE_FREQUENCYNullableFilter<"Medicines"> | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.IntNullableFilter<"Medicines"> | number | null
   unitPrice?: Prisma.IntFilter<"Medicines"> | number
   createdAt?: Prisma.DateTimeFilter<"Medicines"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medicines"> | Date | string
@@ -338,7 +366,9 @@ export type MedicinesOrderByWithAggregationInput = {
   categoryId?: Prisma.SortOrder
   ageGroup?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  dosageFrequency?: Prisma.SortOrderInput | Prisma.SortOrder
+  dosageDays?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -362,7 +392,9 @@ export type MedicinesScalarWhereWithAggregatesInput = {
   categoryId?: Prisma.StringWithAggregatesFilter<"Medicines"> | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPWithAggregatesFilter<"Medicines"> | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolWithAggregatesFilter<"Medicines"> | boolean
-  dosage?: Prisma.StringWithAggregatesFilter<"Medicines"> | string
+  dosageQuantity?: Prisma.IntNullableWithAggregatesFilter<"Medicines"> | number | null
+  dosageFrequency?: Prisma.EnumDOSAGE_FREQUENCYNullableWithAggregatesFilter<"Medicines"> | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.IntNullableWithAggregatesFilter<"Medicines"> | number | null
   unitPrice?: Prisma.IntWithAggregatesFilter<"Medicines"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Medicines"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Medicines"> | Date | string
@@ -377,8 +409,10 @@ export type MedicinesCreateInput = {
   reorderlevel: number
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -396,8 +430,10 @@ export type MedicinesUncheckedCreateInput = {
   categoryId: string
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -413,7 +449,9 @@ export type MedicinesUpdateInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -432,7 +470,9 @@ export type MedicinesUncheckedUpdateInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -450,8 +490,10 @@ export type MedicinesCreateManyInput = {
   categoryId: string
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -465,7 +507,9 @@ export type MedicinesUpdateManyMutationInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -481,7 +525,9 @@ export type MedicinesUncheckedUpdateManyInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -507,7 +553,9 @@ export type MedicinesCountOrderByAggregateInput = {
   categoryId?: Prisma.SortOrder
   ageGroup?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrder
+  dosageFrequency?: Prisma.SortOrder
+  dosageDays?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -517,6 +565,8 @@ export type MedicinesCountOrderByAggregateInput = {
 
 export type MedicinesAvgOrderByAggregateInput = {
   reorderlevel?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrder
+  dosageDays?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
 }
 
@@ -528,7 +578,9 @@ export type MedicinesMaxOrderByAggregateInput = {
   categoryId?: Prisma.SortOrder
   ageGroup?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrder
+  dosageFrequency?: Prisma.SortOrder
+  dosageDays?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -544,7 +596,9 @@ export type MedicinesMinOrderByAggregateInput = {
   categoryId?: Prisma.SortOrder
   ageGroup?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrder
+  dosageFrequency?: Prisma.SortOrder
+  dosageDays?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -554,6 +608,8 @@ export type MedicinesMinOrderByAggregateInput = {
 
 export type MedicinesSumOrderByAggregateInput = {
   reorderlevel?: Prisma.SortOrder
+  dosageQuantity?: Prisma.SortOrder
+  dosageDays?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
 }
 
@@ -616,6 +672,18 @@ export type EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput = {
   set?: $Enums.MEDICINE_AGE_GROUP
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput = {
+  set?: $Enums.DOSAGE_FREQUENCY | null
+}
+
 export type MedicinesCreateNestedOneWithoutStockEntriesInput = {
   create?: Prisma.XOR<Prisma.MedicinesCreateWithoutStockEntriesInput, Prisma.MedicinesUncheckedCreateWithoutStockEntriesInput>
   connectOrCreate?: Prisma.MedicinesCreateOrConnectWithoutStockEntriesInput
@@ -651,8 +719,10 @@ export type MedicinesCreateWithoutCategoryInput = {
   reorderlevel: number
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -668,8 +738,10 @@ export type MedicinesUncheckedCreateWithoutCategoryInput = {
   reorderlevel: number
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -715,7 +787,9 @@ export type MedicinesScalarWhereInput = {
   categoryId?: Prisma.StringFilter<"Medicines"> | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFilter<"Medicines"> | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFilter<"Medicines"> | boolean
-  dosage?: Prisma.StringFilter<"Medicines"> | string
+  dosageQuantity?: Prisma.IntNullableFilter<"Medicines"> | number | null
+  dosageFrequency?: Prisma.EnumDOSAGE_FREQUENCYNullableFilter<"Medicines"> | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.IntNullableFilter<"Medicines"> | number | null
   unitPrice?: Prisma.IntFilter<"Medicines"> | number
   createdAt?: Prisma.DateTimeFilter<"Medicines"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medicines"> | Date | string
@@ -730,8 +804,10 @@ export type MedicinesCreateWithoutStockEntriesInput = {
   reorderlevel: number
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -748,8 +824,10 @@ export type MedicinesUncheckedCreateWithoutStockEntriesInput = {
   categoryId: string
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -780,7 +858,9 @@ export type MedicinesUpdateWithoutStockEntriesInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -798,7 +878,9 @@ export type MedicinesUncheckedUpdateWithoutStockEntriesInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -814,8 +896,10 @@ export type MedicinesCreateWithoutAlertsInput = {
   reorderlevel: number
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -832,8 +916,10 @@ export type MedicinesUncheckedCreateWithoutAlertsInput = {
   categoryId: string
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -864,7 +950,9 @@ export type MedicinesUpdateWithoutAlertsInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -882,7 +970,9 @@ export type MedicinesUncheckedUpdateWithoutAlertsInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -898,8 +988,10 @@ export type MedicinesCreateManyCategoryInput = {
   reorderlevel: number
   ageGroup?: $Enums.MEDICINE_AGE_GROUP
   isActive?: boolean
-  dosage?: string
-  unitPrice?: number
+  dosageQuantity?: number | null
+  dosageFrequency?: $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: number | null
+  unitPrice: number
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -913,7 +1005,9 @@ export type MedicinesUpdateWithoutCategoryInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -930,7 +1024,9 @@ export type MedicinesUncheckedUpdateWithoutCategoryInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -947,7 +1043,9 @@ export type MedicinesUncheckedUpdateManyWithoutCategoryInput = {
   reorderlevel?: Prisma.IntFieldUpdateOperationsInput | number
   ageGroup?: Prisma.EnumMEDICINE_AGE_GROUPFieldUpdateOperationsInput | $Enums.MEDICINE_AGE_GROUP
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
+  dosageQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dosageFrequency?: Prisma.NullableEnumDOSAGE_FREQUENCYFieldUpdateOperationsInput | $Enums.DOSAGE_FREQUENCY | null
+  dosageDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1003,7 +1101,9 @@ export type MedicinesSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   categoryId?: boolean
   ageGroup?: boolean
   isActive?: boolean
-  dosage?: boolean
+  dosageQuantity?: boolean
+  dosageFrequency?: boolean
+  dosageDays?: boolean
   unitPrice?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1023,7 +1123,9 @@ export type MedicinesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   categoryId?: boolean
   ageGroup?: boolean
   isActive?: boolean
-  dosage?: boolean
+  dosageQuantity?: boolean
+  dosageFrequency?: boolean
+  dosageDays?: boolean
   unitPrice?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1040,7 +1142,9 @@ export type MedicinesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   categoryId?: boolean
   ageGroup?: boolean
   isActive?: boolean
-  dosage?: boolean
+  dosageQuantity?: boolean
+  dosageFrequency?: boolean
+  dosageDays?: boolean
   unitPrice?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1057,7 +1161,9 @@ export type MedicinesSelectScalar = {
   categoryId?: boolean
   ageGroup?: boolean
   isActive?: boolean
-  dosage?: boolean
+  dosageQuantity?: boolean
+  dosageFrequency?: boolean
+  dosageDays?: boolean
   unitPrice?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1065,7 +1171,7 @@ export type MedicinesSelectScalar = {
   manufacturer?: boolean
 }
 
-export type MedicinesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unit" | "reorderlevel" | "categoryId" | "ageGroup" | "isActive" | "dosage" | "unitPrice" | "createdAt" | "updatedAt" | "deletedAt" | "manufacturer", ExtArgs["result"]["medicines"]>
+export type MedicinesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unit" | "reorderlevel" | "categoryId" | "ageGroup" | "isActive" | "dosageQuantity" | "dosageFrequency" | "dosageDays" | "unitPrice" | "createdAt" | "updatedAt" | "deletedAt" | "manufacturer", ExtArgs["result"]["medicines"]>
 export type MedicinesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   stockEntries?: boolean | Prisma.Medicines$stockEntriesArgs<ExtArgs>
@@ -1094,7 +1200,9 @@ export type $MedicinesPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     categoryId: string
     ageGroup: $Enums.MEDICINE_AGE_GROUP
     isActive: boolean
-    dosage: string
+    dosageQuantity: number | null
+    dosageFrequency: $Enums.DOSAGE_FREQUENCY | null
+    dosageDays: number | null
     unitPrice: number
     createdAt: Date
     updatedAt: Date
@@ -1533,7 +1641,9 @@ export interface MedicinesFieldRefs {
   readonly categoryId: Prisma.FieldRef<"Medicines", 'String'>
   readonly ageGroup: Prisma.FieldRef<"Medicines", 'MEDICINE_AGE_GROUP'>
   readonly isActive: Prisma.FieldRef<"Medicines", 'Boolean'>
-  readonly dosage: Prisma.FieldRef<"Medicines", 'String'>
+  readonly dosageQuantity: Prisma.FieldRef<"Medicines", 'Int'>
+  readonly dosageFrequency: Prisma.FieldRef<"Medicines", 'DOSAGE_FREQUENCY'>
+  readonly dosageDays: Prisma.FieldRef<"Medicines", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"Medicines", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Medicines", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Medicines", 'DateTime'>

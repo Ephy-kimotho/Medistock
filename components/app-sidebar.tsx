@@ -39,7 +39,6 @@ import {
   SquarePen,
   Mail,
   UserPlus,
-  CreditCard,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -72,11 +71,6 @@ const mainNavItems = [
     subItems: [
       { title: "Dispense", url: "/transactions/dispense", icon: SquarePen },
       { title: "Wastage", url: "/transactions/wastage", icon: Trash2 },
-      {
-        title: "Pending Payments",
-        url: "/transactions/pending-payments",
-        icon: CreditCard,
-      },
     ],
   },
   {

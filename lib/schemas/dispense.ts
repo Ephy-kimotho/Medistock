@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 import { NAME_PATTERN, PHONE_PATTERN } from "@/lib/utils";
 
@@ -24,10 +23,10 @@ export const dispenseSchema = z
 
     notes: z.string().min(1, "Dosage is required"),
 
-    // Payment fields
-    collectPayment: z.boolean(),
-    paymentMethod: z.enum(["cash", "mpesa", "card", "insurance"]).optional(),
-    paymentAmount: z.number().positive().optional(), 
+    // Payment fields - always required
+    paymentMethod: z.enum(["cash", "mpesa", "card", "insurance"], {
+      error: "Payment method is required",
+    }),
     paymentCode: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -79,26 +78,35 @@ export const dispenseSchema = z
       }
     }
 
-    // Payment validation
-    if (data.collectPayment) {
-      if (!data.paymentMethod) {
+    // Payment code validation based on payment method
+    if (data.paymentMethod === "mpesa") {
+      const code = data.paymentCode?.trim() || "";
+      if (code.length !== 10) {
         ctx.addIssue({
           code: "custom",
-          message: "Payment method is required",
-          path: ["paymentMethod"],
+          message: "M-Pesa code must be exactly 10 characters",
+          path: ["paymentCode"],
         });
       }
+    }
 
-      // Note: paymentAmount is now auto-calculated, no validation needed here
-
-      if (
-        data.paymentMethod &&
-        data.paymentMethod !== "cash" &&
-        (!data.paymentCode || data.paymentCode.trim() === "")
-      ) {
+    if (data.paymentMethod === "card") {
+      const code = data.paymentCode?.trim() || "";
+      if (code.length !== 10) {
         ctx.addIssue({
           code: "custom",
-          message: "Payment code is required",
+          message: "Card transaction code must be exactly 10 characters",
+          path: ["paymentCode"],
+        });
+      }
+    }
+
+    if (data.paymentMethod === "insurance") {
+      const code = data.paymentCode?.trim() || "";
+      if (code.length < 13) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Insurance code must be at least 13 characters",
           path: ["paymentCode"],
         });
       }
