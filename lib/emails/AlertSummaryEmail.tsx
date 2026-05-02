@@ -84,7 +84,7 @@ export function AlertSummaryEmail({
                       </Text>
                     ))}
                     <Text className="text-red-700 text-sm mt-3 mb-0 font-medium">
-                      ⚠️ Recommendation: Restock these medicines immediately to
+                      Recommendation: Restock these medicines immediately to
                       avoid service disruption.
                     </Text>
                   </Section>
@@ -110,7 +110,7 @@ export function AlertSummaryEmail({
                       </Text>
                     ))}
                     <Text className="text-orange-700 text-sm mt-3 mb-0 font-medium">
-                      ⚠️ Recommendation: Plan to restock these medicines soon to
+                       Recommendation: Plan to restock these medicines soon to
                       maintain adequate inventory levels.
                     </Text>
                   </Section>
@@ -136,7 +136,7 @@ export function AlertSummaryEmail({
                       </Text>
                     ))}
                     <Text className="text-orange-700 text-sm mt-3 mb-0 font-medium">
-                      ⚠️ Recommendation: Prioritize dispensing medicines from
+                       Recommendation: Prioritize dispensing medicines from
                       these batches before they expire.
                     </Text>
                   </Section>
@@ -162,7 +162,7 @@ export function AlertSummaryEmail({
                       </Text>
                     ))}
                     <Text className="text-red-700 text-sm mt-3 mb-0 font-medium">
-                      ⚠️ Recommendation: Record these batches as wastage
+                       Recommendation: Record these batches as wastage
                       immediately. Do not dispense expired medicines.
                     </Text>
                   </Section>
