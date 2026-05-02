@@ -165,6 +165,10 @@ export function WastageDialog({ open, onClose }: WastageDialogProps) {
               disabled={isPending}
             />
 
+            <p className="text-xs text-muted-foreground">
+              Defaults to the last 3 months if no dates are selected
+            </p>
+
             <DialogFooter className="gap-2 pt-4">
               <Button
                 type="button"
