@@ -6,12 +6,12 @@ import type { RecentTransactionAdmin } from "@/lib/types";
 
 interface RecentTransactionsAdminProps {
   transactions: RecentTransactionAdmin[];
-  isAuditor:boolean,
+  isAuditorOrHR: boolean;
 }
 
 export function RecentTransactionsAdmin({
   transactions,
-  isAuditor
+  isAuditorOrHR,
 }: RecentTransactionsAdminProps) {
   const formatQuantity = (type: string, quantity: number) => {
     if (type === "stock_in") {
@@ -28,7 +28,12 @@ export function RecentTransactionsAdmin({
   };
 
   return (
-    <div className={cn("rounded-xl border border-border bg-card p-6", isAuditor && "col-span-2 mt-2")}>
+    <div
+      className={cn(
+        "rounded-xl border border-border bg-card p-6",
+        isAuditorOrHR && "col-span-2 mt-2",
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-slate-900">

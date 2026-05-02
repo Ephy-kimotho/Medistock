@@ -35,7 +35,7 @@ async function DashboardPage() {
     redirect("/inventory");
   } */
 
-  const isStaff = userRole === "user"
+  const isStaff = userRole === "user";
 
   // Fetch data based on role
   const [stats, transactions, recentAlerts] = await Promise.all([
@@ -93,12 +93,12 @@ async function DashboardPage() {
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {["hr", "admin", "inventory_manager"].includes(userRole) && (
+          {["admin", "inventory_manager"].includes(userRole) && (
             <RecentAlerts alerts={recentAlerts} />
           )}
           <RecentTransactionsAdmin
             transactions={transactions as RecentTransactionAdmin[]}
-            isAuditor={userRole === "auditor"}
+            isAuditorOrHR={userRole === "auditor" || userRole === "hr"}
           />
         </div>
       )}
