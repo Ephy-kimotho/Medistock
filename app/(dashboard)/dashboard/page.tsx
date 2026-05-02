@@ -31,11 +31,11 @@ async function DashboardPage() {
   const userRole = user.role as Role;
 
   // Auditors cannot access the dashboard
-  if (userRole === "auditor") {
+  /*  if (userRole === "auditor") {
     redirect("/inventory");
-  }
+  } */
 
-  const isStaff = userRole === "user";
+  const isStaff = userRole === "user"
 
   // Fetch data based on role
   const [stats, transactions, recentAlerts] = await Promise.all([
@@ -84,7 +84,7 @@ async function DashboardPage() {
       <Statcards stats={statsInfo} />
 
       {/* Quick Actions */}
-      <QuickActions role={userRole} />
+      {userRole !== "auditor" && <QuickActions role={userRole} />}
 
       {/* Recent Activity Section */}
       {isStaff ? (
@@ -93,9 +93,12 @@ async function DashboardPage() {
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <RecentAlerts alerts={recentAlerts} />
+          {["hr", "admin", "inventory_manager"].includes(userRole) && (
+            <RecentAlerts alerts={recentAlerts} />
+          )}
           <RecentTransactionsAdmin
             transactions={transactions as RecentTransactionAdmin[]}
+            isAuditor={userRole === "auditor"}
           />
         </div>
       )}

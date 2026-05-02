@@ -178,8 +178,6 @@ function AppSidebar() {
         return canManageInvitations;
       case "Onboarding":
         return canManageInvitations;
-      case "Dashboard":
-        return !isAuditor;
       default:
         return true;
     }
@@ -259,9 +257,6 @@ function AppSidebar() {
                               className={cn(
                                 (subItem.title === "Dispense" ||
                                   subItem.title === "Wastage") &&
-                                  isHR &&
-                                  "hidden",
-                                subItem.title === "Pending Payments" &&
                                   (isHR || isAuditor) &&
                                   "hidden",
                               )}
