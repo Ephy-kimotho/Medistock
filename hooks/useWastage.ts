@@ -54,7 +54,13 @@ export function useRecordWastage() {
             data: WastageInput;
             userId: string;
         }) => {
-            return await recordWastage(data, userId);
+            const result = await recordWastage(data, userId);
+
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+
+            return result;
         },
         onSuccess: async (result) => {
             // Invalidate all related queries

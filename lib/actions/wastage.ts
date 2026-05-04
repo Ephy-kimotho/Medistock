@@ -61,7 +61,7 @@ export async function recordWastage(data: WastageInput, userId: string) {
             },
         });
 
-        if (!batch) {
+        /*if (!batch) {
             throw new Error("Batch not found.");
         }
 
@@ -80,6 +80,28 @@ export async function recordWastage(data: WastageInput, userId: string) {
             throw new Error(
                 `Insufficient stock. Only ${batch.quantity} units available.`
             );
+        } */
+        // 
+
+        if (!batch) {
+            return { success: false, message: "Batch not found." };
+        }
+
+        if (data.reason === "expired") {
+            const now = new Date();
+            if (!isBefore(new Date(batch.expiryDate), now)) {
+                return {
+                    success: false,
+                    message: `This batch (${batch.batchNumber}) has not yet expired. Expiry date is ${new Date(batch.expiryDate).toLocaleDateString()}.`,
+                };
+            }
+        }
+
+        if (data.quantity > batch.quantity) {
+            return {
+                success: false,
+                message: `Insufficient stock. Only ${batch.quantity} units available.`,
+            };
         }
 
         // Format reason for storage
@@ -129,10 +151,10 @@ export async function recordWastage(data: WastageInput, userId: string) {
         };
     } catch (error) {
         console.error("Failed to record wastage: ", error);
-        if (error instanceof Error) {
-            throw error;
-        }
-        throw new Error("Failed to record wastage.");
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to record wastage.",
+        };
     }
 }
 

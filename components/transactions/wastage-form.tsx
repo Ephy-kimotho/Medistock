@@ -33,6 +33,7 @@ import {
 } from "@/constants";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { isBefore } from "date-fns";
 import type { WastageInput, ExpiredBatch } from "@/lib/types";
 
 interface WastageFormProps {
@@ -366,11 +367,25 @@ export function WastageForm({ userId }: WastageFormProps) {
                         <SelectValue placeholder="Select reason to dispose" />
                       </SelectTrigger>
                       <SelectContent>
-                        {WASTAGE_REASONS.map((reason) => (
-                          <SelectItem key={reason.value} value={reason.value}>
-                            {reason.label}
-                          </SelectItem>
-                        ))}
+                        {WASTAGE_REASONS.map((reason) => {
+                          const isExpiredOption = reason.value === "expired";
+                          const batchNotExpired =
+                            selectedBatch?.expiryDate &&
+                            !isBefore(
+                              new Date(selectedBatch.expiryDate),
+                              new Date(),
+                            );
+
+                          return (
+                            <SelectItem
+                              key={reason.value}
+                              value={reason.value}
+                              disabled={isExpiredOption && !!batchNotExpired}
+                            >
+                              {reason.label}
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   )}
