@@ -70,7 +70,7 @@ export default function MedicinesLoading() {
               <TableHead className="font-semibold text-center">
                 Total Stock
               </TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
+              <TableHead className="font-semibold">Stock tatus</TableHead>
               {isAdminOrManager && (
                 <TableHead className="font-semibold text-center">
                   Actions
