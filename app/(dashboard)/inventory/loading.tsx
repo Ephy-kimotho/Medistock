@@ -73,7 +73,7 @@ export default function StockInventoryLoading() {
               </TableHead>
               <TableHead className="font-semibold">Purchase Date</TableHead>
               <TableHead className="font-semibold">Expiry Date</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
+              <TableHead className="font-semibold">Expiry Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
