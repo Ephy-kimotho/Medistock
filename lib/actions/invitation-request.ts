@@ -143,51 +143,45 @@ async function notifyAdminsOfNewRequest({
 
 export async function createInvitationRequest(data: InvitationRequestInput, requestorId: string) {
     try {
-        // Ensure only hr can create an invitation
-        await requireRole(["hr"])
+        await requireRole(["hr"]);
 
-        // Check if email already exists in users
         const existingUser = await prisma.user.findUnique({
             where: { email: data.email },
         });
 
         if (existingUser) {
-            throw new Error("A user with this email already exists");
+            return { success: false, message: "A user with this email already exists" };
         }
 
-        // Check if email already has a pending request
         const existingRequest = await prisma.invitationRequest.findUnique({
             where: { email: data.email },
         });
 
         if (existingRequest) {
-            throw new Error("An invitation request for this email already exists");
+            return { success: false, message: "An invitation request for this email already exists" };
         }
 
-        // Get the requestor's name for the notification email
         const requestor = await prisma.user.findUnique({
             where: { id: requestorId },
             select: { name: true },
         });
 
         if (!requestor) {
-            throw new Error("Requestor not found!");
+            return { success: false, message: "Requestor not found!" };
         }
 
-        // Create the request
         await prisma.invitationRequest.create({
             data: {
                 name: data.name,
                 email: data.email,
                 role: data.role,
-                phone:data.phone,
+                phone: data.phone,
                 employeeId: data.employeeId,
                 requestedById: requestorId,
                 status: "pending",
             },
         });
 
-        // Notify all admins about the new request
         const notificationResult = await notifyAdminsOfNewRequest({
             employeeName: data.name,
             employeeEmail: data.email,
@@ -206,13 +200,13 @@ export async function createInvitationRequest(data: InvitationRequestInput, requ
 
         return {
             success: true,
-            message: `Request created and notifed ${notificationResult.notified} ${notificationResult.notified > 1 ? "admins" : "admin"}`,
+            message: `Request created and notified ${notificationResult.notified} ${notificationResult.notified > 1 ? "admins" : "admin"}`,
         };
     } catch (error) {
         console.error("Error creating invitation request:", error);
-        if (error instanceof Error) {
-            throw error;
-        }
-        throw new Error("Failed to create invitation request");
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to create invitation request",
+        };
     }
 }

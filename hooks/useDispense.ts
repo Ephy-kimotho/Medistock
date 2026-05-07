@@ -39,7 +39,13 @@ export const useDispenseMedicine = () => {
             data: DispenseInput;
             userId: string;
         }) => {
-            return await dispenseMedicine(data, userId);
+
+            const result = await dispenseMedicine(data, userId);
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+            
+            return result;
         },
         onSuccess: async (result) => {
             // Invalidation of queries
