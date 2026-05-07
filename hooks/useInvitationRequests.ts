@@ -34,17 +34,21 @@ export const useCreateInvitationRequest = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ data, requestorId }: { data: InvitationRequestInput, requestorId: string }) => createInvitationRequest(data, requestorId),
+        mutationFn: async ({ data, requestorId }: { data: InvitationRequestInput; requestorId: string }) => {
+            const result = await createInvitationRequest(data, requestorId);
+
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+
+            return result;
+        },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: RequestKeys.lists() });
             toast.success(data.message);
         },
         onError: (error) => {
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : "Failed to create invitation request";
-            toast.error(message);
+            toast.error(error.message);
         },
     });
 };

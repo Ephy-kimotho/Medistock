@@ -56,19 +56,18 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
         });
 
         if (!batch) {
-            throw new Error("Batch not found.");
+            return { success: false, message: "Batch not found." };
         }
 
-        // Check if batch has expired
         if (isBefore(new Date(batch.expiryDate), new Date())) {
-            throw new Error("Cannot dispense from an expired batch.");
+            return { success: false, message: "Cannot dispense from an expired batch." };
         }
 
-        // Check if enough quantity is available
         if (data.quantity > batch.quantity) {
-            throw new Error(
-                `Insufficient stock. Only ${batch.quantity} units available.`
-            );
+            return {
+                success: false,
+                message: `Insufficient stock. Only ${batch.quantity} units available.`,
+            };
         }
 
         // Handle patient - either create new or use existing
@@ -202,15 +201,15 @@ export async function dispenseMedicine(data: DispenseInput, userId: string) {
             error instanceof Prisma.PrismaClientKnownRequestError &&
             error.code === "P2002"
         ) {
-            throw new Error(
-                "This payment code already exists. Please use a different code."
-            );
+            return {
+                success: false,
+                message: "This payment code already exists. Please use a different code.",
+            };
         }
 
-        if (error instanceof Error) {
-            throw error;
-        }
-
-        throw new Error("Failed to dispense medicine.");
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to dispense medicine.",
+        };
     }
 }

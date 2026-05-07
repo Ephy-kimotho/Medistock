@@ -68,7 +68,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
     selectedMedicine?.dosageQuantity && selectedMedicine?.dosageFrequency
   );
 
-  // Check if frequency is "as_needed" 
+  // Check if frequency is "as_needed"
   const isAsNeeded = selectedMedicine?.dosageFrequency === "as_needed";
 
   // Should auto-calculate quantity? Only if has settings AND not as_needed
@@ -632,7 +632,7 @@ export function DispenseForm({ userId }: DispenseFormProps) {
                   quantity &&
                   quantity > selectedBatch.quantity && (
                     <p className="text-sm text-red-500 font-medium">
-                      ⚠️ Insufficient stock. Required: {quantity} {displayUnit},
+                      Insufficient stock. Required: {quantity} {displayUnit},
                       Available: {selectedBatch.quantity} {displayUnit}
                     </p>
                   )}
